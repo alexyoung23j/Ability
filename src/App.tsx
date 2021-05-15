@@ -1,14 +1,8 @@
-import React from 'react';
-import CommandView from "./components/command_window/CommandView"
+import React from 'react'
+import CommandView from './components/command_window/CommandView'
 
 function App() {
-  return (
-
-      <CommandView />
-        
-      
-      
-  );
+  return <CommandView />
 }
 
-export default App;
+export default App
