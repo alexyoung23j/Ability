@@ -25,6 +25,8 @@
  *  });
  * ```
  */
-import "./index.tsx"
+import './index.tsx'
 
-console.log('👋 This message is being logged by "renderer.js", or is it included via webpack');
+console.log(
+  '👋 This message is being logged by "renderer.js", or is it included via webpack'
+)

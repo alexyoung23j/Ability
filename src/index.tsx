@@ -1,15 +1,15 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import App from './App'
+import './index.css'
 
 function render() {
   ReactDOM.render(
     <React.StrictMode>
-        <App />    
+      <App />
     </React.StrictMode>,
     document.getElementById('root')
-  );
+  )
 }
 
 render()

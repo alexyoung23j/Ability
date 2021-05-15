@@ -1,4 +1,4 @@
 export interface queryPiece {
-    value: string,
-    type: string
+  value: string
+  type: string
 }
