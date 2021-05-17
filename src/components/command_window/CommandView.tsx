@@ -6,6 +6,9 @@ import AutocompleteBar from './AutocompleteBar'
 import CommandLine from './CommandLine'
 import TextSnippetDisplay from './TextSnippetDisplay'
 
+const { ipcRenderer } = require('electron')
+
+
 export default function CommandView() {
   // State
 
@@ -174,9 +177,11 @@ export default function CommandView() {
   }
 
   function ToggleLowerField() {
+    
     if (finalQueryLaunched) {
       return <TextSnippetDisplay />
     } else {
+      ipcRenderer.send('settings-resize', [Math.min(4, validAutocompletes.length)])
       return (
         <AutocompleteBar
           validAutocompletes={validAutocompletes}
@@ -215,7 +220,8 @@ export default function CommandView() {
 
 const commandStyle: CSS.Properties = {
   minHeight: '65px',
-  minWidth: '800px',
+  minWidth: '650px',
+  width: "650px",
   backgroundColor: '#FFFFFF',
   borderRadius: '10px',
   flexDirection: 'column',

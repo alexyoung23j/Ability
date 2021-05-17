@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, globalShortcut } from 'electron'
 import {
   BrowserWindowConstructorOptions,
   HandlerDetails,
@@ -45,7 +45,7 @@ const createWindow = (): void => {
             width: 900,
             height: 500, 
             frame: true,
-            show: true,
+            show: false,
             parent: sentinelWindow,
             title: 'SETTINGS'
           },
@@ -55,34 +55,60 @@ const createWindow = (): void => {
           action: 'allow',
           overrideBrowserWindowOptions: {
             transparent: true,
+            ///backgroundColor: "#DDDDDD",
             frame: false,
-            width: 900,
+            width: 660,
+            height: 85,
             parent: sentinelWindow,
             show: false,
-            title: 'COMMAND'
+            title: 'COMMAND',
+            center:true,
+            movable: true,
+            resizable: false
           },
         }
     }
   })
+}
+
+function keyboardShortcutHandler() {
+  const childWindows = sentinelWindow.getChildWindows()
+  var commandWindow = childWindows.find(window => {
+    return window.title === 'COMMAND'
+  })
+
+  var settingsWindow = childWindows.find(window => {
+    return window.title === 'SETTINGS'
+  })
+
+  commandWindow.show()
+  settingsWindow.hide()
 
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+// Setup when app launches
+app.whenReady().then(() => {
+  globalShortcut.register('CommandOrControl+T', () => {
+    keyboardShortcutHandler()
+  })
+  
+}).then(createWindow)
 
 // Hide all windows when we lose focus
-app.on('browser-window-blur', () => {
-  console.log("blurred, hiding all windows")
+/* app.on('browser-window-blur', (event, window) => {
+  console.log(event, window)
   const childWindows = sentinelWindow.getChildWindows()
 
   for (let window of childWindows) {
     window.hide()
   }
 
-})
+}) */
 
+
+/// IPC LISTENERS
+
+// Handles toggling between the various child BrowserWindows
 ipcMain.on('toggle-event', (event, payload) => {
   const childWindows = sentinelWindow.getChildWindows()
 
@@ -94,8 +120,23 @@ ipcMain.on('toggle-event', (event, payload) => {
     return window.title === payload[1]
   })
   
+  
   windowToDisable.hide()
   windowToEnable.show()
+})
+
+// Handles resizing; this is finicky right now 
+// and we need to get the view css working right to finalize
+ipcMain.on('settings-resize', (event, payload) => {
+  const childWindows = sentinelWindow.getChildWindows()
+  var commandWindow = childWindows.find(window => {
+    return window.title === 'COMMAND'
+  })
+
+  // some approximate calculation for resizing based on # autocompletes shown
+  const newHeight = 85 + payload[0]*55 
+  
+  commandWindow.setSize(680, newHeight)
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
