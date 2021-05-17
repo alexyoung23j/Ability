@@ -13,40 +13,40 @@ if (require('electron-squirrel-startup')) {
   app.quit()
 }
 
-let mainWindow;
+let sentinelWindow;
 const createWindow = (): void => {
-  // Create the browser window.
-    mainWindow = new BrowserWindow({
-    transparent: true,
-    frame: false,
-    minWidth: 0,
-    minHeight: 0,
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      enableRemoteModule: true,
-      nativeWindowOpen: true,
-    },
-    show: false,
+  // Sentinel Window to handle the children windows
+    sentinelWindow = new BrowserWindow({
+        transparent: true,
+        frame: false,
+        minWidth: 0,
+        minHeight: 0,
+        webPreferences: {
+          nodeIntegration: true,
+          contextIsolation: false,
+          enableRemoteModule: true,
+          nativeWindowOpen: true,
+        },
+        show: false,
   })
 
   // and load the index.html of the app.
-  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
+  sentinelWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  sentinelWindow.webContents.openDevTools()
 
-  mainWindow.webContents.setWindowOpenHandler((details: HandlerDetails) => {
+  sentinelWindow.webContents.setWindowOpenHandler((details: HandlerDetails) => {
     switch (details.frameName) {
       case ('SETTINGS'):
         return {
           action: 'allow',
           overrideBrowserWindowOptions: {
             width: 900,
-            height: 900, 
+            height: 500, 
             frame: true,
             show: true,
-            parent: mainWindow,
+            parent: sentinelWindow,
             title: 'SETTINGS'
           },
         }
@@ -57,7 +57,7 @@ const createWindow = (): void => {
             transparent: true,
             frame: false,
             width: 900,
-            parent: mainWindow,
+            parent: sentinelWindow,
             show: false,
             title: 'COMMAND'
           },
@@ -72,8 +72,19 @@ const createWindow = (): void => {
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow)
 
+// Hide all windows when we lose focus
+app.on('browser-window-blur', () => {
+  console.log("blurred, hiding all windows")
+  const childWindows = sentinelWindow.getChildWindows()
+
+  for (let window of childWindows) {
+    window.hide()
+  }
+
+})
+
 ipcMain.on('toggle-event', (event, payload) => {
-  const childWindows = mainWindow.getChildWindows()
+  const childWindows = sentinelWindow.getChildWindows()
 
   var windowToDisable = childWindows.find(window => {
     return window.title === payload[0]

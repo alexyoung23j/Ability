@@ -30,7 +30,7 @@ function createNewWindow(
 
 function App() {
   
-  // Spin up new browserwindows (children of main)
+  // Spin up new browserwindows (children of sentinel)
   const settingsContainer = document.createElement('div')
   createNewWindow(
     WindowType.SETTINGS,
