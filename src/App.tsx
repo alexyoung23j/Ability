@@ -2,6 +2,9 @@ import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 import CommandView from './components/command_window/CommandView'
 import SettingsView from './components/SettingsView'
+const { ipcRenderer } = require('electron')
+
+
 
 const enum WindowType {
   SETTINGS = 'SETTINGS',
@@ -10,7 +13,6 @@ const enum WindowType {
 
 function createNewWindow(
   currentWindowType: WindowType,
-  onClose: () => void,
   containerEl: HTMLDivElement
 ) {
   const externalWindow = window.open('', currentWindowType)
@@ -19,47 +21,45 @@ function createNewWindow(
   // window is closed
   if (externalWindow?.document != null) {
     externalWindow.document.body.appendChild(containerEl)
-    externalWindow.onunload = onClose
   }
 
   return externalWindow
 }
 
+
+
 function App() {
-  const [currentWindowType, setCurrentWindowType] = useState<WindowType>(
-    WindowType.COMMAND
-  )
-
-  const containerEl = document.createElement('div')
-
+  
+  // Spin up new browserwindows (children of main)
+  const settingsContainer = document.createElement('div')
   createNewWindow(
-    currentWindowType,
-    () => {
-      setCurrentWindowType(
-        currentWindowType === WindowType.SETTINGS
-          ? WindowType.COMMAND
-          : WindowType.SETTINGS
-      )
-    },
-    containerEl
+    WindowType.SETTINGS,
+    settingsContainer
+  )
+  
+  const commandContainer = document.createElement('div')
+  createNewWindow(
+    WindowType.COMMAND,
+    commandContainer
   )
 
-  console.log(currentWindowType)
-  let component: JSX.Element
-  switch (currentWindowType) {
-    case WindowType.SETTINGS:
-      component = <SettingsView />
-      break
-
-    case WindowType.COMMAND:
-      component = <CommandView />
-      break
-
-    default:
-      throw new Error('Current Window Type not set.')
+  // Handle toggling between windows
+  const toggleBetweenWindows = (toDisable: string, toEnable: string) => {
+    ipcRenderer.send('toggle-event', [toDisable, toEnable])
   }
 
-  return ReactDOM.createPortal(component, containerEl)
+  let SettingsViewComponent = <SettingsView 
+                                  toggleWindowHandler={toggleBetweenWindows}
+                              />
+
+  let CommandViewComponent = <CommandView />
+
+  return (
+    <div>
+      {ReactDOM.createPortal(SettingsViewComponent, settingsContainer)}
+      {ReactDOM.createPortal(CommandViewComponent, commandContainer)}
+    </div>
+  )
 }
 
 export default App

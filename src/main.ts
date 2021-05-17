@@ -3,6 +3,8 @@ import {
   BrowserWindowConstructorOptions,
   HandlerDetails,
 } from 'electron/renderer'
+const { ipcMain } = require('electron')
+
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -11,9 +13,10 @@ if (require('electron-squirrel-startup')) {
   app.quit()
 }
 
+let mainWindow;
 const createWindow = (): void => {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
     transparent: true,
     frame: false,
     minWidth: 0,
@@ -31,24 +34,58 @@ const createWindow = (): void => {
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   mainWindow.webContents.setWindowOpenHandler((details: HandlerDetails) => {
-    return {
-      action: 'allow',
-      overrideBrowserWindowOptions: {
-        transparent: true,
-        frame: false,
-        width: 900,
-      },
+    switch (details.frameName) {
+      case ('SETTINGS'):
+        return {
+          action: 'allow',
+          overrideBrowserWindowOptions: {
+            width: 900,
+            height: 900, 
+            frame: true,
+            show: true,
+            parent: mainWindow,
+            title: 'SETTINGS'
+          },
+        }
+      case ('COMMAND'):
+        return {
+          action: 'allow',
+          overrideBrowserWindowOptions: {
+            transparent: true,
+            frame: false,
+            width: 900,
+            parent: mainWindow,
+            show: false,
+            title: 'COMMAND'
+          },
+        }
     }
   })
+
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow)
+
+ipcMain.on('toggle-event', (event, payload) => {
+  const childWindows = mainWindow.getChildWindows()
+
+  var windowToDisable = childWindows.find(window => {
+    return window.title === payload[0]
+  })
+
+  var windowToEnable = childWindows.find(window => {
+    return window.title === payload[1]
+  })
+  
+  windowToDisable.hide()
+  windowToEnable.show()
+})
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

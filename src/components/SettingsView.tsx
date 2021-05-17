@@ -1,5 +1,15 @@
 import React from 'react'
 
-export default function SettingsView() {
-  return <div style={{ backgroundColor: 'white' }}>Settings Page</div>
+interface SettingsView {
+  toggleWindowHandler: any
+}
+export default function SettingsView(props: SettingsView) {
+  const toggleWindowHandler = props.toggleWindowHandler
+
+  return (
+    <div style={{ backgroundColor: 'white', height: "500px"}}>
+      Settings Page
+      <button onClick={() => toggleWindowHandler('SETTINGS', 'COMMAND')}> Toggle </button>
+    </div>
+  )
 }
