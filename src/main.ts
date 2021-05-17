@@ -1,4 +1,8 @@
 import { app, BrowserWindow } from 'electron'
+import {
+  BrowserWindowConstructorOptions,
+  HandlerDetails,
+} from 'electron/renderer'
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -12,20 +16,33 @@ const createWindow = (): void => {
   const mainWindow = new BrowserWindow({
     transparent: true,
     frame: false,
-    minWidth: 800,
-    minHeight: 60,
+    minWidth: 0,
+    minHeight: 0,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
       enableRemoteModule: true,
-    }
+      nativeWindowOpen: true,
+    },
+    show: false,
   })
 
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
+
+  mainWindow.webContents.setWindowOpenHandler((details: HandlerDetails) => {
+    return {
+      action: 'allow',
+      overrideBrowserWindowOptions: {
+        transparent: true,
+        frame: false,
+        width: 900,
+      },
+    }
+  })
 }
 
 // This method will be called when Electron has finished
