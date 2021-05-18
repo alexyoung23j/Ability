@@ -15,6 +15,9 @@ if (require('electron-squirrel-startup')) {
 // Global var definitions
 let sentinelWindow;
 
+// "State" to manage blur handling and avoid toggling conflicts
+let toggleInProgress = false;
+
 // Create window for creating sentinel and children BrowserWindows
 const createWindow = (): void => {
   // Sentinel Window to handle the children windows
@@ -49,7 +52,7 @@ const createWindow = (): void => {
             width: 900,
             height: 500, 
             frame: true,
-            show: false,
+            show: true,
             parent: sentinelWindow,
             title: 'SETTINGS'
           },
@@ -66,6 +69,7 @@ const createWindow = (): void => {
             title: 'COMMAND',
             movable: true,
             resizable: false,
+            ///backgroundColor: "#DDDDDD",
           },
         }
     }
@@ -100,21 +104,24 @@ app.on('activate', () => {
 })
 
 // Hide all windows when we lose focus
-/* app.on('browser-window-blur', (event, window) => {
-  console.log(event, window)
+app.on('browser-window-blur', (event, window) => {
   const childWindows = sentinelWindow.getChildWindows()
 
-  for (let window of childWindows) {
-    window.hide()
-  }
+  if (!toggleInProgress) {
+    for (let window of childWindows) {
+      window.hide()
+    }
 
-}) */
+    sentinelWindow.webContents.send('clear-command-line')
+  }
+})
 
 
 /// ------------------------- IPC LISTENERS ------------------------ ///
 
 // Handles toggling between the various child BrowserWindows
 ipcMain.on('toggle-event', (event, payload) => {
+  toggleInProgress=true
   const childWindows = sentinelWindow.getChildWindows()
 
   var windowToDisable = childWindows.find(window => {
@@ -128,6 +135,11 @@ ipcMain.on('toggle-event', (event, payload) => {
   
   windowToDisable.hide()
   windowToEnable.show()
+})
+
+// Fired by react after a slight delay to avoid race condition with blur handling
+ipcMain.on('resolve-toggle-event', () => {
+  toggleInProgress=false
 })
 
 // Handles resizing; this is finicky right now 

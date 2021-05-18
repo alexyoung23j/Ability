@@ -43,10 +43,21 @@ function App() {
     commandContainer
   )
 
+  /// ---------------- IPC HANDLERS -------------- ///
+
+  ipcRenderer.on('clear-command-line', () => {
+    console.log("cleared")
+  })
+
   // Handle toggling between windows
   const toggleBetweenWindows = (toDisable: string, toEnable: string) => {
     ipcRenderer.send('toggle-event', [toDisable, toEnable])
+    setTimeout(() => {
+      ipcRenderer.send('resolve-toggle-event', [])
+    }, 400)
   }
+
+
 
   let SettingsViewComponent = <SettingsView 
                                   toggleWindowHandler={toggleBetweenWindows}
