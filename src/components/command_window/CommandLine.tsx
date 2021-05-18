@@ -345,8 +345,11 @@ export default function CommandLine(props: CommandLine) {
     } else if (e.keyCode === 39 || e.keyCode === 37) {
       // left and right arrows (should work no matter what)
       return getDefaultKeyBinding(e)
-    } else if (e.keyCode === 8) {
-      // backspace key
+    } else if (e.keyCode === 8) { // backspace key
+      // handle completely empty editor
+      if (currentQueryFragment === '' && queryPieces.length === 0) {
+        return 'do-nothing'
+      }
       const focusInQueryPiece = focusLocation()
 
       if (focusInQueryPiece === -1) {
