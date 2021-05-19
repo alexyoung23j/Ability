@@ -15,7 +15,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import '../../css/EditorComponent.css'
+//import '../../css/EditorComponent.global.css'
 import { queryPiece } from '../../types'
 //import enterIcon from  "../../content/svg/enterIcon.svg"
 

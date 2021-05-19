@@ -1,4 +1,4 @@
-import { app, BrowserWindow, globalShortcut } from 'electron'
+import { app, BrowserWindow, globalShortcut, screen, Menu } from 'electron'
 import {
   BrowserWindowConstructorOptions,
   HandlerDetails,
@@ -37,13 +37,16 @@ const createWindow = (): void => {
 
   // Load index.html entrypoint defined by webpack
   sentinelWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
-
+  
   // Open the DevTools.
   //sentinelWindow.webContents.openDevTools()
 
   // Handle instantiation of child browserwindows
   // Properties of these windows defined here
   sentinelWindow.webContents.setWindowOpenHandler((details: HandlerDetails) => {
+
+    const display = screen.getPrimaryDisplay()
+    const maxiSize = display.workAreaSize
     switch (details.frameName) {
       case ('SETTINGS'):
         return {
@@ -52,7 +55,7 @@ const createWindow = (): void => {
             width: 900,
             height: 500, 
             frame: true,
-            show: true,
+            show: false,
             parent: sentinelWindow,
             title: 'SETTINGS'
           },
@@ -62,10 +65,11 @@ const createWindow = (): void => {
           action: 'allow',
           overrideBrowserWindowOptions: {
             frame: false,
-            width: 660,
-            height: 85,
+            height: maxiSize.height,
+            width: maxiSize.width,
             parent: sentinelWindow,
-            show: false,
+            transparent: true,
+            show: true,
             title: 'COMMAND',
             movable: true,
             resizable: false,
@@ -103,7 +107,7 @@ app.on('activate', () => {
   }
 })
 
-// Hide all windows when we lose focus
+// Hide all windows when we lose focus (only relevant for command line when they are using two monitors)
 app.on('browser-window-blur', (event, window) => {
   const childWindows = sentinelWindow.getChildWindows()
 
@@ -153,7 +157,13 @@ ipcMain.on('settings-resize', (event, payload) => {
   // some approximate calculation for resizing based on # autocompletes shown
   const newHeight = 85 + payload[0]*55 
   
-  commandWindow.setSize(680, newHeight)
+  //commandWindow.setSize(680, newHeight)
+})
+
+ipcMain.on('command-line-native-blur', () => {
+
+  app.hide()
+  
 })
 
 

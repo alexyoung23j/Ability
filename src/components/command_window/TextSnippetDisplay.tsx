@@ -2,6 +2,10 @@ import Editor from '@draft-js-plugins/editor'
 import CSS from 'csstype'
 import { EditorState, SelectionState } from 'draft-js'
 import React, { useEffect, useRef, useState } from 'react'
+const {clipboard} = require('electron')
+
+var nodeConsole = require('console');
+var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 export default function TextSnippetDisplay() {
   const [editorState, setEditorState] = useState(EditorState.createEmpty())
@@ -31,12 +35,18 @@ export default function TextSnippetDisplay() {
 
     setEditorState(EditorState.forceSelection(editorState, selection))
     setCopied(true)
+    myConsole.log("wtf")
+
+    
   }
 
   useEffect(() => {
     document.execCommand('copy')
+    var toCopy = editorState.getCurrentContent().getPlainText()
+    myConsole.log("copied: ",toCopy)
+    clipboard.writeText(toCopy)
     if (snippetRef.current !== null && copied) {
-      snippetRef.current.blur()
+      //snippetRef.current.blur()
       setCopied(false)
     }
   }, [editorState])

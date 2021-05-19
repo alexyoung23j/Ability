@@ -194,27 +194,41 @@ export default function CommandView() {
     }
   }
 
+  // Blur the browserwindow
+  function triggerBrowserWindowBlur() {
+    ipcRenderer.send('command-line-native-blur', [])
+  }
+
   return (
-    <div style={commandStyle}>
-      <CommandLine
-        queryPiecePositions={queryPiecePositions}
-        autocompleteInProgress={autocompleteInProgress}
-        finalQueryLaunched={finalQueryLaunched}
-        autocompleteItemClicked={autocompleteItemClicked}
-        currentQueryFragment={currentQueryFragment}
-        currentAutocomplete={currentAutocomplete}
-        queryPieces={queryPieces}
-        currentQueryFragmentHandler={currentQueryFragmentHandler}
-        finalQueryLaunchedHandler={finalQueryLaunchedHandler}
-        addToQueryPiecePositionsHandler={addToQueryPiecePositionsHandler}
-        removeFromQueryPiecePositionsHandler={
-          removeFromQueryPiecePositionsHandler
-        }
-        selectedIdxHandler={selectedIdxHandler}
-        autocompleteItemClickedHandler={autocompleteItemClickedUpdater}
-      />
-      <ToggleLowerField />
+    <div 
+      style={commandAreaStyle}
+      onClick={() => triggerBrowserWindowBlur()}
+    >
+      <div 
+        style={commandStyle}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <CommandLine
+          queryPiecePositions={queryPiecePositions}
+          autocompleteInProgress={autocompleteInProgress}
+          finalQueryLaunched={finalQueryLaunched}
+          autocompleteItemClicked={autocompleteItemClicked}
+          currentQueryFragment={currentQueryFragment}
+          currentAutocomplete={currentAutocomplete}
+          queryPieces={queryPieces}
+          currentQueryFragmentHandler={currentQueryFragmentHandler}
+          finalQueryLaunchedHandler={finalQueryLaunchedHandler}
+          addToQueryPiecePositionsHandler={addToQueryPiecePositionsHandler}
+          removeFromQueryPiecePositionsHandler={
+            removeFromQueryPiecePositionsHandler
+          }
+          selectedIdxHandler={selectedIdxHandler}
+          autocompleteItemClickedHandler={autocompleteItemClickedUpdater}
+        />
+        <ToggleLowerField />
+      </div>
     </div>
+   
   )
 }
 
@@ -226,4 +240,12 @@ const commandStyle: CSS.Properties = {
   borderRadius: '10px',
   flexDirection: 'column',
   outline: 'none',
+  marginTop: "20%"
+}
+
+const commandAreaStyle: CSS.Properties = {
+  display: "flex",
+  alignItems: "flex-start",
+  justifyContent: "center",
+  height: "100%",
 }
