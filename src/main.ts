@@ -1,9 +1,10 @@
-import { app, BrowserWindow, globalShortcut, screen, Menu } from 'electron'
+import { app, BrowserWindow, globalShortcut, screen, Tray, Menu } from 'electron'
 import {
   BrowserWindowConstructorOptions,
   HandlerDetails,
 } from 'electron/renderer'
 const { ipcMain } = require('electron')
+const path = require('path');
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -14,12 +15,13 @@ if (require('electron-squirrel-startup')) {
 
 // Global var definitions
 let sentinelWindow;
+let tray;
 
 // "State" to manage blur handling and avoid toggling conflicts
 let toggleInProgress = false;
 
 // Create window for creating sentinel and children BrowserWindows
-const createWindow = (): void => {
+const createSentinelWindow = (): void => {
   // Sentinel Window to handle the children windows
     sentinelWindow = new BrowserWindow({
         transparent: true,
@@ -54,7 +56,7 @@ const createWindow = (): void => {
           overrideBrowserWindowOptions: {
             width: 900,
             height: 500, 
-            frame: true,
+            frame: false,
             show: false,
             parent: sentinelWindow,
             title: 'SETTINGS'
@@ -78,6 +80,24 @@ const createWindow = (): void => {
         }
     }
   })
+
+  // Tray Created
+  createTray()
+  
+}
+
+// Build the tray and context menus
+const createTray = () => {
+  // Handle Tray and Menus
+  let logoPath = path.join(app.getAppPath(), '/src/content/smallTrayLogo.png')
+  tray = new Tray(logoPath)
+
+  const contextMenu = Menu.buildFromTemplate([
+    { label: 'Settings', type: 'normal', click: () => windowDisplayHandler(false, 'SETTINGS')},
+    { label: 'Commander', type: 'normal', click: () => windowDisplayHandler(false, 'COMMAND') },
+  ])
+  tray.setToolTip('Ability')
+  tray.setContextMenu(contextMenu)
 }
 
 /// -------------------------- APP EVENT HANDLERS -------------------- ///
@@ -88,7 +108,7 @@ app.whenReady().then(() => {
     keyboardShortcutHandler()
   })
   
-}).then(createWindow)
+}).then(createSentinelWindow)
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -103,12 +123,14 @@ app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow()
+    createSentinelWindow()
   }
 })
 
+/// CURRENTLY NOT PLANNING TO IMPLEMENT THIS 
+
 // Hide all windows when we lose focus (only relevant for command line when they are using two monitors)
-app.on('browser-window-blur', (event, window) => {
+/* app.on('browser-window-blur', (event, window) => {
   const childWindows = sentinelWindow.getChildWindows()
 
   if (!toggleInProgress) {
@@ -118,27 +140,17 @@ app.on('browser-window-blur', (event, window) => {
 
     sentinelWindow.webContents.send('clear-command-line')
   }
-})
+}) */
+
 
 
 /// ------------------------- IPC LISTENERS ------------------------ ///
 
 // Handles toggling between the various child BrowserWindows
 ipcMain.on('toggle-event', (event, payload) => {
-  toggleInProgress=true
-  const childWindows = sentinelWindow.getChildWindows()
-
-  var windowToDisable = childWindows.find(window => {
-    return window.title === payload[0]
-  })
-
-  var windowToEnable = childWindows.find(window => {
-    return window.title === payload[1]
-  })
   
+  windowDisplayHandler(false, payload[1])
   
-  windowToDisable.hide()
-  windowToEnable.show()
 })
 
 // Fired by react after a slight delay to avoid race condition with blur handling
@@ -148,7 +160,7 @@ ipcMain.on('resolve-toggle-event', () => {
 
 // Handles resizing; this is finicky right now 
 // and we need to get the view css working right to finalize
-ipcMain.on('settings-resize', (event, payload) => {
+/* ipcMain.on('settings-resize', (event, payload) => {
   const childWindows = sentinelWindow.getChildWindows()
   var commandWindow = childWindows.find(window => {
     return window.title === 'COMMAND'
@@ -158,12 +170,10 @@ ipcMain.on('settings-resize', (event, payload) => {
   const newHeight = 85 + payload[0]*55 
   
   //commandWindow.setSize(680, newHeight)
-})
+}) */
 
-ipcMain.on('command-line-native-blur', () => {
-
-  app.hide()
-  
+ipcMain.on('command-line-native-blur', () => {  
+  windowDisplayHandler(true) 
 })
 
 
@@ -172,16 +182,27 @@ ipcMain.on('command-line-native-blur', () => {
 
 // Handles global key shortcuts (incomplete, will add parametrized behavior)
 function keyboardShortcutHandler() {
+  windowDisplayHandler(false, 'COMMAND')
+
+}
+
+
+// Handles hiding and showing 
+function windowDisplayHandler(hideAll: boolean, toShow?: string) {
+
   const childWindows = sentinelWindow.getChildWindows()
-  var commandWindow = childWindows.find(window => {
-    return window.title === 'COMMAND'
-  })
 
-  var settingsWindow = childWindows.find(window => {
-    return window.title === 'SETTINGS'
-  })
-
-  commandWindow.show()
-  settingsWindow.hide()
-
+  if (hideAll) {
+    for (let window of childWindows) {
+      window.hide()
+    }
+  } else {
+    for (let window of childWindows) {
+      if (window.title === toShow) {
+        window.show()
+      } else {
+        window.hide()
+      }
+    }
+  }
 }

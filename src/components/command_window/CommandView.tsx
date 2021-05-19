@@ -8,6 +8,8 @@ import TextSnippetDisplay from './TextSnippetDisplay'
 
 const { ipcRenderer } = require('electron')
 
+var nodeConsole = require('console');
+var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 export default function CommandView() {
   // State
@@ -240,7 +242,8 @@ const commandStyle: CSS.Properties = {
   borderRadius: '10px',
   flexDirection: 'column',
   outline: 'none',
-  marginTop: "20%"
+  marginTop: "20%",
+  boxShadow: "3px 3px 3px "
 }
 
 const commandAreaStyle: CSS.Properties = {

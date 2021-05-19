@@ -89,6 +89,7 @@
   "dependencies": {
     "@draft-js-plugins/editor": "^4.1.0",
     "draft-js": "^0.11.7",
+    "draft-js-export-html": "^1.4.1",
     "electron-squirrel-startup": "^1.0.0",
     "es6-shim": "^0.35.6",
     "prettier": "^2.3.0",
