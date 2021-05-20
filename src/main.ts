@@ -174,6 +174,7 @@ ipcMain.on('resolve-toggle-event', () => {
 
 ipcMain.on('command-line-native-blur', () => {  
   windowDisplayHandler(true) 
+  app.hide()
 })
 
 
