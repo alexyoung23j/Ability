@@ -17,9 +17,9 @@ import React, {
 } from 'react'
 import '/src/css/EditorComponent.css'
 import { queryPiece } from '../../types'
-//import enterIcon from  "../../content/svg/enterIcon.svg"
+//import {enterIcon} from  "../../content/svg/enterIcon.svg"
 
-//const enterIcon = require("/src/content/svg/enterIcon.svg")
+const enterIcon = require("/src/content/svg/enterIcon.svg")
 //console.log(enterIcon)
  
 
@@ -421,15 +421,15 @@ export default function CommandLine(props: CommandLine) {
   }
 
   // Component to Conditionally display the enter icon button
-  /* function EnterIconComponent() {
+  function EnterIconComponent() {
         if (currentQueryFragment.length === 0 && finalQueryLaunched === false) {
             return (
-                <img style={{height: "12px", position: "absolute", marginLeft: "691px", marginTop: "5px"}} src={enterIcon}/>
+                <img style={{height: "12px", position: "absolute", marginLeft: "595px", marginTop: "2px"}} src={enterIcon}/>
             )
         } else {
             return <div />
         }
-    } */
+    }
 
   // Defines default styling for text in this Editor
   function myBlockStyleFn(contentBlock: any) {
@@ -449,7 +449,7 @@ export default function CommandLine(props: CommandLine) {
         onFocus={onFocusHandler}
         blockStyleFn={myBlockStyleFn}
       />
-      {/* <EnterIconComponent />           */}
+      <EnterIconComponent />          
     </div>
   )
 }
