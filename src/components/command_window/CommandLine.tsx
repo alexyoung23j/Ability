@@ -15,9 +15,13 @@ import React, {
   useRef,
   useState,
 } from 'react'
-//import '../../css/EditorComponent.global.css'
+import '/src/css/EditorComponent.css'
 import { queryPiece } from '../../types'
 //import enterIcon from  "../../content/svg/enterIcon.svg"
+
+//const enterIcon = require("/src/content/svg/enterIcon.svg")
+//console.log(enterIcon)
+ 
 
 // Interface for CommandLine
 interface CommandLine {

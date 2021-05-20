@@ -4,6 +4,8 @@ import CommandView from './components/command_window/CommandView'
 import SettingsView from './components/SettingsView'
 const { ipcRenderer } = require('electron')
 
+//import "./css/EditorComponent.css"
+
 
 
 const enum WindowType {
@@ -17,8 +19,7 @@ function createNewWindow(
 ) {
   const externalWindow = window.open('', currentWindowType)
 
-  // Append the container div and register the event that will get fired when the
-  // window is closed
+  // Append the container div 
   if (externalWindow?.document != null) {
     externalWindow.document.body.appendChild(containerEl)
   }
