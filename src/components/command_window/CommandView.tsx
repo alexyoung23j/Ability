@@ -6,6 +6,11 @@ import AutocompleteBar from './AutocompleteBar'
 import CommandLine from './CommandLine'
 import TextSnippetDisplay from './TextSnippetDisplay'
 
+const { ipcRenderer } = require('electron')
+
+var nodeConsole = require('console');
+var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
+
 export default function CommandView() {
   // State
 
@@ -174,9 +179,11 @@ export default function CommandView() {
   }
 
   function ToggleLowerField() {
+    
     if (finalQueryLaunched) {
       return <TextSnippetDisplay />
     } else {
+      ipcRenderer.send('settings-resize', [Math.min(4, validAutocompletes.length)])
       return (
         <AutocompleteBar
           validAutocompletes={validAutocompletes}
@@ -189,35 +196,59 @@ export default function CommandView() {
     }
   }
 
+  // Blur the browserwindow
+  function triggerBrowserWindowBlur() {
+    ipcRenderer.send('command-line-native-blur', [])
+  }
+
   return (
-    <div style={commandStyle}>
-      <CommandLine
-        queryPiecePositions={queryPiecePositions}
-        autocompleteInProgress={autocompleteInProgress}
-        finalQueryLaunched={finalQueryLaunched}
-        autocompleteItemClicked={autocompleteItemClicked}
-        currentQueryFragment={currentQueryFragment}
-        currentAutocomplete={currentAutocomplete}
-        queryPieces={queryPieces}
-        currentQueryFragmentHandler={currentQueryFragmentHandler}
-        finalQueryLaunchedHandler={finalQueryLaunchedHandler}
-        addToQueryPiecePositionsHandler={addToQueryPiecePositionsHandler}
-        removeFromQueryPiecePositionsHandler={
-          removeFromQueryPiecePositionsHandler
-        }
-        selectedIdxHandler={selectedIdxHandler}
-        autocompleteItemClickedHandler={autocompleteItemClickedUpdater}
-      />
-      <ToggleLowerField />
+    <div 
+      style={commandAreaStyle}
+      onClick={() => triggerBrowserWindowBlur()}
+    >
+      <div 
+        style={commandStyle}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <CommandLine
+          queryPiecePositions={queryPiecePositions}
+          autocompleteInProgress={autocompleteInProgress}
+          finalQueryLaunched={finalQueryLaunched}
+          autocompleteItemClicked={autocompleteItemClicked}
+          currentQueryFragment={currentQueryFragment}
+          currentAutocomplete={currentAutocomplete}
+          queryPieces={queryPieces}
+          currentQueryFragmentHandler={currentQueryFragmentHandler}
+          finalQueryLaunchedHandler={finalQueryLaunchedHandler}
+          addToQueryPiecePositionsHandler={addToQueryPiecePositionsHandler}
+          removeFromQueryPiecePositionsHandler={
+            removeFromQueryPiecePositionsHandler
+          }
+          selectedIdxHandler={selectedIdxHandler}
+          autocompleteItemClickedHandler={autocompleteItemClickedUpdater}
+        />
+        <ToggleLowerField />
+      </div>
     </div>
+   
   )
 }
 
 const commandStyle: CSS.Properties = {
   minHeight: '65px',
-  minWidth: '800px',
+  minWidth: '650px',
+  width: "650px",
   backgroundColor: '#FFFFFF',
   borderRadius: '10px',
   flexDirection: 'column',
   outline: 'none',
+  marginTop: "20%",
+  //boxShadow: "3px 3px 3px "
+}
+
+const commandAreaStyle: CSS.Properties = {
+  display: "flex",
+  alignItems: "flex-start",
+  justifyContent: "center",
+  height: "100%",
 }

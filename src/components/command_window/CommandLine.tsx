@@ -15,9 +15,13 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import '../../css/EditorComponent.css'
+import '/src/css/EditorComponent.css'
 import { queryPiece } from '../../types'
 //import enterIcon from  "../../content/svg/enterIcon.svg"
+
+//const enterIcon = require("/src/content/svg/enterIcon.svg")
+//console.log(enterIcon)
+ 
 
 // Interface for CommandLine
 interface CommandLine {
@@ -345,8 +349,11 @@ export default function CommandLine(props: CommandLine) {
     } else if (e.keyCode === 39 || e.keyCode === 37) {
       // left and right arrows (should work no matter what)
       return getDefaultKeyBinding(e)
-    } else if (e.keyCode === 8) {
-      // backspace key
+    } else if (e.keyCode === 8) { // backspace key
+      // handle completely empty editor
+      if (currentQueryFragment === '' && queryPieces.length === 0) {
+        return 'do-nothing'
+      }
       const focusInQueryPiece = focusLocation()
 
       if (focusInQueryPiece === -1) {

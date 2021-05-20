@@ -25,7 +25,8 @@
  *  });
  * ```
  */
-import './index.tsx'
+import '/src/css/EditorComponent.css'
+
 
 console.log(
   '👋 This message is being logged by "renderer.js", or is it included via webpack'

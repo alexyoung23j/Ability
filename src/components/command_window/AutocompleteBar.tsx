@@ -35,6 +35,7 @@ export default function AutocompleteBar(props: AutocompleteBar) {
             />
           </div>
         ))}
+        <div style={{height: "8px"}}></div>
       </div>
     )
   } else {
@@ -44,5 +45,5 @@ export default function AutocompleteBar(props: AutocompleteBar) {
 
 const autocompleteStyle: CSS.Properties = {
   marginBottom: '8px',
-  marginTop: '8px',
+  marginTop: '2px',
 }
