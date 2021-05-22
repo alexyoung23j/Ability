@@ -25,6 +25,8 @@ export default function CommandView() {
   const [currentQueryFragment, setCurrentQueryFragment] = useState('')
   const [currentAutocomplete, setCurrentAutocomplete] = useState<queryPiece>()
   const [currentAutocompleteIdx, setCurrentAutocompleteIdx] = useState(0)
+  const [alertCommandLineToClear, setAlertCommandLineToClear] = useState('default')
+  const [currentlyClearing, setCurrentClearing] = useState(false)
 
   // AUTOCOMPLETE PARSER (to be swapped out)//
   // eventually this will handle the preposition work and prevent us from recommending invalid preposition followers
@@ -178,12 +180,33 @@ export default function CommandView() {
     setCurrentAutocompleteIdx(idx)
   }
 
+  const alertCommandLineClearHandler = (value: string) => {
+    setAlertCommandLineToClear(value)
+    
+  }
+
+  // --------------------- HELPER METHODS ---------------------- //
+
+  async function clearCommandLine() {
+    // Reset all State
+    setAlertCommandLineToClear('to-clear')
+    setAutocompleteInProgress(false)
+    setAutocompleteItemClicked(false)
+    setFinalQueryLaunched(false)
+    setQueryPiecePositions([0])
+    setQueryPieces([])
+    setValidAutocompletes([])
+    setCurrentQueryFragment('')
+    setCurrentAutocomplete(null)
+    setCurrentAutocompleteIdx(0)
+    
+  }
+
   function ToggleLowerField() {
     
     if (finalQueryLaunched) {
       return <TextSnippetDisplay />
     } else {
-      ipcRenderer.send('settings-resize', [Math.min(4, validAutocompletes.length)])
       return (
         <AutocompleteBar
           validAutocompletes={validAutocompletes}
@@ -198,8 +221,20 @@ export default function CommandView() {
 
   // Blur the browserwindow
   function triggerBrowserWindowBlur() {
-    ipcRenderer.send('command-line-native-blur', [])
+    clearCommandLine().then(() => {
+      setCurrentClearing(true)
+    })
   }
+
+  // Listen for update from CommandLine and 
+  useEffect(() => {
+    if (alertCommandLineToClear === 'cleared') {
+      ipcRenderer.send('command-line-native-blur', [])
+      setAlertCommandLineToClear('default')
+      setCurrentClearing(false)
+    }
+  }, [alertCommandLineToClear])
+
 
   return (
     <div 
@@ -218,6 +253,9 @@ export default function CommandView() {
           currentQueryFragment={currentQueryFragment}
           currentAutocomplete={currentAutocomplete}
           queryPieces={queryPieces}
+          alertCommandLineToClear={alertCommandLineToClear}
+          currentlyClearing={currentlyClearing}
+
           currentQueryFragmentHandler={currentQueryFragmentHandler}
           finalQueryLaunchedHandler={finalQueryLaunchedHandler}
           addToQueryPiecePositionsHandler={addToQueryPiecePositionsHandler}
@@ -226,6 +264,7 @@ export default function CommandView() {
           }
           selectedIdxHandler={selectedIdxHandler}
           autocompleteItemClickedHandler={autocompleteItemClickedUpdater}
+          alertCommandLineClearHandler={alertCommandLineClearHandler}
         />
         <ToggleLowerField />
       </div>
@@ -239,7 +278,7 @@ const commandStyle: CSS.Properties = {
   minWidth: '650px',
   width: "650px",
   backgroundColor: '#FFFFFF',
-  borderRadius: '10px',
+  borderRadius: '15px',
   flexDirection: 'column',
   outline: 'none',
   marginTop: "20%",
@@ -251,4 +290,6 @@ const commandAreaStyle: CSS.Properties = {
   alignItems: "flex-start",
   justifyContent: "center",
   height: "100%",
+  backgroundColor: "rgba(211,211,211, 0.04)",
+  //opacity: "4%"
 }

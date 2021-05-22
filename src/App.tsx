@@ -80,7 +80,7 @@ function App() {
   }
 
 
-
+ 
   let SettingsViewComponent = <SettingsView 
                                   toggleWindowHandler={toggleBetweenWindows}
                               />

@@ -17,11 +17,13 @@ import React, {
 } from 'react'
 import '/src/css/EditorComponent.css'
 import { queryPiece } from '../../types'
-//import {enterIcon} from  "../../content/svg/enterIcon.svg"
 
 const enterIcon = require("/src/content/svg/enterIcon.svg")
-//console.log(enterIcon)
+
+const { ipcRenderer } = require('electron')
  
+var nodeConsole = require('console');
+var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 // Interface for CommandLine
 interface CommandLine {
@@ -33,6 +35,8 @@ interface CommandLine {
   currentQueryFragment: string
   currentAutocomplete: any | queryPiece
   queryPieces: queryPiece[]
+  alertCommandLineToClear: string
+  currentlyClearing: boolean
 
   // callback function props
   currentQueryFragmentHandler: any
@@ -41,6 +45,7 @@ interface CommandLine {
   removeFromQueryPiecePositionsHandler: any
   selectedIdxHandler: any
   autocompleteItemClickedHandler: any
+  alertCommandLineClearHandler: any
 }
 
 export default function CommandLine(props: CommandLine) {
@@ -52,6 +57,8 @@ export default function CommandLine(props: CommandLine) {
   const currentQueryFragment = props.currentQueryFragment
   const currentAutocomplete = props.currentAutocomplete
   const queryPieces = props.queryPieces
+  const alertCommandLineToClear = props.alertCommandLineToClear
+  const currentlyClearing = props.currentlyClearing
 
   // Callbacks to update props
   const currentQueryFragmentHandler = props.currentQueryFragmentHandler
@@ -61,6 +68,7 @@ export default function CommandLine(props: CommandLine) {
     props.removeFromQueryPiecePositionsHandler
   const selectedIdxHandler = props.selectedIdxHandler
   const autocompleteItemClickedHandler = props.autocompleteItemClickedHandler
+  const alertCommandLineClearHandler = props.alertCommandLineClearHandler
 
   // State
   const [editorState, setEditorState] = useState(EditorState.createEmpty())
@@ -85,7 +93,7 @@ export default function CommandLine(props: CommandLine) {
     focusCommandLine()
   }, [commandRef])
 
-  const focusCommandLine = () => {
+  async function focusCommandLine() {
     if (null !== commandRef.current) {
       commandRef.current.focus()
     }
@@ -157,6 +165,25 @@ export default function CommandLine(props: CommandLine) {
       autocompleteItemClickedHandler(false)
     }
   }, [autocompleteItemClicked])
+
+  // Listen for Clearing Command from Parent
+  useEffect(() => {
+    if (alertCommandLineToClear === 'to-clear') {
+      setEditorState(EditorState.createEmpty())
+    }
+    
+  }, [currentlyClearing])
+
+  // Listen for changes to editor, if we are empty and need to clear, we update parent callback 
+  // to trigger the ipcRenderer event that hides the window
+  useEffect(() => {
+    var hasClearableText = editorState.getCurrentContent().hasText()
+    if (currentlyClearing && !hasClearableText) {
+      focusCommandLine().then(() => {
+        alertCommandLineClearHandler('cleared')
+      })
+    }
+  }, [editorState])
 
   //----------------------- HELPER METHODS ---------------------------//
   // Small methods to handle small details of implementation

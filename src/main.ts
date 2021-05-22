@@ -73,8 +73,8 @@ const createSentinelWindow = (): void => {
             transparent: true,
             show: true,
             title: 'COMMAND',
-            movable: true,
-            resizable: false,
+            movable: false,
+            //resizable: false,
             ///backgroundColor: "#DDDDDD",
           },
         }
