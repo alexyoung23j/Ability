@@ -1,10 +1,11 @@
 import CSS from 'csstype'
 import 'draft-js/dist/Draft.css'
 import React, { useEffect, useState } from 'react'
-import { queryPiece } from '../../types'
+import { EditorState, SelectionState, ContentState } from 'draft-js'
+import { queryPiece, textSnippet } from '../../types'
 import AutocompleteBar from './AutocompleteBar'
 import CommandLine from './CommandLine'
-import TextSnippetDisplay from './TextSnippetDisplay'
+import TextSnippetDisplay from "./TextSnippetDisplay"
 
 const { ipcRenderer } = require('electron')
 
@@ -27,6 +28,18 @@ export default function CommandView() {
   const [currentAutocompleteIdx, setCurrentAutocompleteIdx] = useState(0)
   const [alertCommandLineToClear, setAlertCommandLineToClear] = useState('default')
   const [currentlyClearing, setCurrentClearing] = useState(false)
+
+
+  // Performs the work of fetching text snippets (replace with real logic)
+  async function fetchSnippets() {
+    var myContentState1 = ContentState.createFromText("Would any of the following times work for you? \n\n Tuesday 3/18 - 4:00 PM, 5:00 PM, or 6:30 PM\n\n I think a one hour meeting woud be great!")
+    var myContentState2 = ContentState.createFromText("Would any of the following times work for you? \n\n Monday 3/17 - 4:00 PM, 5:00 PM, or 6:30 PM\n\n I think a two hour meeting woud be great!")
+
+    let textSnippetArray: textSnippet[]
+    textSnippetArray = [{content: myContentState1, id: "1", title: "email"}, {content: myContentState2, id: "2", title: "slack"}]
+
+    return textSnippetArray
+  }
 
   // AUTOCOMPLETE PARSER (to be swapped out)//
   // eventually this will handle the preposition work and prevent us from recommending invalid preposition followers
@@ -202,10 +215,25 @@ export default function CommandView() {
     
   }
 
-  function ToggleLowerField() {
-    
+  function ToggleLowerField() {    
     if (finalQueryLaunched) {
-      return <TextSnippetDisplay />
+      /* fetchSnippets().then((payload) => {
+        myConsole.log("hello")
+        myConsole.log(payload)
+        return <TextSnippetDisplay 
+          snippetPayload={payload}
+        />
+      }) */
+
+
+      var myContentState1 = ContentState.createFromText("Would any of the following times work for you? \n\n Tuesday 3/18 - 4:00 PM, 5:00 PM, or 6:30 PM\n\n I think a one hour meeting woud be great!")
+      var myContentState2 = ContentState.createFromText("Would any of the following times work for you? \n\n Monday 3/17 - 4:00 PM, 5:00 PM, or 6:30 PM\n\n I think a two hour meeting woud be great!")
+
+      let textSnippetArray: textSnippet[]
+      textSnippetArray = [{content: myContentState1, id: "1"}, {content: myContentState2, id: "2"}]
+      return <TextSnippetDisplay snippetPayload={textSnippetArray}/>
+
+      
     } else {
       return (
         <AutocompleteBar
