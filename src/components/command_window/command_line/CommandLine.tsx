@@ -16,7 +16,7 @@ import React, {
   useState,
 } from 'react'
 import '/src/css/EditorComponent.css'
-import { queryPiece } from '../../types'
+import { queryPiece } from '../../../types'
 
 const enterIcon = require("/src/content/svg/enterIcon.svg")
 
@@ -451,7 +451,7 @@ export default function CommandLine(props: CommandLine) {
   function EnterIconComponent() {
         if (currentQueryFragment.length === 0 && finalQueryLaunched === false) {
             return (
-                <img style={{height: "12px", position: "absolute", marginLeft: "595px", marginTop: "2px"}} src={enterIcon}/>
+                <img style={{height: "12px", position: "absolute", marginLeft: "495px", marginTop: "2px"}} src={enterIcon}/>
             )
         } else {
             return <div />
@@ -486,7 +486,7 @@ export default function CommandLine(props: CommandLine) {
 const commandLineStyle: CSS.Properties = {
   minHeight: '60px',
   maxHeight: '60px',
-  minWidth: '91%',
+  minWidth: '87%',
   width: 0,
   justifyContent: 'center',
   alignItems: 'flex-start',

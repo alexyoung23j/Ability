@@ -19,8 +19,8 @@ const stringifiedCSS = `
         }
 
         .textSnippetStyle {
-          font-family: 'Times', sans-serif;
-          font-size: 12px;
+          font-family: 'Montserrat', sans-serif;
+          font-size: 14px;
         }`
 
 

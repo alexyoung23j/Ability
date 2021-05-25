@@ -3,9 +3,9 @@ import 'draft-js/dist/Draft.css'
 import React, { useEffect, useState } from 'react'
 import { EditorState, SelectionState, ContentState } from 'draft-js'
 import { queryPiece, textSnippet } from '../../types'
-import AutocompleteBar from './AutocompleteBar'
-import CommandLine from './CommandLine'
-import TextSnippetDisplay from "./TextSnippetDisplay"
+import AutocompleteBar from './autocomplete/AutocompleteBar'
+import CommandLine from './command_line/CommandLine'
+import TextSnippetDisplay from "./snippet_display/TextSnippetDisplay"
 
 const { ipcRenderer } = require('electron')
 
@@ -226,11 +226,11 @@ export default function CommandView() {
       }) */
 
 
-      var myContentState1 = ContentState.createFromText("Would any of the following times work for you? \n\n Tuesday 3/18 - 4:00 PM, 5:00 PM, or 6:30 PM\n\n I think a one hour meeting woud be great!")
-      var myContentState2 = ContentState.createFromText("Would any of the following times work for you? \n\n Monday 3/17 - 4:00 PM, 5:00 PM, or 6:30 PM\n\n I think a two hour meeting woud be great!")
+      var myContentState1 = ContentState.createFromText("Would any of the following times work for you? \n\n Tuesday 3/18 - 4:00 PM, 5:00 PM, or 6:30 PM\n\n I think a one h")
+      var myContentState2 = ContentState.createFromText("Would any of the following times work for you? \n\n Monday 3/17 - 4:00 PM, 5:00 PM, or 6:30 PM\n\n I think a two hour?")
 
       let textSnippetArray: textSnippet[]
-      textSnippetArray = [{content: myContentState1, id: "1"}, {content: myContentState2, id: "2"}]
+      textSnippetArray = [{content: myContentState1, id: "1", title: "email"}, {content: myContentState2, id: "2", title: "slack"}]
       return <TextSnippetDisplay snippetPayload={textSnippetArray}/>
 
       
@@ -303,14 +303,14 @@ export default function CommandView() {
 
 const commandStyle: CSS.Properties = {
   minHeight: '65px',
-  minWidth: '650px',
-  width: "650px",
+  minWidth: '550px',
+  width: "550px",
   backgroundColor: '#FFFFFF',
-  borderRadius: '15px',
+  borderRadius: '12px',
   flexDirection: 'column',
   outline: 'none',
   marginTop: "20%",
-  //boxShadow: "3px 3px 3px "
+  boxShadow: "0 0 100px rgba(0,0,0, 0.4)"
 }
 
 const commandAreaStyle: CSS.Properties = {
@@ -318,6 +318,6 @@ const commandAreaStyle: CSS.Properties = {
   alignItems: "flex-start",
   justifyContent: "center",
   height: "100%",
-  backgroundColor: "rgba(211,211,211, 0.04)",
+  backgroundColor: "rgba(211,211,211, 0.09)",
   //opacity: "4%"
 }

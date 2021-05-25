@@ -7,7 +7,9 @@ import {
     SelectionState,
     ContentState
   } from 'draft-js'
-  import Editor from '@draft-js-plugins/editor'
+import Editor from '@draft-js-plugins/editor'
+import CSS from 'csstype'
+
 
 
 const { ipcRenderer } = require('electron')
@@ -28,14 +30,25 @@ export default function TextEditWindow(props: TextEditWindow) {
 
     const editorRef = useRef<Editor>(null)
 
+    function myBlockStyleFn(contentBlock: any) {
+        return 'textSnippetStyle'
+    }
+
     return (
-        <div>
+        <div style={textEditWindowStyle}>
             <Editor 
                 editorState={editorState}
                 onChange={setEditorState}
                 readOnly={true}
                 ref={editorRef}
+                blockStyleFn={myBlockStyleFn}
             />
         </div>
     )
 }
+
+const textEditWindowStyle: CSS.Properties = {
+    marginTop: "20px",
+    marginBottom: "20px"
+}
+

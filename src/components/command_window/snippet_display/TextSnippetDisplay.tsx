@@ -4,7 +4,7 @@ import CSS from 'csstype'
 
 
 import TextField from "./TextField"
-import { textSnippet } from '../../types'
+import { textSnippet } from '../../../types'
 
 
 const { ipcRenderer } = require('electron')
