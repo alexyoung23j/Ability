@@ -5,27 +5,27 @@ import {
   screen,
   Tray,
   Menu,
-} from 'electron'
+} from 'electron';
 import {
   BrowserWindowConstructorOptions,
   HandlerDetails,
-} from 'electron/renderer'
-const { ipcMain } = require('electron')
-const path = require('path')
-declare const MAIN_WINDOW_WEBPACK_ENTRY: any
+} from 'electron/renderer';
+const { ipcMain } = require('electron');
+const path = require('path');
+declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   // eslint-disable-line global-require
-  app.quit()
+  app.quit();
 }
 
 // Global var definitions
-let sentinelWindow
-let tray
+let sentinelWindow;
+let tray;
 
 // "State" to manage blur handling and avoid toggling conflicts
-let toggleInProgress = false
+let toggleInProgress = false;
 
 // Create window for creating sentinel and children BrowserWindows
 const createSentinelWindow = (): void => {
@@ -33,28 +33,28 @@ const createSentinelWindow = (): void => {
   sentinelWindow = new BrowserWindow({
     transparent: true,
     frame: false,
-    minWidth: 0,
-    minHeight: 0,
+    minWidth: 1000,
+    minHeight: 1000,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
       enableRemoteModule: true,
       nativeWindowOpen: true,
     },
-    show: false,
-  })
+    show: true,
+  });
 
   // Load index.html entrypoint defined by webpack
-  sentinelWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
+  sentinelWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
-  //sentinelWindow.webContents.openDevTools()
+  sentinelWindow.webContents.openDevTools();
 
   // Handle instantiation of child browserwindows
   // Properties of these windows defined here
   sentinelWindow.webContents.setWindowOpenHandler((details: HandlerDetails) => {
-    const display = screen.getPrimaryDisplay()
-    const maxiSize = display.workAreaSize
+    const display = screen.getPrimaryDisplay();
+    const maxiSize = display.workAreaSize;
     switch (details.frameName) {
       case 'SETTINGS':
         return {
@@ -67,7 +67,7 @@ const createSentinelWindow = (): void => {
             parent: sentinelWindow,
             title: 'SETTINGS',
           },
-        }
+        };
       case 'COMMAND':
         return {
           action: 'allow',
@@ -83,19 +83,19 @@ const createSentinelWindow = (): void => {
             hasShadow: false,
             resizable: false,
           },
-        }
+        };
     }
-  })
+  });
 
   // Tray Created
-  createTray()
-}
+  createTray();
+};
 
 // Build the tray and context menus
 const createTray = () => {
   // Handle Tray and Menus
-  let logoPath = path.join(app.getAppPath(), '/src/content/smallTrayLogo.png')
-  tray = new Tray(logoPath)
+  let logoPath = path.join(app.getAppPath(), '/src/content/smallTrayLogo.png');
+  tray = new Tray(logoPath);
 
   const contextMenu = Menu.buildFromTemplate([
     {
@@ -108,10 +108,10 @@ const createTray = () => {
       type: 'normal',
       click: () => windowDisplayHandler(false, 'COMMAND'),
     },
-  ])
-  tray.setToolTip('Ability')
-  tray.setContextMenu(contextMenu)
-}
+  ]);
+  tray.setToolTip('Ability');
+  tray.setContextMenu(contextMenu);
+};
 
 /// -------------------------- APP EVENT HANDLERS -------------------- ///
 
@@ -120,27 +120,27 @@ app
   .whenReady()
   .then(() => {
     globalShortcut.register('CommandOrControl+E', () => {
-      keyboardShortcutHandler()
-    })
+      keyboardShortcutHandler();
+    });
   })
-  .then(createSentinelWindow)
+  .then(createSentinelWindow);
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-    app.quit()
+    app.quit();
   }
-})
+});
 
 app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
-    createSentinelWindow()
+    createSentinelWindow();
   }
-})
+});
 
 /// CURRENTLY NOT PLANNING TO IMPLEMENT THIS
 
@@ -161,13 +161,13 @@ app.on('activate', () => {
 
 // Handles toggling between the various child BrowserWindows
 ipcMain.on('toggle-event', (event, payload) => {
-  windowDisplayHandler(false, payload[1])
-})
+  windowDisplayHandler(false, payload[1]);
+});
 
 // Fired by react after a slight delay to avoid race condition with blur handling
 ipcMain.on('resolve-toggle-event', () => {
-  toggleInProgress = false
-})
+  toggleInProgress = false;
+});
 
 // Handles resizing; this is finicky right now
 // and we need to get the view css working right to finalize
@@ -184,31 +184,31 @@ ipcMain.on('resolve-toggle-event', () => {
 }) */
 
 ipcMain.on('command-line-native-blur', () => {
-  windowDisplayHandler(true)
-  app.hide()
-})
+  windowDisplayHandler(true);
+  app.hide();
+});
 
 /// ----------------------------- OTHER METHODS ------------------- ///
 
 // Handles global key shortcuts (incomplete, will add parametrized behavior)
 function keyboardShortcutHandler() {
-  windowDisplayHandler(false, 'COMMAND')
+  windowDisplayHandler(false, 'COMMAND');
 }
 
 // Handles hiding and showing
 function windowDisplayHandler(hideAll: boolean, toShow?: string) {
-  const childWindows = sentinelWindow.getChildWindows()
+  const childWindows = sentinelWindow.getChildWindows();
 
   if (hideAll) {
     for (let window of childWindows) {
-      window.hide()
+      window.hide();
     }
   } else {
     for (let window of childWindows) {
       if (window.title === toShow) {
-        window.show()
+        window.show();
       } else {
-        window.hide()
+        window.hide();
       }
     }
   }
