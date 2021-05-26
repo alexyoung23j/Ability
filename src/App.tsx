@@ -3,33 +3,36 @@ import ReactDOM from 'react-dom'
 import CommandView from './components/command_window/CommandView'
 import SettingsView from './components/SettingsView'
 const { ipcRenderer } = require('electron')
+const css = require("./index.css")
 
 // Access to terminal console log
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
-
-// CSS for Editor Components defined here... I know this is hilarious 
-const stringifiedCSS = `
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
-
-        .commandLineStyle {
-          font-family: 'Montserrat', sans-serif;
-          font-size: 24px;
-          min-width: 200px;
-        }
-
-        .textSnippetStyle {
-          font-family: 'Montserrat', sans-serif;
-          font-size: 14px;
-        }`
-
-
 
 const enum WindowType {
   SETTINGS = 'SETTINGS',
   COMMAND = 'COMMAND',
 }
 
+// Converts our CSS import into a string to be injected into the new windows
+function parseCSS(css: any): String {
+  let cssString = ''
+  const stringyCSS = JSON.stringify(css)
+  const parsedCSS = JSON.parse(stringyCSS)
+  const numImports = parsedCSS.default.length
+
+  // Add import statements
+  for (var i = 0; i < numImports-1; i++) {
+    cssString += parsedCSS.default[i][1]
+  }
+
+  // Add classes 
+  cssString += parsedCSS.default[numImports-1][1]
+  
+  return cssString
+}
+
+// Creates new windows 
 function createNewWindow(
   currentWindowType: WindowType,
   containerEl: HTMLDivElement
@@ -38,7 +41,7 @@ function createNewWindow(
   const externalWindow = window.open('', currentWindowType)
 
   // Inject css into new window
-  const addStylesString = `<html><head><style>${stringifiedCSS}</style></head></html>`
+  const addStylesString = `<html><head><style>${parseCSS(css)}</style></head></html>`
   externalWindow.document.write(addStylesString)
 
   // Append the container div 

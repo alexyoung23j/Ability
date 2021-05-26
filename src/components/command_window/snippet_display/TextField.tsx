@@ -45,7 +45,7 @@ export default function TextField(props: TextField) {
     function TabDisplayer() {
 
         return (
-            <div style={{display: "flex", flexDirection:"row", alignItems: "center", justifyContent: "flex-start"}}>
+            <div style={{display: "flex", flexDirection:"row", alignItems: "flex-end", justifyContent: "flex-end", marginLeft: "8px"}}>
                 {snippetPayload.map((snippet, idx) => (
                     <div key={idx}>
                         <Tab 
@@ -70,14 +70,14 @@ const textFieldStyle: CSS.Properties = {
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
-    alignItems: "center"
+    alignItems: "flex-start"
 }
 
 const textWindowStyle: CSS.Properties = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    width: "480px",
+    width: "450px",
     borderRadius: "12px",
     boxShadow: "inset 0 0 40px rgba(0, 0, 0, .05)"
 }

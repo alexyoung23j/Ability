@@ -17,11 +17,12 @@ export default function Tab(props: Tab) {
 
     const tabStyle: CSS.Properties = {
         backgroundColor: highlightColor,
-        borderRadius: "2px",
+        borderTopLeftRadius: "4px",
+        borderTopRightRadius: "4px",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        width: "40px",
+        width: "60px",
         height: height,
     }
 
