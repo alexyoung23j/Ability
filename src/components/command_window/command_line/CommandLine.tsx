@@ -15,7 +15,6 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import '/src/css/EditorComponent.css'
 import { queryPiece } from '../../../types'
 
 const enterIcon = require("/src/content/svg/enterIcon.svg")
