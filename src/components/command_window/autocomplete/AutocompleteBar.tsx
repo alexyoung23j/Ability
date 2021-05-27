@@ -1,6 +1,6 @@
 import CSS from 'csstype'
 import React from 'react'
-import { queryPiece } from '../../types'
+import { queryPiece } from '../../../types'
 import AutocompleteItem from './AutocompleteItem'
 
 interface AutocompleteBar {

@@ -10,7 +10,7 @@ import {stateToHTML} from 'draft-js-export-html';
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
-export default function TextSnippetDisplay() {
+export default function TextSnippetDisplayDummy() {
   const [editorState, setEditorState] = useState(EditorState.createEmpty())
   const [copyText, setCopyText] = useState('')
   const [copied, setCopied] = useState(false)

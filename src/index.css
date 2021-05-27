@@ -1,1 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+
+.commandLineStyle {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 24px;
+    min-width: 200px;
+}
+
+.textSnippetStyle {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    color: #7D7D7D;
+}
 
