@@ -5,7 +5,7 @@ import { EditorState, SelectionState, ContentState } from 'draft-js'
 import { queryPiece, textSnippet } from '../../types'
 import AutocompleteBar from './autocomplete/AutocompleteBar'
 import CommandLine from './command_line/CommandLine'
-import TextSnippetDisplay from "./snippet_display/TextSnippetDisplay"
+import TextSnippetDropdown from "./snippet_display/TextSnippetDropdown"
 
 const { ipcRenderer } = require('electron')
 
@@ -226,12 +226,12 @@ export default function CommandView() {
       }) */
 
 
-      var myContentState1 = ContentState.createFromText("Would any of the following times work for you? \n\n Tuesday 3/18 - 4:00 PM, 5:00 PM, or 6:30 PM\n\n I think a one h")
-      var myContentState2 = ContentState.createFromText("Would any of the following times work for you? \n\n Monday 3/17 - 4:00 PM, 5:00 PM, or 6:30 PM\n\n I think a two hour?")
+      var myContentState1 = ContentState.createFromText("Would any of the following times work for you? \n\nTuesday 3/18 - 4:00 PM, 5:00 PM, or 6:30 PM\n\nI think a one hour meeitng would be great and oh that is just so fucking cool im looking forward to it")
+      var myContentState2 = ContentState.createFromText("Would any of the following times work for you?")
 
       let textSnippetArray: textSnippet[]
       textSnippetArray = [{content: myContentState1, id: "1", title: "email"}, {content: myContentState2, id: "2", title: "slack"}]
-      return <TextSnippetDisplay snippetPayload={textSnippetArray}/>
+      return <TextSnippetDropdown snippetPayload={textSnippetArray}/>
 
       
     } else {

@@ -9,6 +9,8 @@ import {
   } from 'draft-js'
 import Editor from '@draft-js-plugins/editor'
 import CSS from 'csstype'
+const {clipboard} = require('electron')
+import {stateToHTML} from 'draft-js-export-html';
 
 
 
@@ -19,6 +21,7 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 interface TextEditWindow {
     defaultContent: ContentState
+    containsStyles: boolean
 }
 
 
@@ -27,28 +30,61 @@ export default function TextEditWindow(props: TextEditWindow) {
     // Load up with the text snippet we passed
     const myContentState = props.defaultContent
     const [editorState, setEditorState] = useState(EditorState.createWithContent(myContentState))
+    const [editorStateHidden, setEditorStateHidden] = useState(EditorState.createWithContent(myContentState))
 
-    const editorRef = useRef<Editor>(null)
+    const editorVisibleRef = useRef<Editor>(null)
+    const editorHiddenRef = useRef<Editor>(null)
 
-    function myBlockStyleFn(contentBlock: any) {
-        return 'textSnippetStyle'
+    // Copies the current content to the clipboard 
+    // TODO: Handle styled content 
+    useEffect(() => {
+        if (editorHiddenRef.current !== null) {
+            copyToClipboard()
+        }
+    }, [])
+
+    function copyToClipboard() {
+        var toCopy = editorStateHidden.getCurrentContent().getPlainText()
+        clipboard.writeText(toCopy)
+    }
+
+    function visibleBlockStyleFn(contentBlock: any) {
+        return 'visibleTextSnippetStyle'
+    }
+
+    // We have an invisible div that allows us to copy paste using other styles easily
+    function hiddenBlockStyleFn(contentBlock: any) {
+        return 'hiddenTextSnippetStyle'
     }
 
     return (
         <div style={textEditWindowStyle}>
-            <Editor 
-                editorState={editorState}
-                onChange={setEditorState}
-                readOnly={true}
-                ref={editorRef}
-                blockStyleFn={myBlockStyleFn}
-            />
+            <div>
+                <Editor 
+                    editorState={editorState}
+                    onChange={setEditorState}
+                    readOnly={true}
+                    ref={editorVisibleRef}
+                    blockStyleFn={visibleBlockStyleFn}
+                />
+            </div>
+            <div style={{visibility: "hidden", position: "absolute"}}>
+                <Editor 
+                    editorState={editorStateHidden}
+                    onChange={setEditorStateHidden}
+                    readOnly={true}
+                    ref={editorHiddenRef}
+                    blockStyleFn={hiddenBlockStyleFn}
+                />
+            </div>
+            
         </div>
     )
 }
 
 const textEditWindowStyle: CSS.Properties = {
     marginTop: "20px",
-    marginBottom: "20px"
+    marginBottom: "20px",
+    marginRight: "5%"
 }
 

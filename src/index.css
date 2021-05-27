@@ -6,11 +6,33 @@
     min-width: 200px;
 }
 
-.textSnippetStyle {
-    font-family: Montserrat;
+.visibleTextSnippetStyle {
+    font-family: 'Montserrat';
     font-style: normal;
     font-weight: normal;
     font-size: 16px;
     color: #7D7D7D;
 }
 
+.hiddenTextSnippetStyle {
+    font-family: 'Arial';
+    font-style: normal;
+    font-weight: normal;
+    font-size: 10px;
+}
+
+.textSnippetTab {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12;
+    color: #7D7D7D;
+    font-weight: 600;
+}
+
+.clipboardCopiedText {
+    font-family: 'Montserrat', sans-serif;
+    font-style: italic;
+    font-weight: normal;
+    color: #7D7D7D;
+    font-size: 14px;
+    display: flex;
+}

@@ -18,6 +18,7 @@ import React, {
 import { queryPiece } from '../../../types'
 
 const enterIcon = require("/src/content/svg/enterIcon.svg")
+const settingsIcon = require("/src/content/svg/settingsIcon.svg")
 
 const { ipcRenderer } = require('electron')
  
@@ -447,10 +448,15 @@ export default function CommandLine(props: CommandLine) {
   }
 
   // Component to Conditionally display the enter icon button
-  function EnterIconComponent() {
+  function IconComponent() {
         if (currentQueryFragment.length === 0 && finalQueryLaunched === false) {
             return (
                 <img style={{height: "12px", position: "absolute", marginLeft: "495px", marginTop: "2px"}} src={enterIcon}/>
+            )
+        } else if (finalQueryLaunched === true) { 
+          // TODO: Add logic for routing to settings view with information about the query that was entered 
+            return (
+              <img style={{height: "18px", position: "absolute", marginLeft: "495px", marginTop: "2px"}} src={settingsIcon}/>
             )
         } else {
             return <div />
@@ -475,7 +481,7 @@ export default function CommandLine(props: CommandLine) {
         onFocus={onFocusHandler}
         blockStyleFn={myBlockStyleFn}
       />
-      <EnterIconComponent />          
+      <IconComponent />          
     </div>
   )
 }
