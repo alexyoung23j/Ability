@@ -15,46 +15,57 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 interface TextField {
     snippetPayload: textSnippet[]
+    setToggleHandler: (val: boolean) => void
 }
 
 
 export default function TextField(props: TextField) {
     // props
-    const snippetPayload = props.snippetPayload
+    const {snippetPayload, setToggleHandler } = props
 
     // State
     const [curDisplayIdx, setCurDisplayIdx] = useState(0)
 
-    
-
-    function WindowDisplayer() {
-        return (
-            <div style={textWindowStyle}>
-                <div>
-                    <TextEditWindow 
-                        defaultContent={snippetPayload[curDisplayIdx].content}
-                    />
-                </div>
-                
-            </div>
-            
-        )
+    const TabClickHandler = (idx: number) => {
+        setCurDisplayIdx(idx)
+        setToggleHandler(true)
     }
 
+    useEffect(() => {
+        setToggleHandler(true)
+    }, [])
     
     function TabDisplayer() {
 
         return (
-            <div style={{display: "flex", flexDirection:"row", alignItems: "flex-end", justifyContent: "flex-end", marginLeft: "8px"}}>
+            <div style={{display: "flex", flexDirection:"row", alignItems: "flex-end", justifyContent: "center", marginLeft: "14px"}}>
                 {snippetPayload.map((snippet, idx) => (
                     <div key={idx}>
                         <Tab 
                             highlighted={idx === curDisplayIdx ? true : false}
                             text={snippet.title}
+                            onClickHandler={TabClickHandler}
+                            index={idx}
                         />
                     </div>
                 ))}
             </div>
+        )
+    }
+
+    function WindowDisplayer() {
+        // TODO: Add in the handling for styled content vs unstyle content
+        return (
+            <div style={textWindowStyle}>
+                <div style={{marginLeft: "5%"}}>
+                    <TextEditWindow 
+                        defaultContent={snippetPayload[curDisplayIdx].content}
+                        containsStyles={false}
+                    />
+                </div>
+                
+            </div>
+            
         )
     }
 
@@ -76,7 +87,7 @@ const textFieldStyle: CSS.Properties = {
 const textWindowStyle: CSS.Properties = {
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     width: "450px",
     borderRadius: "12px",
     boxShadow: "inset 0 0 40px rgba(0, 0, 0, .05)"

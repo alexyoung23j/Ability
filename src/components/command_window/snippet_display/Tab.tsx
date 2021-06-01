@@ -1,19 +1,25 @@
 import CSS from 'csstype'
-import React from 'react'
+import React, { useState } from 'react'
 
 
 interface Tab {
     highlighted: boolean
     text: string
+    onClickHandler: (number: number) => void
+    index: number
 }
 
 export default function Tab(props: Tab) {
     // props
-    const text = props.text
-    const highlighted = props.highlighted
+    const {text, highlighted, onClickHandler, index} = props
+
+    const [largeFont, setLargeFont] = useState(false)
 
     var highlightColor = highlighted === true ? "#FBFBFB" : "#E7E7E7"
-    var height = highlighted === true ? "20px" : "15px"
+    var height = highlighted === true ? "24px" : "20px"
+    var fontColor = highlighted === true ? "#87DCD7" : "#7D7D7D"
+
+    var fontSize = (highlighted === true || largeFont === true) ? "12px" : "11px"
 
     const tabStyle: CSS.Properties = {
         backgroundColor: highlightColor,
@@ -22,15 +28,19 @@ export default function Tab(props: Tab) {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        width: "60px",
+        width: "65px",
         height: height,
+        WebkitUserSelect: "none"
     }
 
     return (
         <div
             style={tabStyle}
+            onClick={() => onClickHandler(index)}
+            onMouseEnter={() => setLargeFont(true)}
+            onMouseLeave={() => setLargeFont(false)}
         >
-            <div>
+            <div className="textSnippetTab" style={{color: fontColor, fontSize: fontSize}}>
                 {text}
             </div>
         </div>
