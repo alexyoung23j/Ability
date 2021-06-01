@@ -4,7 +4,7 @@ import CSS from 'csstype'
 
 
 import TextEditWindow from "./TextEditWindow"
-import { textSnippet } from '../../../types'
+import { textSnippet } from '../../../../types'
 import Tab from "./Tab"
 
 

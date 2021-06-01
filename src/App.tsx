@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 import CommandView from './components/command_window/CommandView'
-import SettingsView from './components/SettingsView'
+import SettingsView from './components/settings_window/SettingsView'
 const { ipcRenderer } = require('electron')
 const css = require("./index.css")
 
