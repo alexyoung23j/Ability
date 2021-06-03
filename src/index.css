@@ -36,3 +36,18 @@
     font-size: 14px;
     display: flex;
 }
+
+.timeBarText {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: normal;
+    color: #7D7D7D;
+    font-size: 12px;
+    display: flex;
+    height: 12px;
+    width: 40px;
+    margin-bottom: 5px;
+    margin-left: 2px; 
+    justify-content: center;
+    align-items: center
+
+}
