@@ -14,7 +14,7 @@ export default function ResultEngine() {
         "days": [
             {
                 "calendar_date": "2021-06-09",
-                "hard_start": "2021-06-09T08:00:00Z",
+                "hard_start": "2021-06-09T08:15:00Z",
                 "hard_end": "2021-06-09T21:00:00Z",
                 "free_blocks": [
                     {

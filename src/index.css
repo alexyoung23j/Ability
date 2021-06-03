@@ -39,11 +39,11 @@
 
 .timeBarText {
     font-family: 'Montserrat', sans-serif;
-    font-weight: normal;
+    font-weight: lighter;
     color: #7D7D7D;
     font-size: 12px;
     display: flex;
-    height: 12px;
+    height: 10px;
     width: 40px;
     margin-bottom: 5px;
     margin-left: 2px; 

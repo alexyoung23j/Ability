@@ -40,7 +40,27 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
         }
     }, [])
 
+
+    // -------------------------- Calculating Positioning -------------------------- //
+    function calculateMinutes(minutes: number) {
+        var minOffset;
+
+        if (Math.abs(minutes) < 15) {
+            minOffset=0
+        } else if (Math.abs(minutes) < 30) {
+            minOffset = 1
+        } else if (Math.abs(minutes) < 45) {
+            minOffset = 2
+        } else {
+            minOffset = 3
+        }
+
+        return minutes >= 0 ? minOffset : -minOffset
+    }
+
     function datetimeToOffset(start: string, end: string) {
+
+        
         const startTime = new Date(start)
         const endTime = new Date(end)
 
@@ -50,18 +70,22 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
         const startMin= startTime.getUTCMinutes()
         const endMin = endTime.getUTCMinutes()
         
+        var minOffset = calculateMinutes(startMin)
+        var minDifferenceOffset = calculateMinutes(endMin-startMin)
 
-        myConsole.log(startHour, startMin)
+        // Formula for finding the offset from right needed (assumes the size of each bar is 40px, as defined in index.css)
 
-        // space + (22*space - start*)
+        const offset = newElementOffset + 20 + (24-startHour)*40 - minOffset*10
 
-        const offset = newElementOffset + 20 + (24-startHour)*40
+        const width = (endHour-startHour)*40 + minDifferenceOffset*10
 
-        return offset
+        if (end === "2021-06-09T24:00:00Z") {
+            return [String(offset+width + 'px'), String(-width + "px")]
+        }
+        return [String(offset-width + 'px'), String(width + "px")]
 
     }
 
-    myConsole.log(datetimeToOffset(hard_start, hard_end))
     
     // -------------------------- Time Bars -------------------------- //
     
@@ -75,7 +99,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
                             <div className="timeBarText">
                                 {time}
                             </div>
-                            <div style={{width: "0.5px", backgroundColor: "#7D7D7D", opacity: "50%", height: "30px"}}>
+                            <div style={{width: "0.5px", backgroundColor: "#7D7D7D", opacity: "50%", height: "25px"}}>
                                 
                             </div>
                         </div>
@@ -87,7 +111,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
                             <div className="timeBarText">
                                 {time}
                             </div>
-                            <div style={{width: "0.5px", backgroundColor: "#7D7D7D", opacity: "50%", height: "30px"}}>
+                            <div style={{width: "0.5px", backgroundColor: "#7D7D7D", opacity: "50%", height: "25px"}}>
                                 
                             </div>
                         </div>
@@ -97,7 +121,27 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
             </div>
         )
     }
-    
+
+    // -------------------------- Hard Limit Bars -------------------------- //
+    function LimitBars() {
+        // Create offset and width for the start hard limit
+        const [startOffset, startWidth] = datetimeToOffset("2021-06-09T00:00:00Z", hard_start)
+
+        // Create offset and width for the start hard limit
+        const [endOffset, endWidth] = datetimeToOffset(hard_end, "2021-06-09T24:00:00Z")
+        
+
+        return (
+            <div style={{position: "relative", display: "flex", justifyContent: "center", alignItems: "center", marginTop: "16px"}}>
+                <div style={{position: "absolute", right: startOffset, minWidth: startWidth, width: startWidth, backgroundColor: "gray", opacity: "20%", minHeight: "19px"}}>
+                </div>
+
+                <div style={{position: "absolute", right: endOffset, minWidth: endWidth, width: endWidth, backgroundColor: "gray", opacity: "20%", minHeight: "19px"}}>
+                </div>
+
+            </div>
+        )
+    }
     
     
     
@@ -107,15 +151,8 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
             style={horizontalCalendarStyle}
         >
            <HorizontalBars />   
-           <div style={{position: "relative"}}>
-                <div style={{position: "absolute", right: "660px",  minWidth: "40px", backgroundColor: "red"}}>
-                    8 
-                </div>
-
-                <div style={{position: "relative", right: "620px",  minWidth: "40px", backgroundColor: "red"}}>
-                    9 
-                </div>
-            </div> 
+           <LimitBars />
+            
           
         </div>
     )
