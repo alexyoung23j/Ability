@@ -297,7 +297,7 @@ const commandStyle: CSS.Properties = {
   borderRadius: '12px',
   flexDirection: 'column',
   outline: 'none',
-  marginTop: "15%",
+  marginTop: "5%",
   boxShadow: "0 0 100px rgba(0,0,0, 0.4)"
 }
 
