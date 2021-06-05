@@ -1,4 +1,4 @@
-import { EditorState, SelectionState, ContentState } from 'draft-js'
+import { EditorState, SelectionState, ContentState } from './components/command_window/results_display/snippet_display/node_modules/draft-js'
 
 
 export interface queryPiece {
