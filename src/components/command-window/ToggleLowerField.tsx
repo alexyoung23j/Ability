@@ -3,6 +3,7 @@ import React from 'react';
 import AutocompleteEngine, {
   AutocompleteEngineProps,
 } from './autocomplete/AutocompleteEngine';
+import Parser from './Parser';
 import ResultEngine from './results-display/ResultEngine';
 
 // Toggle Lower Field Component (Leave here to avoid annoying problems with how the directory is structured)
@@ -11,10 +12,10 @@ interface ToggleLowerFieldProps extends AutocompleteEngineProps {
 }
 
 export default function ToggleLowerField(props: ToggleLowerFieldProps) {
-  const { finalQueryLaunched, ...autocompleteEngineProps } = props;
+  const { finalQueryLaunched, ...parserProps } = props;
   return (
     (props.finalQueryLaunched && <ResultEngine />) || (
-      <AutocompleteEngine {...autocompleteEngineProps} />
+      <Parser {...parserProps} />
     )
   );
 }
