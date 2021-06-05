@@ -1,13 +1,11 @@
-import { EditorState, SelectionState, ContentState } from './components/command_window/results_display/snippet_display/node_modules/draft-js'
+import { ContentState } from 'draft-js';
 
-
-export interface queryPiece {
-  value: string
-  type: string
+export enum QueryPieceType {
+  PREPOSITION = 'PREPOSITION',
+  MODIFIER = 'MODIFIER',
 }
-
 export interface textSnippet {
-  content: ContentState
-  id: string
-  title: string
+  content: ContentState;
+  id: string;
+  title: string;
 }
