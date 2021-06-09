@@ -23,8 +23,6 @@ interface HorizontalCalendar {
 export default function HorizontalCalendar(props: HorizontalCalendar) {
     const  { date, hard_start, hard_end, free_blocks, events, index } = props
 
-   
-
 
     // -------------------------- HORIZONTAL SCROLL STUFF -------------------------- //
     const scrollRef = useRef(null)

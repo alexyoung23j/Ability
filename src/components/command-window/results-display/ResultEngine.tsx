@@ -1,156 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import CalendarView from './calendar_display/CalendarView';
 import TextSnippetDropdown from './snippet_display/TextSnippetDropdown';
 import { textSnippet } from '../../../types';
 import { ContentState } from 'draft-js';
+import { calendarDummyResults } from '../constants';
+
+
 
 export default function ResultEngine() {
   // dummy calendar index query response
-  var calendarResults = {
-    days: [
-      {
-        calendar_date: '2021-06-09',
-        hard_start: '2021-06-09T08:15:00Z',
-        hard_end: '2021-06-09T20:45:00Z',
-        free_blocks: [
-          {
-            start_time: '2021-06-09T12:00:00Z',
-            end_time: '2021-06-09T16:00:00Z',
-          },
-          {
-            start_time: '2021-06-09T19:00:00Z',
-            end_time: '2021-06-09T20:45:00Z',
-          },
-        ],
-        events: [
-          {
-            start_time: '2021-06-09T03:00:00Z',
-            end_time: '2021-06-09T05:30:00Z',
-            title: 'Event 1',
-            url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-            color: 'red',
-          },
-          {
-            start_time: '2021-06-09T10:00:00Z',
-            end_time: '2021-06-09T11:45:00Z',
-            title: 'Event 1',
-            url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-            color: 'red',
-          },
-          {
-            start_time: '2021-06-09T16:00:00Z',
-            end_time: '2021-06-09T19:00:00Z',
-            title: 'Event 2',
-            url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-            color: 'blue',
-          },
-        ],
-      },
-      {
-        calendar_date: '2021-06-10',
-        hard_start: '2021-06-10T08:00:00Z',
-        hard_end: '2021-06-10T21:00:00Z',
-        free_blocks: [
-          {
-            start_time: '2021-06-10T15:00:00Z',
-            end_time: '2021-06-10T16:00:00Z',
-          },
-        ],
-        events: [
-          {
-            start_time: '2021-06-10T10:00:00Z',
-            end_time: '2021-06-10T11:00:00Z',
-            title: 'Event 3',
-            url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-            color: 'red',
-          },
-          {
-            start_time: '2021-06-10T17:00:00Z',
-            end_time: '2021-06-10T18:00:00Z',
-            title: 'Event 4',
-            url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-            color: 'blue',
-          },
-        ],
-      },
-      {
-        calendar_date: '2021-06-10',
-        hard_start: '2021-06-10T08:00:00Z',
-        hard_end: '2021-06-10T21:00:00Z',
-        free_blocks: [],
-        events: [
-          {
-            start_time: '2021-06-10T10:00:00Z',
-            end_time: '2021-06-10T11:00:00Z',
-            title: 'Event 3',
-            url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-            color: 'red',
-          },
-          {
-            start_time: '2021-06-10T17:00:00Z',
-            end_time: '2021-06-10T18:00:00Z',
-            title: 'Event 4',
-            url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-            color: 'blue',
-          },
-        ],
-      },
-      {
-        calendar_date: '2021-06-10',
-        hard_start: '2021-06-10T08:00:00Z',
-        hard_end: '2021-06-10T21:00:00Z',
-        free_blocks: [
-          {
-            start_time: '2021-06-10T15:00:00Z',
-            end_time: '2021-06-10T16:00:00Z',
-          },
-        ],
-        events: [
-          {
-            start_time: '2021-06-10T10:00:00Z',
-            end_time: '2021-06-10T11:00:00Z',
-            title: 'Event 3',
-            url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-            color: 'red',
-          },
-          {
-            start_time: '2021-06-10T17:00:00Z',
-            end_time: '2021-06-10T18:00:00Z',
-            title: 'Event 4',
-            url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-            color: 'blue',
-          },
-        ],
-      },
-      {
-        calendar_date: '2021-06-10',
-        hard_start: '2021-06-10T08:00:00Z',
-        hard_end: '2021-06-10T21:00:00Z',
-        free_blocks: [
-          {
-            start_time: '2021-06-10T15:00:00Z',
-            end_time: '2021-06-10T16:00:00Z',
-          },
-        ],
-        events: [
-          {
-            start_time: '2021-06-10T10:00:00Z',
-            end_time: '2021-06-10T11:00:00Z',
-            title: 'Event 3',
-            url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-            color: 'red',
-          },
-          {
-            start_time: '2021-06-10T17:00:00Z',
-            end_time: '2021-06-10T18:00:00Z',
-            title: 'Event 4',
-            url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-            color: 'blue',
-          },
-        ],
-      },
-    ],
-  };
+  const [calendarResultData, setCalendarResultData] = useState(calendarDummyResults)
+  const [ignoreSlots, setIgnoreSlots] = useState({})
 
   // Filler for the text snippet (replace with the real values)
   var myContentState1 = ContentState.createFromText(
@@ -168,7 +28,7 @@ export default function ResultEngine() {
 
   return (
     <div>
-      <CalendarView calendar_data={calendarResults} />
+      <CalendarView calendar_data={calendarResultData} setIgnoreSlots={setIgnoreSlots}/>
       <TextSnippetDropdown snippetPayload={textSnippetArray} />
     </div>
   );

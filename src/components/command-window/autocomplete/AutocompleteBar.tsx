@@ -1,7 +1,6 @@
 import CSS from 'csstype';
 import React from 'react';
 import { Piece } from '../TreeNode';
-import { useCount } from '../useCount';
 import AutocompleteItem from './AutocompleteItem';
 
 export interface AutocompleteBarProps {
