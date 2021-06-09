@@ -5,11 +5,12 @@ import HorizontalCalendar from './HorizontalCalendar'
 
 interface CalendarBody {
     calendar_data: any
+    ignoreHandler: any
 }
 
 export default function CalendarBody(props: CalendarBody) {
     
-    const {calendar_data} = props
+    const {calendar_data, ignoreHandler} = props
 
     
     
@@ -22,6 +23,7 @@ export default function CalendarBody(props: CalendarBody) {
                         hard_start={data.hard_start}
                         hard_end={data.hard_end}
                         free_blocks={data.free_blocks}
+                        ignoreHandler={ignoreHandler}
                         events={data.events}
                         index={idx}
                     />
