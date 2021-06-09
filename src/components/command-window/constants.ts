@@ -75,13 +75,14 @@ export const calendarDummyResults = {
               end_time: '2021-06-09T13:00:00Z',
             },
             {
-              start_time: '2021-06-09T12:30:00:00Z',
+              start_time: '2021-06-09T12:30:00Z',
               end_time: '2021-06-09T13:30:00Z',
             },
             {
-              start_time: '2021-06-09T13:00:00:00Z',
+              start_time: '2021-06-09T13:00:00Z',
               end_time: '2021-06-09T14:00:00Z',
             },
+           
           ]
         },
         {
@@ -96,7 +97,6 @@ export const calendarDummyResults = {
               start_time: '2021-06-09T19:45:00Z',
               end_time: '2021-06-09T20:45:00Z',
             },
-
           ]
         },
       ],
