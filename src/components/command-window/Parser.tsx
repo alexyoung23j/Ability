@@ -69,4 +69,77 @@ A few situations we handle
     see if the next thing typed is a number, and if it is, proceed with approach 2, but with a more limited space of formats. So for example if they typed 
     "may", then we autocomplete the word "may", and if the next thing they type is "1", we show the format "dd". If the next thing they type is 
 
+
+----------------- Official Modifiers Guide -----------------
+
+1. Duration Modifier - specifies an amount time during a day 
+    Ex: x hr, x min, x.y hour (1.5 hours)
+
+2. Time Modifier - specifies a time ON a given day
+    Ex: Morning, evening, night, noon, "xx:xx", "xx pm", all day etc
+
+3. Date Modifier - specifies a particular day
+    Ex: today, tomorrow, monday, tuesday.. month x (april 2), x month (2 april), "dd/mm/yyyy", "d/m"
+
+4. Range Modifier - specifies a range of days
+    Ex: week, month, year, weekend, x days (3 days), x weeks, x months
+
+
+
+----------------- Official Prepositions Guide -----------------
+
+1. for -> Duration Modifier
+2. at -> Time Modifier
+3. after -> Time Modifier
+4. before -> Time Modifier 
+5. this -> Time Modifier, Date Modifier, Range Modifier 
+6. on -> Date Modifier  
+7. next -> Date Modifier, Range Modifier 
+8. in -> Range Modifier
+9. week of -> Date Modifier 
+
+
+The query result will be parsed and handled according to the following general rules:
+1. Each modifier has a default value (for instance, range defaults to week, time to all day , etc). If no 
+    value for the modifier is given, we use the default
+2. The result engine will read the queryPieces array in order. Each modifier specifies some details about the calendar
+    and if it is preceeded by a preposition, that will narrow the search space further. Prepositions can ONLY reduce the 
+    search space, so it is important we design the logic handling the modifiers accordingly. In addition, each modifier 
+    has a default preposition if none is given (usually just "this", or "on", etc). 
+
+
+Edge Cases we need to handle:
+1. "this" and "next' are able to change the range modifier without the user actually specifying a range modifier. 
+    For instance, "next monday" is really the same as "next monday next week", which changes our target DAY to monday and
+    our target RANGE to next week. This logic needs to be handled. 
+
+----------------- Official Numerical Parsing Guide -----------------
+
+There are two distinct numerical situations:
+
+1. The number is a quantifier of either a Duration Modifier or a Range modifier. For instance "in 2 weeks". "in" is a preposition, 
+    "2" is a quantifier, and "weeks" is a range modifier. "for 3 hours" is a second example. Each quantifier has the property of
+    being a single, non negative, no space or special character (aside from the decimal) number. 
+        NOTE: If we see a ".", this means the numerical is for sure a quantifier. "1.5 hours"
+
+2. The number is ITSELF a modifier. Examples include "6/17" or "april 2". These two examples are illustrative because they break down
+    this category further. 
+      A. Numerical Modifiers that START with a number (i.e. "6/17", "4 pm") can be handled using the formatter logic. The parser completely 
+        shuts off the autocomplete engine and ensures that the text string matches one of a collection of regex formats. This value is 
+        then assigned to currentAutocomplete, inserted into queryPieces, and visually styled by the command line. Numerical Modifiers starting
+        with a number make up the bulk of the numerical modifiers.
+            NOTE: The parser should not start displaying the formats until AFTER either a special character (:, /) or a space follower by a letter 
+            (ex: "2 p" -> implies we should show the "pm" format). Otherwise, we are forcing the user to use a number as a modifier when they may want
+            it as a quantifier instead. 
+
+      B. Numerical modifiers that start with text (only "april 2" and variants of that format) fit into this group. The handling for these values
+      is slightly different. The parser will not recognize that it starts with a number, but it will continue to listen to see if the value matches
+      the "month x" regex format. After a few characters, the autocompleter will no longer find any matches ("sept" will not be an autocomplete value). 
+      The parser needs 
+
+  Implications for the parser implementation:
+
+  1. The parser needs to be constantly listening to the query fragment.
+      if the query fragment starts with a number, we can instantly start ignoring the autocomplete and 
+
  */

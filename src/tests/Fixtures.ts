@@ -78,4 +78,10 @@ export const PREPOSITION_FIXTURES: Array<PrepositionPiece> = [
     type: QueryPieceType.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DURATION],
   },
+  {
+    value: 'in',
+    type: QueryPieceType.PREPOSITION,
+    allowedModifierCategories: [ModifierCategory.DATE],
+  },
+
 ];
