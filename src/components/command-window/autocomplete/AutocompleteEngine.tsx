@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import AutocompleteBar, { AutocompleteBarProps } from './AutocompleteBar';
 import { ALL_MODIFIER_CATEGORIES } from '../constants';
+import { buildModifierTrie, buildPrepositionTrie, TreeNode } from '../TreeNode';
 import {
-  buildModifierTrie,
-  buildPrepositionTrie,
   CategoryFilters,
   isPrepositionPiece,
   ModifierPiece,
@@ -12,8 +11,7 @@ import {
   PrepositionPiece,
   PrepositionQueryFragment,
   QueryFragment,
-  TreeNode,
-} from '../TreeNode';
+} from './types';
 
 export interface AutocompleteEngineProps extends AutocompleteBarProps {
   precedingQueryPieces: Array<Piece>;

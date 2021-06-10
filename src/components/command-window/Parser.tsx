@@ -2,8 +2,8 @@ import React from 'react';
 import AutocompleteEngine, {
   AutocompleteEngineProps,
 } from './autocomplete/AutocompleteEngine';
+import { QueryFragment } from './autocomplete/types';
 import { isNumeric } from './QueryUtil';
-import { QueryFragment } from './TreeNode';
 
 const FULL_NUMERIC = new RegExp('[0-9]+');
 

@@ -1,10 +1,11 @@
 import CSS from 'csstype';
 import 'draft-js/dist/Draft.css';
 import React, { useEffect, useState } from 'react';
-import { QueryPieceType } from '../../types';
+import { Piece, QueryPieceType } from './autocomplete/types';
 import CommandLine from './command-line/CommandLine';
+import Parser from './Parser';
+import ResultEngine from './results-display/ResultEngine';
 import ToggleLowerField from './ToggleLowerField';
-import { Piece } from './TreeNode';
 
 const { ipcRenderer } = require('electron');
 
@@ -255,20 +256,21 @@ export default function CommandView() {
           autocompleteItemClickedHandler={setAutocompleteItemClicked}
           alertCommandLineClearHandler={setAlertCommandLineToClear}
         />
-        <ToggleLowerField
-          onAutocompletion={setValidAutocompletes}
-          finalQueryLaunched={finalQueryLaunched}
-          validAutocompletes={validAutocompletes}
-          highlightedIdx={currentAutocompleteIdx}
-          autocompleteInProgress={autocompleteInProgress}
-          clickHandler={autocompleteClickHandler}
-          hoverHandler={autocompleteHoverHandler}
-          precedingQueryPieces={queryPieces}
-          queryFragment={{
-            value: currentQueryFragment,
-            type: QueryPieceType.MODIFIER,
-          }}
-        />
+        {(finalQueryLaunched && <ResultEngine />) || (
+          <Parser
+            onAutocompletion={setValidAutocompletes}
+            validAutocompletes={validAutocompletes}
+            highlightedIdx={currentAutocompleteIdx}
+            autocompleteInProgress={autocompleteInProgress}
+            clickHandler={autocompleteClickHandler}
+            hoverHandler={autocompleteHoverHandler}
+            precedingQueryPieces={queryPieces}
+            queryFragment={{
+              value: currentQueryFragment,
+              type: QueryPieceType.MODIFIER,
+            }}
+          />
+        )}
       </div>
     </div>
   );

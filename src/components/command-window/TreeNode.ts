@@ -1,18 +1,19 @@
+import {
+  DATE_MODIFIER_FIXTURES,
+  TIME_MODIFIER_FIXTURES,
+  PREPOSITION_FIXTURES,
+} from '../../tests/Fixtures';
 import { assert } from '../../assert';
-import { QueryPieceType } from '../../types';
-import { ALL_MODIFIER_CATEGORIES, DATE_MODIFIERS } from './constants';
-
-export type PieceCategory = ModifierCategory;
-
-export interface Piece {
-  value: string;
-  type: QueryPieceType;
-}
-
-export interface QueryFragment {
-  value: string;
-  type: QueryPieceType;
-}
+import {
+  Piece,
+  QueryFragment,
+  CategoryFilters,
+  isModifierPiece,
+  ModifierPiece,
+  ModifierQueryFragment,
+  PrepositionPiece,
+  PrepositionQueryFragment,
+} from './autocomplete/types';
 
 export class TreeNode<
   TPiece extends Piece,
@@ -155,47 +156,6 @@ export class TreeNode<
   }
 }
 
-export interface ModifierPiece extends Piece {
-  value: string;
-  category: ModifierCategory;
-}
-
-export type CategoryFilters = Array<ModifierCategory>;
-
-export interface PrepositionPiece extends Piece {
-  value: string;
-  allowedModifierCategories: CategoryFilters;
-}
-
-export function isPrepositionPiece(piece: Piece): piece is PrepositionPiece {
-  return piece.type === QueryPieceType.PREPOSITION;
-}
-
-export function isModifierPiece(
-  piece: Piece | ModifierPiece
-): piece is ModifierPiece {
-  return 'category' in piece && piece.type === QueryPieceType.MODIFIER;
-}
-
-export interface ModifierQueryFragment {
-  value: string;
-  type: QueryPieceType.MODIFIER;
-}
-export interface PrepositionQueryFragment {
-  value: string;
-  type: QueryPieceType.PREPOSITION;
-}
-
-export const enum CommandCategory {
-  COMMAND = 'COMMAND',
-}
-
-export const enum ModifierCategory {
-  TIME = 'TIME',
-  DURATION = 'DURATION',
-  DATE = 'DATE',
-}
-
 class ModifierNode extends TreeNode<ModifierPiece, ModifierQueryFragment> {}
 class PrepositionNode extends TreeNode<
   PrepositionPiece,
@@ -212,21 +172,13 @@ function buildTrie<TPiece extends Piece, TQueryFragment extends QueryFragment>(
 
 export function buildModifierTrie(): ModifierNode {
   const trie = buildTrie<ModifierPiece, ModifierQueryFragment>(
-    DATE_MODIFIERS.map((value) => ({
-      value,
-      category: ModifierCategory.DATE,
-      type: QueryPieceType.MODIFIER,
-    }))
+    DATE_MODIFIER_FIXTURES.concat(TIME_MODIFIER_FIXTURES)
   );
   return trie;
 }
 
 export function buildPrepositionTrie(): PrepositionNode {
   return buildTrie<PrepositionPiece, PrepositionQueryFragment>(
-    DATE_MODIFIERS.map((value) => ({
-      value,
-      type: QueryPieceType.PREPOSITION,
-      allowedModifierCategories: ALL_MODIFIER_CATEGORIES,
-    }))
+    PREPOSITION_FIXTURES
   );
 }

@@ -15,7 +15,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Piece } from '../TreeNode';
+import { Piece } from '../autocomplete/types';
 
 const enterIcon = require('/src/content/svg/enterIcon.svg');
 const settingsIcon = require('/src/content/svg/settingsIcon.svg');
