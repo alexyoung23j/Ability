@@ -17,6 +17,7 @@ import {
 export interface AutocompleteEngineProps extends AutocompleteBarProps {
   precedingQueryPieces: Array<Piece>;
   queryFragment: QueryFragment;
+  setHandlingNumericInput: (val: boolean) => void;
   onAutocompletion: (autocompletions: Array<Piece>) => void;
 }
 

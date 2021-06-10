@@ -8,6 +8,15 @@ import {
 export const DATE_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   'tomorrow',
   'today',
+  "monday", 
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday", 
+  "saturday", 
+  "sunday",
+  "week",
+  "weekend",
 ].map((value) => ({
   value,
   category: ModifierCategory.DATE,
@@ -24,6 +33,15 @@ export const TIME_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   type: QueryPieceType.MODIFIER,
 }));
 
+export const TEST_DURATION_MODIFIER_FIXTURES: Array<ModifierPiece> = [
+  '1 hr',
+  '2 hrs',
+].map((value) => ({
+  value,
+  category: ModifierCategory.DURATION,
+  type: QueryPieceType.MODIFIER,
+}));
+
 export const PREPOSITION_FIXTURES: Array<PrepositionPiece> = [
   {
     value: 'after',
@@ -36,8 +54,28 @@ export const PREPOSITION_FIXTURES: Array<PrepositionPiece> = [
     allowedModifierCategories: [ModifierCategory.TIME],
   },
   {
+    value: 'at',
+    type: QueryPieceType.PREPOSITION,
+    allowedModifierCategories: [ModifierCategory.TIME],
+  },
+  {
     value: 'on',
     type: QueryPieceType.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DATE],
+  },
+  {
+    value: 'this',
+    type: QueryPieceType.PREPOSITION,
+    allowedModifierCategories: [ModifierCategory.TIME, ModifierCategory.DATE],
+  },
+  {
+    value: 'next',
+    type: QueryPieceType.PREPOSITION,
+    allowedModifierCategories: [ModifierCategory.TIME, ModifierCategory.DATE],
+  },
+  {
+    value: 'for',
+    type: QueryPieceType.PREPOSITION,
+    allowedModifierCategories: [ModifierCategory.DURATION],
   },
 ];

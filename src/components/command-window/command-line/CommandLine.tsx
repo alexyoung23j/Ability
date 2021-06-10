@@ -15,7 +15,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Piece } from '../autocomplete/types';
+import { Piece, QueryPieceType, ModifierCategory } from '../autocomplete/types';
 
 const enterIcon = require('/src/content/svg/enterIcon.svg');
 const settingsIcon = require('/src/content/svg/settingsIcon.svg');
@@ -35,6 +35,7 @@ interface CommandLine {
   queryPieces: Piece[];
   alertCommandLineToClear: string;
   currentlyClearing: boolean;
+  handlingNumericInput: boolean;
 
   // callback function props
   currentQueryFragmentHandler: any;
@@ -44,6 +45,7 @@ interface CommandLine {
   selectedIdxHandler: any;
   autocompleteItemClickedHandler: any;
   alertCommandLineClearHandler: any;
+  
 }
 
 export default function CommandLine(props: CommandLine) {
@@ -57,6 +59,7 @@ export default function CommandLine(props: CommandLine) {
   const queryPieces = props.queryPieces;
   const alertCommandLineToClear = props.alertCommandLineToClear;
   const currentlyClearing = props.currentlyClearing;
+  const handlingNumericInput = props.handlingNumericInput
 
   // Callbacks to update props
   const currentQueryFragmentHandler = props.currentQueryFragmentHandler;
@@ -80,7 +83,9 @@ export default function CommandLine(props: CommandLine) {
 
   // Styling objects
   const styleMap = {
-    'WHEN-MODIFIER': whenModifierStyles,
+    TIME: timeModifierStyles,
+    DATE: dateModifierStyles,
+    DURATION: durationModifierStyles,
     PREPOSITION: prepositionsStyles,
   };
 
@@ -348,13 +353,19 @@ export default function CommandLine(props: CommandLine) {
     // Grab autocomplete value and type from the Piece object
     const autocompleteValue = parseOutSpaces(currentAutocomplete.value);
     const autocompleteType = currentAutocomplete.type;
+    let autocompleteStyle;
+    if (autocompleteType === QueryPieceType.MODIFIER ) {
+      autocompleteStyle = currentAutocomplete.category
+    } else {
+      autocompleteStyle = autocompleteType
+    }
 
     // replace text with autocomplete value
     const newState = editorTextReplacer(
       queryPiecePositions[queryPiecePositions.length - 1],
       text.length,
       autocompleteValue,
-      autocompleteType,
+      autocompleteStyle,
       true
     );
     return newState;
@@ -432,7 +443,7 @@ export default function CommandLine(props: CommandLine) {
           currentQueryFragment.length
         );
         if (
-          currentAutocomplete.type === 'PREPOSITION' &&
+          !handlingNumericInput &&
           fragmentWithoutFinalSpace === currentAutocomplete.value
         ) {
           handleEnterKey();
@@ -524,13 +535,26 @@ const commandLineStyle: CSS.Properties = {
   marginTop: '2px',
 };
 
-const whenModifierStyles: CSS.Properties = {
-  fontWeight: 'bold',
+const dateModifierStyles: CSS.Properties = {
+  fontWeight: 'lighter',
+  color: 'rgba(125, 125, 125, .5)',
+  fontSize: '25px',
+};
+
+const timeModifierStyles: CSS.Properties = {
+  fontWeight: 'lighter',
+  color: 'rgba(125, 125, 125, .9)',
+  fontSize: '25px', 
+};
+
+const durationModifierStyles: CSS.Properties = {
+  fontWeight: 'normal',
   color: '#87DCD7',
-  fontSize: '24px',
+  fontSize: '25px',
 };
 
 const prepositionsStyles: CSS.Properties = {
   fontWeight: 'bold',
-  fontSize: '24px',
+  fontSize: '25px',
+  color: "#6B6B6B"
 };

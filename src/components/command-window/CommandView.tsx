@@ -28,6 +28,7 @@ export default function CommandView() {
   const [alertCommandLineToClear, setAlertCommandLineToClear] =
     useState('default');
   const [currentlyClearing, setCurrentClearing] = useState(false);
+  const [handlingNumericInput, setHandlingNumeric] = useState(false)
 
   // // Performs the work of fetching text snippets (replace with real logic)
   // async function fetchSnippets() {
@@ -243,6 +244,7 @@ export default function CommandView() {
           currentQueryFragment={currentQueryFragment}
           currentAutocomplete={currentAutocomplete}
           queryPieces={queryPieces}
+          handlingNumericInput={handlingNumericInput}
           alertCommandLineToClear={alertCommandLineToClear}
           currentlyClearing={currentlyClearing}
           currentQueryFragmentHandler={setCurrentQueryFragment}
@@ -261,6 +263,7 @@ export default function CommandView() {
             validAutocompletes={validAutocompletes}
             highlightedIdx={currentAutocompleteIdx}
             autocompleteInProgress={autocompleteInProgress}
+            setHandlingNumericInput={setHandlingNumeric}
             clickHandler={autocompleteClickHandler}
             hoverHandler={autocompleteHoverHandler}
             precedingQueryPieces={queryPieces}
