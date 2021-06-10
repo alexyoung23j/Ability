@@ -13,12 +13,12 @@ export default function ResultEngine() {
   const [calendarResultData, setCalendarResultData] = useState(calendarDummyResults)
   const [ignoreSlots, setIgnoreSlots] = useState([])
 
-  // Index of the form [x, y, z] where x = day idx, y = free_block idx, z = free_slot idx
+  // Index of the form [x, y, z] where x = day_idx, y = free_block idx, z = free_slot idx
   const updateIgnoredSlots = (index: number[], action: string) => {
     if (action === "remove") {
       setIgnoreSlots([...ignoreSlots, index])
     } else if (action === "add-back") {
-      const newSlots = ignoreSlots.filter(slot => slot != index)
+      let newSlots = ignoreSlots.filter(slot => JSON.stringify(slot) != JSON.stringify(index))
       setIgnoreSlots(newSlots)
     }
   }

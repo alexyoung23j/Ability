@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react'
 import CSS from 'csstype'
 import ScrollContainer from 'react-indiana-drag-scroll'
 import useDragScroll from 'use-drag-scroll'
+import ReactDOM from 'react-dom';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -134,11 +135,11 @@ function LimitBars(props: {hard_start: string; hard_end: string}) {
     
 
     return (
-        <div style={{position: "relative", display: "flex", justifyContent: "center", alignItems: "center", marginTop: "16px"}}>
-            <div style={{position: "absolute", right: startOffset, minWidth: startWidth, width: startWidth, backgroundColor: "gray", opacity: "15%", minHeight: "19px"}}>
+        <div style={{position: "relative", display: "flex", justifyContent: "center", alignItems: "center", marginTop: "15px"}}>
+            <div style={{position: "absolute", right: startOffset, minWidth: startWidth, width: startWidth, backgroundColor: "gray", opacity: "15%", minHeight: "20px"}}>
             </div>
 
-            <div style={{position: "absolute", right: endOffset, minWidth: endWidth, width: endWidth, backgroundColor: "gray", opacity: "15%", minHeight: "19px"}}>
+            <div style={{position: "absolute", right: endOffset, minWidth: endWidth, width: endWidth, backgroundColor: "gray", opacity: "15%", minHeight: "20px"}}>
             </div>
 
         </div>
@@ -148,22 +149,20 @@ function LimitBars(props: {hard_start: string; hard_end: string}) {
 function CalendarEvents(props: {events}) {
     const {events} = props
     return (
-        <div style={{position: "relative", display: "flex", justifyContent: "center", alignItems: "center", marginTop: "4px"}} >
+        <div style={{position: "relative", display: "flex", justifyContent: "center", alignItems: "center", marginTop: "15px"}} >
             {events.map((event, idx) => (
-                <div key={idx}>
-                    <div style={{position: "absolute", 
-                            right: datetimeToOffset(event.start_time, event.end_time, 1)[0], 
-                            width: datetimeToOffset(event.start_time, event.end_time, 1)[1],
-                            backgroundColor: "gray",
-                            opacity: "70%",
-                            minHeight: "14px",
-                            borderRadius: 3 , 
-                            cursor: "pointer"    
-                    }}
-                        onClick={() => myConsole.log("wtf")}
-                    >
-                    </div>
-                </div>
+                <div style={{position: "absolute", 
+                        right: datetimeToOffset(event.start_time, event.end_time, 1)[0], 
+                        width: datetimeToOffset(event.start_time, event.end_time, 1)[1],
+                        backgroundColor: "gray",
+                        opacity: "70%",
+                        minHeight: "14px",
+                        borderRadius: 3 , 
+                        cursor: "pointer"    
+                }}
+                    onClick={() => myConsole.log("wtf")}
+                >
+            </div>
             ))}
         </div>
     )
@@ -173,18 +172,16 @@ function FreeBlocks(props: {free_blocks; day_idx; ignoreHandler}) {
     const {free_blocks, day_idx, ignoreHandler} = props
 
     return (
-        <div style={{position: "relative", display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "6px", pointerEvents: "none"}} >
+        <div style={{position: "relative", display: "flex", justifyContent: "center", alignItems: "center", marginTop: "15px", pointerEvents: "none"}} >
             {free_blocks.map((event, idx) => (
-                <div key={idx}>
-                    <div style={{position: "absolute", 
-                            right: datetimeToOffset(event.start_time, event.end_time, 5)[0], 
-                            width: datetimeToOffset(event.start_time, event.end_time, 5)[1],
-                            minHeight: "20px",
-                            borderRadius: 3 , 
-                            border: "2px solid rgba(135, 220, 215, 1)",
-                            cursor: "pointer", 
-                    }}>
-                    </div>
+                <div style={{position: "absolute", 
+                        right: datetimeToOffset(event.start_time, event.end_time, 5)[0], 
+                        width: datetimeToOffset(event.start_time, event.end_time, 5)[1],
+                        minHeight: "20px",
+                        borderRadius: 3 , 
+                        border: "2px solid rgba(135, 220, 215, 1)",
+                        cursor: "pointer", 
+                }}>
                 </div>
                 
             ))}
@@ -196,7 +193,7 @@ function FreeSlots(props: {free_blocks; day_idx; ignoreHandler}) {
     const {free_blocks, day_idx, ignoreHandler} = props
 
     return (
-        <div style={{position: "relative", display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "1px", flexDirection: "row"}} >
+        <div style={{position: "relative", display: "flex", justifyContent: "center", alignItems: "center", marginTop: "15px", flexDirection: "row"}} >
             {free_blocks.map((block, block_idx) => (
                 block.free_slots.map((event, slot_idx) => (
                     <Slot 
@@ -216,48 +213,78 @@ function Slot(props: {event, slot_idx; block_idx; day_idx, ignoreHandler}) {
     const {event, slot_idx, block_idx, day_idx, ignoreHandler} = props
 
     const [isActive, setIsActive] = useState(true)
-    const [color, setColor] = useState("#DDF4F3")
+    const [color, setColor] = useState("#C1ECEA")
+    const [zIndex, setZIndex] = useState(0)
+    const [showPopup, setShowPopup] = useState(false)
     
 
     return ( 
-        <div key={slot_idx}>
-            <div style={{position: "absolute", 
-                    right: datetimeToOffset(event.start_time, event.end_time, 0)[0], 
-                    width: datetimeToOffset(event.start_time, event.end_time, 1)[1],
-                    minHeight: "20px",
-                    borderRadius: 5 , 
-                    backgroundColor: color,
-                    cursor: "pointer", 
+        <div style={{position: "absolute", 
+                right: datetimeToOffset(event.start_time, event.end_time, 0)[0], 
+                width: datetimeToOffset(event.start_time, event.end_time, 1)[1],
+                minHeight: "20px",
+                borderRadius: 5 , 
+                borderColor: "black",
+                backgroundColor: color,
+                cursor: "pointer", 
+                zIndex: zIndex
+        }}
+            onClick={() => {
+                if (isActive) {
+                    setColor("rgba(135, 220, 215, 0)")
+                    setIsActive(false)
+                    ignoreHandler([day_idx, block_idx, slot_idx], "remove")
+                } else {
+                    setColor("rgba(135, 220, 215, 1)")
+                    setIsActive(true)
+                    ignoreHandler([day_idx, block_idx, slot_idx], "add-back")
+                }
+                
             }}
-                onClick={() => {
-                    //myConsole.log(event.start_time, slot_idx)
-                    if (isActive) {
-                        setColor("rgba(135, 220, 215, 0)")
-                        setIsActive(false)
-                        ignoreHandler([day_idx, block_idx, slot_idx], "remove")
-                    } else {
-                        setColor("rgba(135, 220, 215, 0.3)")
-                        setIsActive(true)
-                        ignoreHandler([day_idx, block_idx, slot_idx], "add-back")
-                    }
-                    
-                }}
-                onMouseEnter={() => {
-                    setColor("rgba(135, 220, 215, .7)")
-                }}
-                onMouseLeave={() => {
-                    if (isActive) {
-                        setColor("#DDF4F3")
-                    } else {
-                        setColor("rgba(135, 220, 215, 0)")
-                    }
-                    
-                }}
-            >
-            </div>
+            onMouseEnter={() => {
+                if (isActive) {
+                    setColor("rgba(135, 220, 215, 1)")
+                } else {
+                    setColor("rgba(125, 125, 125, .3)")
+                }
+                setShowPopup(true)
+                setZIndex(10)
+                
+            }}
+            onMouseLeave={() => {
+                if (isActive) {
+                    setColor("#C1ECEA")
+                } else {
+                    setColor("rgba(135, 220, 215, 0)")
+                }
+                setZIndex(0)
+                setShowPopup(false)
+                
+            }}
+        >
         </div>
+            
     )
 
+}
+
+function SlotPopup(props: {show, left; right;}) {
+
+    const {show, left, right} = props
+    const settingsContainer = document.createElement('div');
+    if(show) {
+        return ReactDOM.createPortal(
+            <div>
+                Hello cunt
+            </div>
+        , settingsContainer)
+    } else {
+        return (
+            <div>
+
+            </div>
+        )
+    }
 }
 
 
@@ -334,7 +361,7 @@ const horizontalCalendarStyle: CSS.Properties = {
 const timeBarStyle: CSS.Properties = {
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
     width: BAR_WIDTH.toString() + "px"
 }
