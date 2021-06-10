@@ -5,7 +5,6 @@ import { Piece, QueryPieceType } from './autocomplete/types';
 import CommandLine from './command-line/CommandLine';
 import Parser from './Parser';
 import ResultEngine from './results-display/ResultEngine';
-import ToggleLowerField from './ToggleLowerField';
 
 const { ipcRenderer } = require('electron');
 

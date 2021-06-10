@@ -28,7 +28,7 @@ export const PREPOSITION_FIXTURES: Array<PrepositionPiece> = [
   {
     value: 'after',
     type: QueryPieceType.PREPOSITION,
-    allowedModifierCategories: [ModifierCategory.TIME],
+    allowedModifierCategories: [ModifierCategory.TIME, ModifierCategory.DATE],
   },
   {
     value: 'before',

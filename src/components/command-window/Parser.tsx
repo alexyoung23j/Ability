@@ -28,9 +28,9 @@ export default function Parser(props: ParserProps) {
 
   const { value } = queryFragment;
 
-  if (value.length > 0 && isNumeric(value[0])) {
-    //   Parse value here and choose what to render?
-  } else {
-    return <AutocompleteEngine {...props} />;
-  }
+  //   if (value.length > 0 && isNumeric(value[0])) {
+  //     //   Parse value here and choose what to render?
+  //   } else {
+  return <AutocompleteEngine {...props} />;
+  //   }
 }

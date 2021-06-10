@@ -54,33 +54,33 @@ export class TreeNode<
    */
   findMatchingPieces(
     {
-      fragment,
+      queryValue,
       currentIdx,
     }: {
-      fragment: TQueryFragment;
+      queryValue: string;
       currentIdx: number;
     },
     otherMatchingPieces: Array<TPiece>,
     categoryFilters: CategoryFilters
   ): Array<TPiece> {
-    if (this.isLeaf || currentIdx == fragment.value.length - 1) {
+    if (this.isLeaf || currentIdx == queryValue.length - 1) {
       const matchingPieces = [];
       for (const piece of Array.from(this.childrenPieces)) {
         if (
           this._isPieceAllowed(piece, categoryFilters) &&
-          fragment.value[currentIdx] === piece.value[currentIdx]
+          queryValue[currentIdx] === piece.value[currentIdx]
         ) {
           matchingPieces.push(piece);
         }
       }
       return [...matchingPieces, ...otherMatchingPieces];
     }
-    const child = this.findChild(fragment, currentIdx);
+    const child = this.findChild({ queryValue, currentIdx });
     if (child == null) {
       return otherMatchingPieces;
     }
     return child.findMatchingPieces(
-      { fragment, currentIdx: currentIdx + 1 },
+      { queryValue, currentIdx: currentIdx + 1 },
       otherMatchingPieces,
       categoryFilters
     );
@@ -90,11 +90,11 @@ export class TreeNode<
    * Return list of pieces in the trie that can be used as autocompletions of a query fragment.
    */
   autocomplete(
-    fragment: TQueryFragment,
-    categoryFilters: CategoryFilters
+    queryValue: string,
+    categoryFilters?: CategoryFilters
   ): Array<TPiece> {
     return this.findMatchingPieces(
-      { fragment, currentIdx: 0 },
+      { queryValue, currentIdx: 0 },
       [],
       categoryFilters
     );
@@ -105,11 +105,14 @@ export class TreeNode<
    *
    * Returns null if no matching child node is found.
    */
-  findChild(
-    { value }: TQueryFragment | TPiece,
-    currentIdx: number
-  ): TreeNode<TPiece, TQueryFragment> | null {
-    if (currentIdx === value.length) {
+  findChild({
+    queryValue,
+    currentIdx,
+  }: {
+    queryValue: string;
+    currentIdx: number;
+  }): TreeNode<TPiece, TQueryFragment> | null {
+    if (currentIdx === queryValue.length) {
       return null;
     }
     assert(
@@ -117,7 +120,7 @@ export class TreeNode<
       'this.children should be instantiated before using for search.'
     );
     return this.children.find(
-      (childNode) => childNode.char === value[currentIdx]
+      (childNode) => childNode.char === queryValue[currentIdx]
     );
   }
 
@@ -134,7 +137,7 @@ export class TreeNode<
       return;
     }
 
-    let childNode = this.findChild(piece, currentIdx);
+    let childNode = this.findChild({ queryValue: piece.value, currentIdx });
     if (childNode == null) {
       const node = new TreeNode<TPiece, TQueryFragment>();
       // TODO kedar: move this into the node constructor
@@ -154,6 +157,16 @@ export class TreeNode<
       this.traverseAndConstruct(piece, 0);
     }
   }
+
+  printTrie(): void {
+    console.log(this.char);
+    for (const child of this.children) {
+      child.printTrie();
+    }
+    if (this.isLeaf) {
+      console.log('full word:', this.piece.value);
+    }
+  }
 }
 
 class ModifierNode extends TreeNode<ModifierPiece, ModifierQueryFragment> {}
@@ -167,6 +180,7 @@ function buildTrie<TPiece extends Piece, TQueryFragment extends QueryFragment>(
 ): TreeNode<TPiece, TQueryFragment> {
   const root = new TreeNode<TPiece, TQueryFragment>(true);
   root.build(library);
+
   return root;
 }
 
@@ -178,7 +192,7 @@ export function buildModifierTrie(): ModifierNode {
 }
 
 export function buildPrepositionTrie(): PrepositionNode {
-  return buildTrie<PrepositionPiece, PrepositionQueryFragment>(
-    PREPOSITION_FIXTURES
-  );
+  const trie =
+    buildTrie<PrepositionPiece, PrepositionQueryFragment>(PREPOSITION_FIXTURES);
+  return trie;
 }
