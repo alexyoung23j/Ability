@@ -36,6 +36,7 @@ interface CommandLine {
   alertCommandLineToClear: string;
   currentlyClearing: boolean;
   handlingNumericInput: boolean;
+  validAutocompletes: Piece[];
 
   // callback function props
   currentQueryFragmentHandler: any;
@@ -60,6 +61,7 @@ export default function CommandLine(props: CommandLine) {
   const alertCommandLineToClear = props.alertCommandLineToClear;
   const currentlyClearing = props.currentlyClearing;
   const handlingNumericInput = props.handlingNumericInput
+  const validAutocompletes = props.validAutocompletes
 
   // Callbacks to update props
   const currentQueryFragmentHandler = props.currentQueryFragmentHandler;
@@ -350,6 +352,7 @@ export default function CommandLine(props: CommandLine) {
     // Grab the Text from the contentBlock
     const text = currentContentBlock.getText();
 
+
     // Grab autocomplete value and type from the Piece object
     const autocompleteValue = parseOutSpaces(currentAutocomplete.value);
     const autocompleteType = currentAutocomplete.type;
@@ -427,6 +430,27 @@ export default function CommandLine(props: CommandLine) {
     }
   }
 
+  function shouldAutocompleteOnSpace(currentQueryFragment) {
+    const fragmentWithoutFinalSpace = currentQueryFragment.slice(
+      0,
+      currentQueryFragment.length
+    );
+
+    myConsole.log(parseOutSpaces(currentAutocomplete.value))
+    myConsole.log(fragmentWithoutFinalSpace)
+    myConsole.log("----")
+    
+    myConsole.log(parseOutSpaces(currentAutocomplete.value) === fragmentWithoutFinalSpace)
+    if (validAutocompletes.length === 1 || parseOutSpaces(currentAutocomplete.value) === fragmentWithoutFinalSpace) {
+      return true
+    } else {
+      return false
+    }
+    // if we dont have a space in our current autocomplete 
+    if (!handlingNumericInput && !(/\s/.test(currentAutocomplete.value))) {
+      return (fragmentWithoutFinalSpace === currentAutocomplete.value)
+    }
+  }
   // Handle Key Commands
   function keyCommandHandler(key: string): DraftHandleValue {
     if (key === 'enter-key') {
@@ -438,13 +462,9 @@ export default function CommandLine(props: CommandLine) {
       // Delete query piece unless we are on the current query
       if (focusInQueryPiece === -1) {
         // Handle when we dont press enter but autocomplete should occur
-        const fragmentWithoutFinalSpace = currentQueryFragment.slice(
-          0,
-          currentQueryFragment.length
-        );
+       
         if (
-          !handlingNumericInput &&
-          fragmentWithoutFinalSpace === currentAutocomplete.value
+          shouldAutocompleteOnSpace(currentQueryFragment)
         ) {
           handleEnterKey();
         } else {

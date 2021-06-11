@@ -5,6 +5,9 @@ import AutocompleteEngine, {
 import { QueryFragment } from './autocomplete/types';
 import { isNumeric } from './QueryUtil';
 
+var nodeConsole = require('console');
+var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
+
 const FULL_NUMERIC = new RegExp('[0-9]+');
 
 const CONTAINS_NUMERIC = new RegExp('.*[0-9]*.*');
@@ -23,18 +26,28 @@ function _validateInput({ value }: QueryFragment): boolean {
   }
 }
 
+function _normalizeWhitespace({ value }: QueryFragment): string {
+  const newVal = value.replace(/\u00A0/, ' ')
+  return newVal
+}
+
 export default function Parser(props: ParserProps) {
   const { queryFragment, setHandlingNumericInput } = props;
 
   const { value } = queryFragment;
 
+  const cleanQueryFragment = {
+    value: _normalizeWhitespace(queryFragment),
+    type: queryFragment.type
+  }
+
   if (value.length > 0 && isNumeric(value[0])) {
    //       Parse value here and choose what to render?
    setHandlingNumericInput(true)
-   return <AutocompleteEngine {...props} />;
+   return <AutocompleteEngine {...props} queryFragment={cleanQueryFragment} />;
   } else {
     setHandlingNumericInput(false)
-    return <AutocompleteEngine {...props} />;
+    return <AutocompleteEngine {...props} queryFragment={cleanQueryFragment} />;
   }
 }
 
@@ -97,6 +110,10 @@ A few situations we handle
 7. next -> Date Modifier, Range Modifier 
 8. in -> Range Modifier
 9. week of -> Date Modifier 
+
+----------------- Official Quantifiers Guide -----------------
+
+
 
 
 The query result will be parsed and handled according to the following general rules:

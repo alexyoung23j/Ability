@@ -245,6 +245,7 @@ export default function CommandView() {
           currentAutocomplete={currentAutocomplete}
           queryPieces={queryPieces}
           handlingNumericInput={handlingNumericInput}
+          validAutocompletes={validAutocompletes}
           alertCommandLineToClear={alertCommandLineToClear}
           currentlyClearing={currentlyClearing}
           currentQueryFragmentHandler={setCurrentQueryFragment}

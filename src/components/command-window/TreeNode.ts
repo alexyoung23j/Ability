@@ -3,6 +3,7 @@ import {
   TIME_MODIFIER_FIXTURES,
   PREPOSITION_FIXTURES,
   TEST_DURATION_MODIFIER_FIXTURES,
+  NUMERICAL_DATE_MODIFIER_FIXTURES,
 } from '../../tests/Fixtures';
 import { assert } from '../../assert';
 import {
@@ -187,7 +188,7 @@ function buildTrie<TPiece extends Piece, TQueryFragment extends QueryFragment>(
 
 export function buildModifierTrie(): ModifierNode {
   const trie = buildTrie<ModifierPiece, ModifierQueryFragment>(
-    DATE_MODIFIER_FIXTURES.concat(TIME_MODIFIER_FIXTURES).concat(TEST_DURATION_MODIFIER_FIXTURES)
+    DATE_MODIFIER_FIXTURES.concat(TIME_MODIFIER_FIXTURES).concat(TEST_DURATION_MODIFIER_FIXTURES).concat(NUMERICAL_DATE_MODIFIER_FIXTURES)
   );
   return trie;
 }

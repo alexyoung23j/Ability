@@ -23,6 +23,24 @@ export const DATE_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   type: QueryPieceType.MODIFIER,
 }));
 
+function createDateArray(month: string) {
+  let array = []
+
+
+  for (var i = 0; i < 5000; i++) {
+    const day = month + " " + i.toString()
+    array.push({
+      value: day,
+      category: ModifierCategory.DATE,
+      type: QueryPieceType.MODIFIER, 
+    })
+  }
+
+  return array
+
+}
+export const NUMERICAL_DATE_MODIFIER_FIXTURES: Array<ModifierPiece> = createDateArray("april")
+
 export const TIME_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   'morning',
   'evening',
@@ -80,6 +98,11 @@ export const PREPOSITION_FIXTURES: Array<PrepositionPiece> = [
   },
   {
     value: 'in',
+    type: QueryPieceType.PREPOSITION,
+    allowedModifierCategories: [ModifierCategory.DATE],
+  },
+  {
+    value: 'week of',
     type: QueryPieceType.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DATE],
   },
