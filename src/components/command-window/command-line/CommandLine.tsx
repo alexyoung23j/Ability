@@ -88,6 +88,7 @@ export default function CommandLine(props: CommandLine) {
     TIME: timeModifierStyles,
     DATE: dateModifierStyles,
     DURATION: durationModifierStyles,
+    RANGE: rangeModifierStyles,
     PREPOSITION: prepositionsStyles,
   };
 
@@ -436,12 +437,12 @@ export default function CommandLine(props: CommandLine) {
       currentQueryFragment.length
     );
 
-    myConsole.log(parseOutSpaces(currentAutocomplete.value))
-    myConsole.log(fragmentWithoutFinalSpace)
-    myConsole.log("----")
+    //myConsole.log(parseOutSpaces(currentAutocomplete.value))
+    //myConsole.log(fragmentWithoutFinalSpace)
+    //myConsole.log("----")
     
-    myConsole.log(parseOutSpaces(currentAutocomplete.value) === fragmentWithoutFinalSpace)
-    if (validAutocompletes.length === 1 || parseOutSpaces(currentAutocomplete.value) === fragmentWithoutFinalSpace) {
+    //myConsole.log(parseOutSpaces(currentAutocomplete.value) === fragmentWithoutFinalSpace)
+    if (validAutocompletes.length === 1 || (currentAutocomplete != null && parseOutSpaces(currentAutocomplete.value) === fragmentWithoutFinalSpace)) {
       return true
     } else {
       return false
@@ -564,6 +565,13 @@ const dateModifierStyles: CSS.Properties = {
 const timeModifierStyles: CSS.Properties = {
   fontWeight: 'lighter',
   color: 'rgba(125, 125, 125, .9)',
+  fontSize: '25px', 
+};
+
+const rangeModifierStyles: CSS.Properties = {
+  fontWeight: 'lighter',
+  fontStyle: "italic",
+  //color: 'rgba(125, 125, 125, .9)',
   fontSize: '25px', 
 };
 

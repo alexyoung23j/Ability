@@ -8,6 +8,7 @@ export const ALL_MODIFIER_CATEGORIES = [
   ModifierCategory.TIME,
   ModifierCategory.DURATION,
   ModifierCategory.DATE,
+  ModifierCategory.RANGE
 ];
 
 export const DATE_MODIFIERS = ['tomorrow', 'today'];

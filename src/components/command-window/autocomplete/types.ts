@@ -37,6 +37,7 @@ export const enum ModifierCategory {
   TIME = 'TIME',
   DURATION = 'DURATION',
   DATE = 'DATE',
+  RANGE = 'RANGE'
 }
 
 export type CategoryFilters = Array<ModifierCategory>;

@@ -106,6 +106,7 @@ export default function CommandView() {
       setCurrentAutocompleteIdx(0);
       setAutocompleteInProgress(false);
     }
+    //myConsole.log("my completes: ", validAutocompletes.slice(0, 5))
   }, [validAutocompletes]);
 
   // Parse the autocomplete when the query fragment is updated
@@ -272,6 +273,7 @@ export default function CommandView() {
               value: currentQueryFragment,
               type: QueryPieceType.MODIFIER,
             }}
+            numerics={[]} // this is not really needed here, TODO: change this later
           />
         )}
       </div>
