@@ -1,49 +1,103 @@
 import React, { useEffect, useState } from 'react';
 import AutocompleteEngine, {
-  AutocompleteEngineProps,
+  BaseAutocompleteEngineProps,
 } from './autocomplete/AutocompleteEngine';
-import { QueryFragment } from './autocomplete/types';
-import { isNumeric } from './QueryUtil';
+import { Piece, QueryFragment } from './autocomplete/types';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
+export const NUMERIC_WILDCARD = '_';
 
-interface ParserProps extends AutocompleteEngineProps {}
-
+interface ParserProps extends BaseAutocompleteEngineProps {
+  precedingQueryPieces: Array<Piece>;
+  queryFragment: QueryFragment;
+  updateRoot: (autocompletions: Array<Piece>) => void;
+}
 
 // Replace whitespace with non break whitespace and replace numbers with x
 function _normalizeQuery({ value }: QueryFragment): string {
-  
-  const newVal = value.replace(/\u00A0/, ' ').replace(/\d+/g, 'x')
-  return newVal
+  return value.replace(/\u00A0/, ' ').replace(/\d+/g, NUMERIC_WILDCARD);
+}
+
+function _insertNumbers(
+  autocompletions: Array<Piece>,
+  numerics: Array<String>
+): Array<Piece> {
+  const hydratedCompletions = [];
+  for (const completion of autocompletions) {
+    //myConsole.log("completion: ", completion)
+    if (
+      completion.value.includes(NUMERIC_WILDCARD) &&
+      numerics != null &&
+      numerics.length > 0
+    ) {
+      const hydratedValue = [];
+      let numIdx = 0;
+      for (const char of completion.value) {
+        if (char === NUMERIC_WILDCARD && numIdx <= numerics.length - 1) {
+          hydratedValue.push(numerics[numIdx]);
+          numIdx += 1;
+        } else {
+          hydratedValue.push(char);
+        }
+      }
+
+      //   for (const idx of indicesToReplace) {
+      //     if (numerics[numIdx] != null) {
+      //       newVal =
+      //         newVal.substring(0, idx) +
+      //         numerics[numIdx] +
+      //         newVal.substring(idx + numerics[numIdx].length);
+      //       numIdx += 1;
+      //     } else {
+      //       newVal =
+      //         newVal.substring(0, idx) +
+      //         numerics[numIdx - 1] +
+      //         newVal.substring(idx + 1);
+      //     }
+      //   }
+      hydratedCompletions.push({
+        ...completion,
+        value: hydratedValue.join(''),
+      });
+    } else {
+      hydratedCompletions.push(completion);
+    }
+  }
+
+  return hydratedCompletions;
 }
 
 export default function Parser(props: ParserProps) {
-  const { queryFragment, setHandlingNumericInput } = props;
+  const { queryFragment } = props;
   const { value } = queryFragment;
-
 
   const cleanQueryFragment = {
     value: _normalizeQuery(queryFragment),
-    type: queryFragment.type
-  }
-  const numerics = value.match(/\d+/g)
+    type: queryFragment.type,
+  };
+  const numerics = value.match(/\d+/g);
 
-  myConsole.log(numerics)
-  // create array of numerical characters seperated by any other characters
-  
+  // create array of numerical characters separated by any other characters
 
-  return <AutocompleteEngine {...props} numerics={numerics} queryFragment={cleanQueryFragment} />;
-  
+  return (
+    <AutocompleteEngine
+      {...props}
+      onAutocompletion={(autocompletions: Array<Piece>) =>
+        _insertNumbers(autocompletions, numerics)
+      }
+      queryFragment={cleanQueryFragment}
+    />
+  );
 }
 
 /* 
 
 High Level Plan for Parser:
 
-We intercept text and check for numbers in that text. If we find them, we record them in order and then replace them with "x". 
-This will allow the values to be found in the trie. From within AutocompleteEngine, we convert those "x" strings into the correct
+We intercept text and check for numbers in that text. If we find them, we record them in order and then replace them with NUMERIC_WILDCARD. 
+This will allow the values to be found in the trie. From within AutocompleteEngine, we convert those NUMERIC_WILDCARD strings into the correct
 numerical values before displaying them to the user and saving them in our queryPieces array that is kept in CommandView.
 
 

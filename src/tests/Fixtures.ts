@@ -8,16 +8,16 @@ import {
 /* ----------------- Official Modifiers Guide -----------------
 
 1. Duration Modifier - specifies an amount time during a day 
-    Ex: x hr, x min, x.y hour (1.5 hours)
+    Ex: _ hr, _ min, _.y hour (1.5 hours)
 
 2. Time Modifier - specifies a time ON a given day
     Ex: Morning, evening, night, noon, "xx:xx", "xx pm", all day etc
 
 3. Date Modifier - specifies a particular day
-    Ex: today, tomorrow, monday, tuesday.. month x (april 2), x month (2 april), "dd/mm/yyyy", "d/m"
+    Ex: today, tomorrow, monday, tuesday.. month _ (april 2), _ month (2 april), "dd/mm/yyyy", "d/m"
 
 4. Range Modifier - specifies a range of days
-    Ex: week, month, year, weekend, x days (3 days), x weeks, x months
+    Ex: week, month, year, weekend, _ days (3 days), _ weeks, _ months
 
 
 
@@ -34,14 +34,19 @@ import {
 9. week of -> Date Modifier 
  */
 
- 
 export const DURATION_MODIFIER_FIXTURES: Array<ModifierPiece> = [
-  'x hour',
-  'x hours',
-  'x mins',
-  'x minutes', 
-  'x min',
-  'x minute', 
+  '_ hour',
+  '_ hours',
+  '_ mins',
+  '_ minutes',
+  '_ min',
+  '_minute',
+  '_hour',
+  '_hours',
+  '_mins',
+  '_minutes',
+  '_min',
+  '_minute',
 ].map((value) => ({
   value,
   category: ModifierCategory.DURATION,
@@ -54,10 +59,10 @@ export const TIME_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   'afternoon',
   'night',
   'noon',
-  'x:x pm',
-  "x:x am",
-  'x pm',
-  'x am',
+  '_:_ pm',
+  '_:_ am',
+  '_ pm',
+  '_ am',
 ].map((value) => ({
   value,
   category: ModifierCategory.TIME,
@@ -67,40 +72,40 @@ export const TIME_MODIFIER_FIXTURES: Array<ModifierPiece> = [
 export const DATE_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   'tomorrow',
   'today',
-  "monday", 
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday", 
-  "saturday", 
-  "sunday",
-  "x/x",
-  "x/x/2021",
-  "x/x/2022",
-  "x january",
-  "x february",
-  "x march",
-  "x april",
-  "x may",
-  "x june",
-  "x july",
-  "x august",
-  "x september",
-  "x october",
-  "x november",
-  "x december",
-  "january x",
-  "february x",
-  "march x",
-  "april x",
-  "may x",
-  "june x",
-  "july x",
-  "august x",
-  "september x",
-  "october x",
-  "november x",
-  "december x",
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+  'sunday',
+  '_/_',
+  '_/_/2021',
+  '_/_/2022',
+  '_ january',
+  '_ february',
+  '_ march',
+  '_ april',
+  '_ may',
+  '_ june',
+  '_ july',
+  '_ august',
+  '_ september',
+  '_ october',
+  '_ november',
+  '_ december',
+  'january _',
+  'february _',
+  'march _',
+  'april _',
+  'may _',
+  'june _',
+  'july _',
+  'august _',
+  'september _',
+  'october _',
+  'november _',
+  'december _',
 ].map((value) => ({
   value,
   category: ModifierCategory.DATE,
@@ -112,23 +117,36 @@ export const RANGE_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   'month',
   'year',
   'weekend',
-  'x day',
-  'x days',
-  'x week',
-  'x weeks',
-  'x month',
-  'x months'
+  '_ day',
+  '_ days',
+  '_ week',
+  '_ weeks',
+  '_ month',
+  '_ months',
+  'january',
+  'february',
+  'march',
+  'april',
+  'may',
+  'june',
+  'july',
+  'august',
+  'september',
+  'october',
+  'november',
+  'december',
 ].map((value) => ({
   value,
   category: ModifierCategory.RANGE,
   type: QueryPieceType.MODIFIER,
 }));
 
-
-
-export const MODIFIER_FIXTURES = DURATION_MODIFIER_FIXTURES.concat(TIME_MODIFIER_FIXTURES).concat(DATE_MODIFIER_FIXTURES).concat(RANGE_MODIFIER_FIXTURES)
-
-
+export const MODIFIER_FIXTURES = [
+  ...DURATION_MODIFIER_FIXTURES,
+  ...TIME_MODIFIER_FIXTURES,
+  ...DATE_MODIFIER_FIXTURES,
+  ...RANGE_MODIFIER_FIXTURES,
+];
 
 export const PREPOSITION_FIXTURES: Array<PrepositionPiece> = [
   {
@@ -154,7 +172,11 @@ export const PREPOSITION_FIXTURES: Array<PrepositionPiece> = [
   {
     value: 'this',
     type: QueryPieceType.PREPOSITION,
-    allowedModifierCategories: [ModifierCategory.TIME, ModifierCategory.DATE, ModifierCategory.RANGE],
+    allowedModifierCategories: [
+      ModifierCategory.TIME,
+      ModifierCategory.DATE,
+      ModifierCategory.RANGE,
+    ],
   },
   {
     value: 'on',
@@ -176,5 +198,4 @@ export const PREPOSITION_FIXTURES: Array<PrepositionPiece> = [
     type: QueryPieceType.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DATE],
   },
-
 ];

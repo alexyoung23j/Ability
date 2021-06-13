@@ -1,7 +1,4 @@
-import {
-  PREPOSITION_FIXTURES,
-  MODIFIER_FIXTURES,
-} from '../../tests/Fixtures';
+import { PREPOSITION_FIXTURES, MODIFIER_FIXTURES } from '../../tests/Fixtures';
 import { assert } from '../../assert';
 import {
   Piece,
@@ -184,7 +181,8 @@ function buildTrie<TPiece extends Piece, TQueryFragment extends QueryFragment>(
 }
 
 export function buildModifierTrie(): ModifierNode {
-  const trie = buildTrie<ModifierPiece, ModifierQueryFragment>(MODIFIER_FIXTURES);
+  const trie =
+    buildTrie<ModifierPiece, ModifierQueryFragment>(MODIFIER_FIXTURES);
   return trie;
 }
 

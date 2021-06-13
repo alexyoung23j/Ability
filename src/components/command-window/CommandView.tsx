@@ -28,7 +28,6 @@ export default function CommandView() {
   const [alertCommandLineToClear, setAlertCommandLineToClear] =
     useState('default');
   const [currentlyClearing, setCurrentClearing] = useState(false);
-  const [handlingNumericInput, setHandlingNumeric] = useState(false)
 
   // // Performs the work of fetching text snippets (replace with real logic)
   // async function fetchSnippets() {
@@ -245,7 +244,6 @@ export default function CommandView() {
           currentQueryFragment={currentQueryFragment}
           currentAutocomplete={currentAutocomplete}
           queryPieces={queryPieces}
-          handlingNumericInput={handlingNumericInput}
           validAutocompletes={validAutocompletes}
           alertCommandLineToClear={alertCommandLineToClear}
           currentlyClearing={currentlyClearing}
@@ -261,11 +259,10 @@ export default function CommandView() {
         />
         {(finalQueryLaunched && <ResultEngine />) || (
           <Parser
-            onAutocompletion={setValidAutocompletes}
+            updateRoot={setValidAutocompletes}
             validAutocompletes={validAutocompletes}
             highlightedIdx={currentAutocompleteIdx}
             autocompleteInProgress={autocompleteInProgress}
-            setHandlingNumericInput={setHandlingNumeric}
             clickHandler={autocompleteClickHandler}
             hoverHandler={autocompleteHoverHandler}
             precedingQueryPieces={queryPieces}
@@ -273,7 +270,6 @@ export default function CommandView() {
               value: currentQueryFragment,
               type: QueryPieceType.MODIFIER,
             }}
-            numerics={[]} // this is not really needed here, TODO: change this later
           />
         )}
       </div>

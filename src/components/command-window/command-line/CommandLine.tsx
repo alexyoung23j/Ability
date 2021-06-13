@@ -21,10 +21,10 @@ const enterIcon = require('/src/content/svg/enterIcon.svg');
 const settingsIcon = require('/src/content/svg/settingsIcon.svg');
 
 var nodeConsole = require('console');
-var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
+new nodeConsole.Console(process.stdout, process.stderr);
 
 // Interface for CommandLine
-interface CommandLine {
+interface CommandLineProps {
   // state props
   queryPiecePositions: number[];
   autocompleteInProgress: boolean;
@@ -35,7 +35,6 @@ interface CommandLine {
   queryPieces: Piece[];
   alertCommandLineToClear: string;
   currentlyClearing: boolean;
-  handlingNumericInput: boolean;
   validAutocompletes: Piece[];
 
   // callback function props
@@ -46,10 +45,9 @@ interface CommandLine {
   selectedIdxHandler: any;
   autocompleteItemClickedHandler: any;
   alertCommandLineClearHandler: any;
-  
 }
 
-export default function CommandLine(props: CommandLine) {
+export default function CommandLine(props: CommandLineProps) {
   // Props
   const queryPiecePositions = props.queryPiecePositions;
   const autocompleteInProgress = props.autocompleteInProgress;
@@ -60,8 +58,7 @@ export default function CommandLine(props: CommandLine) {
   const queryPieces = props.queryPieces;
   const alertCommandLineToClear = props.alertCommandLineToClear;
   const currentlyClearing = props.currentlyClearing;
-  const handlingNumericInput = props.handlingNumericInput
-  const validAutocompletes = props.validAutocompletes
+  const validAutocompletes = props.validAutocompletes;
 
   // Callbacks to update props
   const currentQueryFragmentHandler = props.currentQueryFragmentHandler;
@@ -353,15 +350,14 @@ export default function CommandLine(props: CommandLine) {
     // Grab the Text from the contentBlock
     const text = currentContentBlock.getText();
 
-
     // Grab autocomplete value and type from the Piece object
     const autocompleteValue = parseOutSpaces(currentAutocomplete.value);
     const autocompleteType = currentAutocomplete.type;
     let autocompleteStyle;
-    if (autocompleteType === QueryPieceType.MODIFIER ) {
-      autocompleteStyle = currentAutocomplete.category
+    if (autocompleteType === QueryPieceType.MODIFIER) {
+      autocompleteStyle = currentAutocomplete.category;
     } else {
-      autocompleteStyle = autocompleteType
+      autocompleteStyle = autocompleteType;
     }
 
     // replace text with autocomplete value
@@ -440,16 +436,16 @@ export default function CommandLine(props: CommandLine) {
     //myConsole.log(parseOutSpaces(currentAutocomplete.value))
     //myConsole.log(fragmentWithoutFinalSpace)
     //myConsole.log("----")
-    
+
     //myConsole.log(parseOutSpaces(currentAutocomplete.value) === fragmentWithoutFinalSpace)
-    if (validAutocompletes.length === 1 || (currentAutocomplete != null && parseOutSpaces(currentAutocomplete.value) === fragmentWithoutFinalSpace)) {
-      return true
+    if (
+      validAutocompletes.length === 1 ||
+      (currentAutocomplete != null &&
+        parseOutSpaces(currentAutocomplete.value) === fragmentWithoutFinalSpace)
+    ) {
+      return true;
     } else {
-      return false
-    }
-    // if we dont have a space in our current autocomplete 
-    if (!handlingNumericInput && !(/\s/.test(currentAutocomplete.value))) {
-      return (fragmentWithoutFinalSpace === currentAutocomplete.value)
+      return false;
     }
   }
   // Handle Key Commands
@@ -463,10 +459,8 @@ export default function CommandLine(props: CommandLine) {
       // Delete query piece unless we are on the current query
       if (focusInQueryPiece === -1) {
         // Handle when we dont press enter but autocomplete should occur
-       
-        if (
-          shouldAutocompleteOnSpace(currentQueryFragment)
-        ) {
+
+        if (shouldAutocompleteOnSpace(currentQueryFragment)) {
           handleEnterKey();
         } else {
           const newEditorState = handleSpaceBar();
@@ -565,14 +559,14 @@ const dateModifierStyles: CSS.Properties = {
 const timeModifierStyles: CSS.Properties = {
   fontWeight: 'lighter',
   color: 'rgba(125, 125, 125, .9)',
-  fontSize: '25px', 
+  fontSize: '25px',
 };
 
 const rangeModifierStyles: CSS.Properties = {
   fontWeight: 'lighter',
-  fontStyle: "italic",
+  fontStyle: 'italic',
   //color: 'rgba(125, 125, 125, .9)',
-  fontSize: '25px', 
+  fontSize: '25px',
 };
 
 const durationModifierStyles: CSS.Properties = {
@@ -584,5 +578,5 @@ const durationModifierStyles: CSS.Properties = {
 const prepositionsStyles: CSS.Properties = {
   fontWeight: 'bold',
   fontSize: '25px',
-  color: "#6B6B6B"
+  color: '#6B6B6B',
 };

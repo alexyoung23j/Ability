@@ -17,49 +17,14 @@ import {
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
-
-export interface AutocompleteEngineProps extends AutocompleteBarProps {
+export interface BaseAutocompleteEngineProps extends AutocompleteBarProps {
   precedingQueryPieces: Array<Piece>;
   queryFragment: QueryFragment;
-  numerics: Array<String>;
-  setHandlingNumericInput: (val: boolean) => void;
-  onAutocompletion: (autocompletions: Array<Piece>) => void;
+  updateRoot: (autocompletions: Array<Piece>) => void;
 }
 
-function locations(substring,string){
-  var a=[],i=-1;
-  while((i=string.indexOf(substring,i+1)) >= 0) a.push(i);
-  return a;
-}
-
-function _insertNumbers(autocompletions: Array<Piece>, numerics: Array<String>): Array<Piece> {
-  const completionCopy = autocompletions
-  for (const completion of completionCopy) {
-    //myConsole.log("completion: ", completion)
-    if (completion.value.includes("x") && numerics != null && numerics.length > 0) {
-
-      let newVal = completion.value;
-      const indicesToReplace = locations('x', newVal)
-
-     
-      let numIdx = 0
-      for (const idx of indicesToReplace) {
-        if (numerics[numIdx] != null) {
-          newVal = newVal.substring(0, idx) + numerics[numIdx] + newVal.substring(idx+1)
-          numIdx+=1
-        } else {
-          newVal = newVal.substring(0, idx) + numerics[numIdx-1] + newVal.substring(idx+1)
-        }
-        
-      }
-
-      completion.value = newVal
-
-    }
-  }
-
-
-  return completionCopy
+interface AutocompleteEngineProps extends BaseAutocompleteEngineProps {
+  onAutocompletion: (autocompletions: Array<Piece>) => Array<Piece>;
 }
 
 export default function AutocompleteEngine(props: AutocompleteEngineProps) {
@@ -77,7 +42,7 @@ export default function AutocompleteEngine(props: AutocompleteEngineProps) {
   const {
     precedingQueryPieces,
     queryFragment,
-    numerics,
+    updateRoot,
     onAutocompletion,
     ...autocompleteBarProps
   } = props;
@@ -111,12 +76,11 @@ export default function AutocompleteEngine(props: AutocompleteEngineProps) {
     )
   );
 
-  myConsole.log("numerics: ", numerics)
-  autocompletions = _insertNumbers(autocompletions, numerics)
+  autocompletions = onAutocompletion(autocompletions);
 
   useEffect(() => {
     if (queryFragment.value.length > 0) {
-      onAutocompletion(autocompletions);
+      updateRoot(autocompletions);
     }
   }, [queryFragment.value]);
 
