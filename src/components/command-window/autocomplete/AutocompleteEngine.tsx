@@ -1,24 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import AutocompleteBar, { AutocompleteBarProps } from './AutocompleteBar';
 import { ALL_MODIFIER_CATEGORIES } from '../constants';
+import { buildModifierTrie, buildPrepositionTrie, TreeNode } from '../TreeNode';
 import {
-  buildModifierTrie,
-  buildPrepositionTrie,
-  CategoryFilters,
+  isModifierPiece,
   isPrepositionPiece,
+  ModifierCategory,
   ModifierPiece,
   ModifierQueryFragment,
   Piece,
   PrepositionPiece,
   PrepositionQueryFragment,
   QueryFragment,
-  TreeNode,
-} from '../TreeNode';
+} from './types';
 
-export interface AutocompleteEngineProps extends AutocompleteBarProps {
+var nodeConsole = require('console');
+var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
+
+export interface BaseAutocompleteEngineProps extends AutocompleteBarProps {
   precedingQueryPieces: Array<Piece>;
   queryFragment: QueryFragment;
-  onAutocompletion: (autocompletions: Array<Piece>) => void;
+  updateRoot: (autocompletions: Array<Piece>) => void;
+}
+
+interface AutocompleteEngineProps extends BaseAutocompleteEngineProps {
+  onAutocompletion: (autocompletions: Array<Piece>) => Array<Piece>;
 }
 
 export default function AutocompleteEngine(props: AutocompleteEngineProps) {
@@ -29,32 +35,68 @@ export default function AutocompleteEngine(props: AutocompleteEngineProps) {
     TreeNode<PrepositionPiece, PrepositionQueryFragment>
   >(buildPrepositionTrie());
 
+  const [unusedModifierCategories, setUnusedModifierCategories] = useState<
+    Array<ModifierCategory>
+  >(ALL_MODIFIER_CATEGORIES);
+
   const {
     precedingQueryPieces,
     queryFragment,
+    updateRoot,
     onAutocompletion,
     ...autocompleteBarProps
   } = props;
 
-  let allowedModifierCategories: CategoryFilters = ALL_MODIFIER_CATEGORIES;
+  let autocompletions = [];
+  let allowedModifierCategories = ALL_MODIFIER_CATEGORIES;
 
   // Check if previous query is a preposition
+  let runOnPrepositions = true;
   if (precedingQueryPieces.length > 0) {
     const previousPiece = precedingQueryPieces[precedingQueryPieces.length - 1];
     if (isPrepositionPiece(previousPiece)) {
       allowedModifierCategories = previousPiece.allowedModifierCategories;
+      runOnPrepositions = false;
     }
   }
-  // Check if query already contains a modifier
 
-  const autocompletions = modifierTrieRoot.autocomplete(
-    { ...queryFragment } as ModifierQueryFragment,
-    allowedModifierCategories
+  if (runOnPrepositions) {
+    autocompletions = autocompletions.concat(
+      prepositionTrieRoot.autocomplete(queryFragment.value)
+    );
+  }
+
+  autocompletions = autocompletions.concat(
+    modifierTrieRoot.autocomplete(
+      queryFragment.value,
+      // intersect allowedModifierCategories with unusedModifierCategories
+      allowedModifierCategories.filter((category) =>
+        unusedModifierCategories.includes(category)
+      )
+    )
   );
 
+  autocompletions = onAutocompletion(autocompletions);
+
   useEffect(() => {
-    onAutocompletion(autocompletions);
+    if (queryFragment.value.length > 0) {
+      updateRoot(autocompletions);
+    }
   }, [queryFragment.value]);
+
+  useEffect(() => {
+    let usedModifierCategories = [];
+    for (const piece of precedingQueryPieces) {
+      if (isModifierPiece(piece)) {
+        usedModifierCategories.push(piece.category);
+      }
+    }
+    setUnusedModifierCategories(
+      ALL_MODIFIER_CATEGORIES.filter(
+        (category) => !usedModifierCategories.includes(category)
+      )
+    );
+  }, [precedingQueryPieces.length]);
 
   return (
     <AutocompleteBar

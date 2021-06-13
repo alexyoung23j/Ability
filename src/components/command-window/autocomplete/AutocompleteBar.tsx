@@ -1,7 +1,7 @@
 import CSS from 'csstype';
 import React from 'react';
-import { Piece } from '../TreeNode';
 import AutocompleteItem from './AutocompleteItem';
+import { Piece } from './types';
 
 export interface AutocompleteBarProps {
   validAutocompletes: Array<Piece>;
@@ -24,7 +24,7 @@ export default function AutocompleteBar(props: AutocompleteBarProps) {
   if (autocompleteInProgress && validAutocompletes.length > 0) {
     return (
       <div style={autocompleteStyle}>
-        {validAutocompletes.map((piece, idx) => (
+        {validAutocompletes.slice(0, 5).map((piece, idx) => (
           <div key={idx}>
             <AutocompleteItem
               value={piece.value}

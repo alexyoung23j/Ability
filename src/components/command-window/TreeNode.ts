@@ -1,18 +1,15 @@
+import { PREPOSITION_FIXTURES, MODIFIER_FIXTURES } from '../../tests/Fixtures';
 import { assert } from '../../assert';
-import { QueryPieceType } from '../../types';
-import { ALL_MODIFIER_CATEGORIES, DATE_MODIFIERS } from './constants';
-
-export type PieceCategory = ModifierCategory;
-
-export interface Piece {
-  value: string;
-  type: QueryPieceType;
-}
-
-export interface QueryFragment {
-  value: string;
-  type: QueryPieceType;
-}
+import {
+  Piece,
+  QueryFragment,
+  CategoryFilters,
+  isModifierPiece,
+  ModifierPiece,
+  ModifierQueryFragment,
+  PrepositionPiece,
+  PrepositionQueryFragment,
+} from './autocomplete/types';
 
 export class TreeNode<
   TPiece extends Piece,
@@ -53,33 +50,33 @@ export class TreeNode<
    */
   findMatchingPieces(
     {
-      fragment,
+      queryValue,
       currentIdx,
     }: {
-      fragment: TQueryFragment;
+      queryValue: string;
       currentIdx: number;
     },
     otherMatchingPieces: Array<TPiece>,
     categoryFilters: CategoryFilters
   ): Array<TPiece> {
-    if (this.isLeaf || currentIdx == fragment.value.length - 1) {
+    if (this.isLeaf || currentIdx == queryValue.length - 1) {
       const matchingPieces = [];
       for (const piece of Array.from(this.childrenPieces)) {
         if (
           this._isPieceAllowed(piece, categoryFilters) &&
-          fragment.value[currentIdx] === piece.value[currentIdx]
+          queryValue[currentIdx] === piece.value[currentIdx]
         ) {
           matchingPieces.push(piece);
         }
       }
       return [...matchingPieces, ...otherMatchingPieces];
     }
-    const child = this.findChild(fragment, currentIdx);
+    const child = this.findChild({ queryValue, currentIdx });
     if (child == null) {
       return otherMatchingPieces;
     }
     return child.findMatchingPieces(
-      { fragment, currentIdx: currentIdx + 1 },
+      { queryValue, currentIdx: currentIdx + 1 },
       otherMatchingPieces,
       categoryFilters
     );
@@ -89,11 +86,11 @@ export class TreeNode<
    * Return list of pieces in the trie that can be used as autocompletions of a query fragment.
    */
   autocomplete(
-    fragment: TQueryFragment,
-    categoryFilters: CategoryFilters
+    queryValue: string,
+    categoryFilters?: CategoryFilters
   ): Array<TPiece> {
     return this.findMatchingPieces(
-      { fragment, currentIdx: 0 },
+      { queryValue, currentIdx: 0 },
       [],
       categoryFilters
     );
@@ -104,11 +101,14 @@ export class TreeNode<
    *
    * Returns null if no matching child node is found.
    */
-  findChild(
-    { value }: TQueryFragment | TPiece,
-    currentIdx: number
-  ): TreeNode<TPiece, TQueryFragment> | null {
-    if (currentIdx === value.length) {
+  findChild({
+    queryValue,
+    currentIdx,
+  }: {
+    queryValue: string;
+    currentIdx: number;
+  }): TreeNode<TPiece, TQueryFragment> | null {
+    if (currentIdx === queryValue.length) {
       return null;
     }
     assert(
@@ -116,7 +116,7 @@ export class TreeNode<
       'this.children should be instantiated before using for search.'
     );
     return this.children.find(
-      (childNode) => childNode.char === value[currentIdx]
+      (childNode) => childNode.char === queryValue[currentIdx]
     );
   }
 
@@ -133,7 +133,7 @@ export class TreeNode<
       return;
     }
 
-    let childNode = this.findChild(piece, currentIdx);
+    let childNode = this.findChild({ queryValue: piece.value, currentIdx });
     if (childNode == null) {
       const node = new TreeNode<TPiece, TQueryFragment>();
       // TODO kedar: move this into the node constructor
@@ -153,47 +153,16 @@ export class TreeNode<
       this.traverseAndConstruct(piece, 0);
     }
   }
-}
 
-export interface ModifierPiece extends Piece {
-  value: string;
-  category: ModifierCategory;
-}
-
-export type CategoryFilters = Array<ModifierCategory>;
-
-export interface PrepositionPiece extends Piece {
-  value: string;
-  allowedModifierCategories: CategoryFilters;
-}
-
-export function isPrepositionPiece(piece: Piece): piece is PrepositionPiece {
-  return piece.type === QueryPieceType.PREPOSITION;
-}
-
-export function isModifierPiece(
-  piece: Piece | ModifierPiece
-): piece is ModifierPiece {
-  return 'category' in piece && piece.type === QueryPieceType.MODIFIER;
-}
-
-export interface ModifierQueryFragment {
-  value: string;
-  type: QueryPieceType.MODIFIER;
-}
-export interface PrepositionQueryFragment {
-  value: string;
-  type: QueryPieceType.PREPOSITION;
-}
-
-export const enum CommandCategory {
-  COMMAND = 'COMMAND',
-}
-
-export const enum ModifierCategory {
-  TIME = 'TIME',
-  DURATION = 'DURATION',
-  DATE = 'DATE',
+  printTrie(): void {
+    console.log(this.char);
+    for (const child of this.children) {
+      child.printTrie();
+    }
+    if (this.isLeaf) {
+      console.log('full word:', this.piece.value);
+    }
+  }
 }
 
 class ModifierNode extends TreeNode<ModifierPiece, ModifierQueryFragment> {}
@@ -207,26 +176,18 @@ function buildTrie<TPiece extends Piece, TQueryFragment extends QueryFragment>(
 ): TreeNode<TPiece, TQueryFragment> {
   const root = new TreeNode<TPiece, TQueryFragment>(true);
   root.build(library);
+
   return root;
 }
 
 export function buildModifierTrie(): ModifierNode {
-  const trie = buildTrie<ModifierPiece, ModifierQueryFragment>(
-    DATE_MODIFIERS.map((value) => ({
-      value,
-      category: ModifierCategory.DATE,
-      type: QueryPieceType.MODIFIER,
-    }))
-  );
+  const trie =
+    buildTrie<ModifierPiece, ModifierQueryFragment>(MODIFIER_FIXTURES);
   return trie;
 }
 
 export function buildPrepositionTrie(): PrepositionNode {
-  return buildTrie<PrepositionPiece, PrepositionQueryFragment>(
-    DATE_MODIFIERS.map((value) => ({
-      value,
-      type: QueryPieceType.PREPOSITION,
-      allowedModifierCategories: ALL_MODIFIER_CATEGORIES,
-    }))
-  );
+  const trie =
+    buildTrie<PrepositionPiece, PrepositionQueryFragment>(PREPOSITION_FIXTURES);
+  return trie;
 }

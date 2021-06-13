@@ -1,10 +1,10 @@
 import CSS from 'csstype';
 import 'draft-js/dist/Draft.css';
 import React, { useEffect, useState } from 'react';
-import { QueryPieceType } from '../../types';
+import { Piece, QueryPieceType } from './autocomplete/types';
 import CommandLine from './command-line/CommandLine';
-import ToggleLowerField from './ToggleLowerField';
-import { Piece } from './TreeNode';
+import Parser from './Parser';
+import ResultEngine from './results-display/ResultEngine';
 
 const { ipcRenderer } = require('electron');
 
@@ -105,6 +105,7 @@ export default function CommandView() {
       setCurrentAutocompleteIdx(0);
       setAutocompleteInProgress(false);
     }
+    //myConsole.log("my completes: ", validAutocompletes.slice(0, 5))
   }, [validAutocompletes]);
 
   // Parse the autocomplete when the query fragment is updated
@@ -243,6 +244,7 @@ export default function CommandView() {
           currentQueryFragment={currentQueryFragment}
           currentAutocomplete={currentAutocomplete}
           queryPieces={queryPieces}
+          validAutocompletes={validAutocompletes}
           alertCommandLineToClear={alertCommandLineToClear}
           currentlyClearing={currentlyClearing}
           currentQueryFragmentHandler={setCurrentQueryFragment}
@@ -255,20 +257,21 @@ export default function CommandView() {
           autocompleteItemClickedHandler={setAutocompleteItemClicked}
           alertCommandLineClearHandler={setAlertCommandLineToClear}
         />
-        <ToggleLowerField
-          onAutocompletion={setValidAutocompletes}
-          finalQueryLaunched={finalQueryLaunched}
-          validAutocompletes={validAutocompletes}
-          highlightedIdx={currentAutocompleteIdx}
-          autocompleteInProgress={autocompleteInProgress}
-          clickHandler={autocompleteClickHandler}
-          hoverHandler={autocompleteHoverHandler}
-          precedingQueryPieces={queryPieces}
-          queryFragment={{
-            value: currentQueryFragment,
-            type: QueryPieceType.MODIFIER,
-          }}
-        />
+        {(finalQueryLaunched && <ResultEngine />) || (
+          <Parser
+            updateRoot={setValidAutocompletes}
+            validAutocompletes={validAutocompletes}
+            highlightedIdx={currentAutocompleteIdx}
+            autocompleteInProgress={autocompleteInProgress}
+            clickHandler={autocompleteClickHandler}
+            hoverHandler={autocompleteHoverHandler}
+            precedingQueryPieces={queryPieces}
+            queryFragment={{
+              value: currentQueryFragment,
+              type: QueryPieceType.MODIFIER,
+            }}
+          />
+        )}
       </div>
     </div>
   );

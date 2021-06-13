@@ -1,10 +1,14 @@
-import { QueryPieceType } from '../../types';
-import { ModifierCategory, ModifierPiece } from './TreeNode';
+import {
+  ModifierCategory,
+  ModifierPiece,
+  QueryPieceType,
+} from './autocomplete/types';
 
 export const ALL_MODIFIER_CATEGORIES = [
   ModifierCategory.TIME,
   ModifierCategory.DURATION,
   ModifierCategory.DATE,
+  ModifierCategory.RANGE
 ];
 
 export const DATE_MODIFIERS = ['tomorrow', 'today'];
