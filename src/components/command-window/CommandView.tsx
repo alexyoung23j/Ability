@@ -285,7 +285,7 @@ const commandStyle: CSS.Properties = {
   borderRadius: '12px',
   flexDirection: 'column',
   outline: 'none',
-  marginTop: '5%',
+  marginTop: "10%",
   boxShadow: '0 0 100px rgba(0,0,0, 0.4)',
 };
 
@@ -295,5 +295,6 @@ const commandAreaStyle: CSS.Properties = {
   justifyContent: 'center',
   height: '100%',
   backgroundColor: 'rgba(211,211,211, 0.09)',
-  //opacity: "4%"
+  position: "fixed",
+  width: "100%"
 };

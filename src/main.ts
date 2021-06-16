@@ -13,6 +13,9 @@ import {
 const { ipcMain } = require('electron');
 const path = require('path');
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
+ 
+// TODO: This isnt fixing anyting
+ipcMain.setMaxListeners(Infinity)
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -24,68 +27,49 @@ if (require('electron-squirrel-startup')) {
 let sentinelWindow;
 let tray;
 
-// "State" to manage blur handling and avoid toggling conflicts
-let toggleInProgress = false;
-
 // Create window for creating sentinel and children BrowserWindows
 const createSentinelWindow = (): void => {
   // Sentinel Window to handle the children windows
+  const display = screen.getPrimaryDisplay();
+  const maxiSize = display.workAreaSize;
+
+  // These are the default settings for the command view. May end up being something different in production 
   sentinelWindow = new BrowserWindow({
-    transparent: true,
     frame: false,
-    minWidth: 1000,
-    minHeight: 1000,
+    height: maxiSize.height,
+    width: maxiSize.width,
+    transparent: true,
+    show: true,
+    title: 'COMMAND',
+    movable: false,
+    hasShadow: false,
+    resizable: false,
+    fullscreenable: false,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
       enableRemoteModule: true,
       nativeWindowOpen: true,
     },
-    show: true,
   });
 
   // Load index.html entrypoint defined by webpack
   sentinelWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
-  sentinelWindow.webContents.openDevTools();
+  //sentinelWindow.webContents.openDevTools();
 
-  // Handle instantiation of child browserwindows
-  // Properties of these windows defined here
-  sentinelWindow.webContents.setWindowOpenHandler((details: HandlerDetails) => {
-    const display = screen.getPrimaryDisplay();
-    const maxiSize = display.workAreaSize;
-    switch (details.frameName) {
-      case 'SETTINGS':
-        return {
-          action: 'allow',
-          overrideBrowserWindowOptions: {
-            width: 900,
-            height: 500,
-            frame: false,
-            show: false,
-            parent: sentinelWindow,
-            title: 'SETTINGS',
-          },
-        };
-      case 'COMMAND':
-        return {
-          action: 'allow',
-          overrideBrowserWindowOptions: {
-            frame: false,
-            height: maxiSize.height,
-            width: maxiSize.width,
-            parent: sentinelWindow,
-            transparent: true,
-            show: true,
-            title: 'COMMAND',
-            movable: false,
-            hasShadow: false,
-            resizable: false,
-          },
-        };
-    }
+  // Make Transition a bit smoother
+  sentinelWindow.on('show', () => {
+    setTimeout(() => {
+      sentinelWindow.setOpacity(1);
+    }, 100);
   });
+  
+  sentinelWindow.on('hide', () => {
+    sentinelWindow.setOpacity(0);
+  });
+
 
   // Tray Created
   createTray();
@@ -101,12 +85,12 @@ const createTray = () => {
     {
       label: 'Settings',
       type: 'normal',
-      click: () => windowDisplayHandler(false, 'SETTINGS'),
+      click: () => openSettingsView(),
     },
     {
       label: 'Commander',
       type: 'normal',
-      click: () => windowDisplayHandler(false, 'COMMAND'),
+      click: () => openCommandLine(),
     },
   ]);
   tray.setToolTip('Ability');
@@ -142,74 +126,71 @@ app.on('activate', () => {
   }
 });
 
-/// CURRENTLY NOT PLANNING TO IMPLEMENT THIS
-
-// Hide all windows when we lose focus (only relevant for command line when they are using two monitors)
-/* app.on('browser-window-blur', (event, window) => {
-  const childWindows = sentinelWindow.getChildWindows()
-
-  if (!toggleInProgress) {
-    for (let window of childWindows) {
-      window.hide()
-    }
-
-    sentinelWindow.webContents.send('clear-command-line')
-  }
-}) */
 
 /// ------------------------- IPC LISTENERS ------------------------ ///
 
-// Handles toggling between the various child BrowserWindows
-ipcMain.on('toggle-event', (event, payload) => {
-  windowDisplayHandler(false, payload[1]);
-});
-
-// Fired by react after a slight delay to avoid race condition with blur handling
-ipcMain.on('resolve-toggle-event', () => {
-  toggleInProgress = false;
-});
-
-// Handles resizing; this is finicky right now
-// and we need to get the view css working right to finalize
-/* ipcMain.on('settings-resize', (event, payload) => {
-  const childWindows = sentinelWindow.getChildWindows()
-  var commandWindow = childWindows.find(window => {
-    return window.title === 'COMMAND'
-  })
-
-  // some approximate calculation for resizing based on # autocompletes shown
-  const newHeight = 85 + payload[0]*55 
-  
-  //commandWindow.setSize(680, newHeight)
-}) */
-
+// Hide the Command Line
 ipcMain.on('command-line-native-blur', () => {
-  windowDisplayHandler(true);
-  app.hide();
+  windowDisplayHandler('COMMMAND', true)
+  sentinelWindow.hide()
 });
+
+// Close the settings window
+ipcMain.on('close-settings', () => {
+  windowDisplayHandler('COMMAND', false)
+})
 
 /// ----------------------------- OTHER METHODS ------------------- ///
 
 // Handles global key shortcuts (incomplete, will add parametrized behavior)
 function keyboardShortcutHandler() {
-  windowDisplayHandler(false, 'COMMAND');
+  openCommandLine()
+}
+
+// Open Command Line
+function openCommandLine() {
+  windowDisplayHandler("COMMAND", false).then(() => {
+    sentinelWindow.show()
+  })
+}
+
+// Open Settings View 
+function openSettingsView() {
+  windowDisplayHandler("SETTINGS", false).then(() => {
+    sentinelWindow.show()
+  })
 }
 
 // Handles hiding and showing
-function windowDisplayHandler(hideAll: boolean, toShow?: string) {
-  const childWindows = sentinelWindow.getChildWindows();
+async function windowDisplayHandler(toShow: string, showAfterChanges) {
+  const display = screen.getPrimaryDisplay();
+  const maxiSize = display.workAreaSize;
 
-  if (hideAll) {
-    for (let window of childWindows) {
-      window.hide();
-    }
-  } else {
-    for (let window of childWindows) {
-      if (window.title === toShow) {
-        window.show();
-      } else {
-        window.hide();
-      }
-    }
+  sentinelWindow.hide()
+
+  if (toShow === "COMMAND") {
+    sentinelWindow.webContents.send('show-command', 'display command line')
+    
+    sentinelWindow.setSize(maxiSize.width, maxiSize.height)
+    sentinelWindow.setBounds({x: 0, y: 0})
+    sentinelWindow.setResizable(false)
+    sentinelWindow.setMovable(false)
+    sentinelWindow.setHasShadow(false)
+
+  } else if (toShow === "SETTINGS") {
+    sentinelWindow.webContents.send('show-settings', 'display settings')
+    sentinelWindow.setSize(maxiSize.width/2, maxiSize.height)
+    sentinelWindow.setBounds({x: 0, y: 0})
+    sentinelWindow.setResizable(true)
+    sentinelWindow.setMovable(true)
+    sentinelWindow.setHasShadow(true)
+    
   }
+
+  if (showAfterChanges) {
+    sentinelWindow.show()
+  }
+  
+
+  
 }
