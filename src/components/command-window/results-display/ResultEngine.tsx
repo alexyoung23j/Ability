@@ -1,16 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CalendarView from './calendar_display/CalendarView';
 import TextSnippetDropdown from './snippet_display/TextSnippetDropdown';
 import { textSnippet } from '../../../types';
 import { ContentState } from 'draft-js';
 import { calendarDummyResults } from '../constants';
 
-
+var nodeConsole = require('console');
+var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 export default function ResultEngine() {
   // dummy calendar index query response
   const [calendarResultData, setCalendarResultData] = useState(calendarDummyResults)
-  const [ignoreSlots, setIgnoreSlots] = useState({})
+  const [ignoreSlots, setIgnoreSlots] = useState([])
+
+  // Index of the form [x, y, z] where x = day_idx, y = free_block idx, z = free_slot idx
+  const updateIgnoredSlots = (index: number[], action: string) => {
+    if (action === "remove") {
+      setIgnoreSlots([...ignoreSlots, index])
+    } else if (action === "add-back") {
+      let newSlots = ignoreSlots.filter(slot => JSON.stringify(slot) != JSON.stringify(index))
+      setIgnoreSlots(newSlots)
+    }
+  }
+
+  useEffect(() => {
+    myConsole.log("ignored: ", ignoreSlots)
+  }, [ignoreSlots])
 
   // Filler for the text snippet (replace with the real values)
   var myContentState1 = ContentState.createFromText(
@@ -28,7 +43,7 @@ export default function ResultEngine() {
 
   return (
     <div>
-      <CalendarView calendar_data={calendarResultData} setIgnoreSlots={setIgnoreSlots}/>
+      <CalendarView calendar_data={calendarResultData} ignoreHandler={updateIgnoredSlots}/>
       <TextSnippetDropdown snippetPayload={textSnippetArray} />
     </div>
   );
