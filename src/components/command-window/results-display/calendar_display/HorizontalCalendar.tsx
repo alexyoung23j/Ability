@@ -160,6 +160,7 @@ function CalendarEvents(props: {events}) {
                         borderRadius: 3 , 
                         cursor: "pointer"    
                 }}
+                    key={idx}
                     onClick={() => myConsole.log("wtf")}
                 >
             </div>
@@ -181,7 +182,10 @@ function FreeBlocks(props: {free_blocks; day_idx; ignoreHandler}) {
                         borderRadius: 3 , 
                         border: "2px solid rgba(135, 220, 215, 1)",
                         cursor: "pointer", 
-                }}>
+                }}
+                key={idx}
+                >
+                  
                 </div>
                 
             ))}
@@ -196,6 +200,10 @@ function FreeSlots(props: {free_blocks; day_idx; ignoreHandler}) {
         <div style={{position: "relative", display: "flex", justifyContent: "center", alignItems: "center", marginTop: "15px", flexDirection: "row"}} >
             {free_blocks.map((block, block_idx) => (
                 block.free_slots.map((event, slot_idx) => (
+                  <div
+                    key={slot_idx}
+                    style={{position: "absolute"}}
+                  >
                     <Slot 
                         event={event}
                         slot_idx={slot_idx}
@@ -203,6 +211,9 @@ function FreeSlots(props: {free_blocks; day_idx; ignoreHandler}) {
                         day_idx={day_idx}
                         ignoreHandler={ignoreHandler}
                     />
+
+                  </div>
+                  
                 ))
             ))}
         </div>
@@ -268,24 +279,6 @@ function Slot(props: {event, slot_idx; block_idx; day_idx, ignoreHandler}) {
 
 }
 
-function SlotPopup(props: {show, left; right;}) {
-
-    const {show, left, right} = props
-    const settingsContainer = document.createElement('div');
-    if(show) {
-        return ReactDOM.createPortal(
-            <div>
-                Hello cunt
-            </div>
-        , settingsContainer)
-    } else {
-        return (
-            <div>
-
-            </div>
-        )
-    }
-}
 
 
 export default function HorizontalCalendar(props: HorizontalCalendar) {
