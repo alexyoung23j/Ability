@@ -26,6 +26,7 @@ if (require('electron-squirrel-startup')) {
 // Global var definitions
 let sentinelWindow;
 let tray;
+let currentWindow = 'COMMAND';
 
 // Create window for creating sentinel and children BrowserWindows
 const createSentinelWindow = (): void => {
@@ -59,7 +60,7 @@ const createSentinelWindow = (): void => {
   // Open the DevTools.
   //sentinelWindow.webContents.openDevTools();
 
-  // Make Transition a bit smoother
+  // Make Transition a bit smoother between window views
   sentinelWindow.on('show', () => {
     setTimeout(() => {
       sentinelWindow.setOpacity(1);
@@ -69,7 +70,6 @@ const createSentinelWindow = (): void => {
   sentinelWindow.on('hide', () => {
     sentinelWindow.setOpacity(0);
   });
-
 
   // Tray Created
   createTray();
@@ -135,48 +135,63 @@ ipcMain.on('command-line-native-blur', () => {
   sentinelWindow.hide()
 });
 
-// Close the settings window
+// Close the settings window (with a button)
 ipcMain.on('close-settings', () => {
+  sentinelWindow.hide()
   windowDisplayHandler('COMMAND', false)
+})
+
+// Update our "state" to indicate the command line is currently in the sentinelWindow
+ipcMain.on('command-showing', () => {
+  currentWindow = "COMMAND"
+})
+
+// Update our "state" to indicate the settings view is currently in the sentinelWindow
+ipcMain.on('settings-showing', () => {
+  currentWindow = "SETTINGS"
 })
 
 /// ----------------------------- OTHER METHODS ------------------- ///
 
 // Handles global key shortcuts (incomplete, will add parametrized behavior)
 function keyboardShortcutHandler() {
-  openCommandLine()
+  if (currentWindow == "SETTINGS") {
+    sentinelWindow.hide()
+    windowDisplayHandler("COMMAND", false)
+  } else {
+    if (sentinelWindow.isVisible()) {
+      sentinelWindow.hide()
+    } else {
+      sentinelWindow.show()
+    }
+  }
 }
 
-// Open Command Line
+// Open Command Line (wrapper for future implementation needs)
 function openCommandLine() {
-  windowDisplayHandler("COMMAND", false).then(() => {
-    sentinelWindow.show()
-  })
+  windowDisplayHandler("COMMAND", true)
 }
 
-// Open Settings View 
+// Open Settings View (wrapper for future implementation needs)
 function openSettingsView() {
-  windowDisplayHandler("SETTINGS", false).then(() => {
-    sentinelWindow.show()
-  })
+  windowDisplayHandler("SETTINGS", true)
 }
 
 // Handles hiding and showing
-async function windowDisplayHandler(toShow: string, showAfterChanges) {
+function windowDisplayHandler(toShow: string, showAfterChanges) {
   const display = screen.getPrimaryDisplay();
   const maxiSize = display.workAreaSize;
 
-  sentinelWindow.hide()
-
+  // Show Command Line and update window settings
   if (toShow === "COMMAND") {
     sentinelWindow.webContents.send('show-command', 'display command line')
-    
     sentinelWindow.setSize(maxiSize.width, maxiSize.height)
     sentinelWindow.setBounds({x: 0, y: 0})
     sentinelWindow.setResizable(false)
     sentinelWindow.setMovable(false)
     sentinelWindow.setHasShadow(false)
 
+    // Show Settings and update window settings
   } else if (toShow === "SETTINGS") {
     sentinelWindow.webContents.send('show-settings', 'display settings')
     sentinelWindow.setSize(maxiSize.width/2, maxiSize.height)
@@ -184,13 +199,13 @@ async function windowDisplayHandler(toShow: string, showAfterChanges) {
     sentinelWindow.setResizable(true)
     sentinelWindow.setMovable(true)
     sentinelWindow.setHasShadow(true)
+    sentinelWindow.center()
     
   }
 
+  // Show the window after changes (only relevant if window hidden before change)
   if (showAfterChanges) {
     sentinelWindow.show()
   }
-  
 
-  
 }

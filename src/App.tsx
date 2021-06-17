@@ -5,6 +5,8 @@ import SettingsView from './components/settings-window/SettingsView';
 const { ipcRenderer } = require('electron');
 const css = require('./index.css');
 
+ipcRenderer.setMaxListeners(Infinity)
+
 // Hack to Add CSS to the DOM. TODO: Fix this if we really need to 
 const addStylesString = `<html><head><style>${parseCSS(css)}</style></head></html>`;
 document.write(addStylesString)
@@ -40,20 +42,19 @@ function App() {
 
   // Handle toggling between windows
   const toggleBetweenWindows = (toDisable: string, toEnable: string) => {
-    ipcRenderer.send('toggle-event', [toDisable, toEnable]);
-    setTimeout(() => {
-      ipcRenderer.send('resolve-toggle-event', []);
-    }, 400);
+    
   };
 
   // Force Command Line to be Shown
   ipcRenderer.on('show-command', (event, message) => {
     setShowCommand(true)
+    ipcRenderer.send('command-showing', [])
   })
 
-  // Force Command Line to be Shown
+  // Force Settings to be Shown
   ipcRenderer.on('show-settings', (event, message) => {
     setShowCommand(false)
+    ipcRenderer.send('settings-showing')
   })
 
   return (
