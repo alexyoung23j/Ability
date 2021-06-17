@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
 import CommandView from './components/command-window/CommandView';
 import SettingsView from './components/settings-window/SettingsView';
 const { ipcRenderer } = require('electron');
 const css = require('./index.css');
 
-ipcRenderer.setMaxListeners(Infinity)
+ipcRenderer.setMaxListeners(Infinity);
 
-// Hack to Add CSS to the DOM. TODO: Fix this if we really need to 
-const addStylesString = `<html><head><style>${parseCSS(css)}</style></head></html>`;
-document.write(addStylesString)
+// Hack to Add CSS to the DOM. TODO: Fix this if we really need to
+const addStylesString = `<html><head><style>${parseCSS(
+  css
+)}</style></head></html>`;
+document.write(addStylesString);
 
 // Access to terminal console log
 var nodeConsole = require('console');
@@ -33,33 +34,32 @@ function parseCSS(css: any): String {
   return cssString;
 }
 
-
 function App() {
   // State
-  const [showCommand, setShowCommand] = useState(true)
+  const [showCommand, setShowCommand] = useState(true);
 
   /// ---------------- IPC HANDLERS -------------- ///
 
   // Handle toggling between windows
-  const toggleBetweenWindows = (toDisable: string, toEnable: string) => {
-    
-  };
+  const toggleBetweenWindows = (toDisable: string, toEnable: string) => {};
 
   // Force Command Line to be Shown
   ipcRenderer.on('show-command', (event, message) => {
-    setShowCommand(true)
-    ipcRenderer.send('command-showing', [])
-  })
+    setShowCommand(true);
+    ipcRenderer.send('command-showing', []);
+  });
 
   // Force Settings to be Shown
   ipcRenderer.on('show-settings', (event, message) => {
-    setShowCommand(false)
-    ipcRenderer.send('settings-showing')
-  })
+    setShowCommand(false);
+    ipcRenderer.send('settings-showing');
+  });
 
   return (
     <div>
-      {(showCommand && <CommandView/>) || (<SettingsView toggleWindowHandler={toggleBetweenWindows} />)}
+      {(showCommand && <CommandView />) || (
+        <SettingsView toggleWindowHandler={toggleBetweenWindows} />
+      )}
     </div>
   );
 }
