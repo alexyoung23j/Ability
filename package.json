@@ -113,6 +113,7 @@
     "react-dom": "^17.0.2",
     "react-google-login": "^5.2.2",
     "react-indiana-drag-scroll": "^2.0.1",
+    "react-tooltip": "^4.2.21",
     "ts-node": "^10.0.0",
     "use-drag-scroll": "^1.0.1"
   }
