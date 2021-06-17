@@ -5,16 +5,17 @@ import SettingsView from './components/settings-window/SettingsView';
 const { ipcRenderer } = require('electron');
 const css = require('./index.css');
 
+ipcRenderer.setMaxListeners(Infinity)
+
+// Hack to Add CSS to the DOM. TODO: Fix this if we really need to 
+const addStylesString = `<html><head><style>${parseCSS(css)}</style></head></html>`;
+document.write(addStylesString)
+
 // Access to terminal console log
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
-const enum WindowType {
-  SETTINGS = 'SETTINGS',
-  COMMAND = 'COMMAND',
-}
-
-// Converts our CSS import into a string to be injected into the new windows
+// Converts our CSS import into a string to be injected into the window
 function parseCSS(css: any): String {
   let cssString = '';
   const stringyCSS = JSON.stringify(css);
@@ -32,59 +33,33 @@ function parseCSS(css: any): String {
   return cssString;
 }
 
-// Creates new windows
-function createNewWindow(
-  currentWindowType: WindowType,
-  containerEl: HTMLDivElement
-) {
-  const externalWindow = window.open('', currentWindowType);
-
-  // Inject css into new window
-  const addStylesString = `<html><head><style>${parseCSS(
-    css
-  )}</style></head></html>`;
-  externalWindow.document.write(addStylesString);
-
-  // Append the container div
-  if (externalWindow?.document != null) {
-    externalWindow.document.body.appendChild(containerEl);
-  }
-
-  return externalWindow;
-}
 
 function App() {
-  // Spin up new browserwindows (children of sentinel)
-  const settingsContainer = document.createElement('div');
-  createNewWindow(WindowType.SETTINGS, settingsContainer);
-
-  const commandContainer = document.createElement('div');
-  createNewWindow(WindowType.COMMAND, commandContainer);
+  // State
+  const [showCommand, setShowCommand] = useState(true)
 
   /// ---------------- IPC HANDLERS -------------- ///
 
-  ipcRenderer.on('clear-command-line', () => {
-    console.log('cleared');
-  });
-
   // Handle toggling between windows
   const toggleBetweenWindows = (toDisable: string, toEnable: string) => {
-    ipcRenderer.send('toggle-event', [toDisable, toEnable]);
-    setTimeout(() => {
-      ipcRenderer.send('resolve-toggle-event', []);
-    }, 400);
+    
   };
 
-  let SettingsViewComponent = (
-    <SettingsView toggleWindowHandler={toggleBetweenWindows} />
-  );
+  // Force Command Line to be Shown
+  ipcRenderer.on('show-command', (event, message) => {
+    setShowCommand(true)
+    ipcRenderer.send('command-showing', [])
+  })
 
-  let CommandViewComponent = <CommandView />;
+  // Force Settings to be Shown
+  ipcRenderer.on('show-settings', (event, message) => {
+    setShowCommand(false)
+    ipcRenderer.send('settings-showing')
+  })
 
   return (
     <div>
-      {ReactDOM.createPortal(SettingsViewComponent, settingsContainer)}
-      {ReactDOM.createPortal(CommandViewComponent, commandContainer)}
+      {(showCommand && <CommandView/>) || (<SettingsView toggleWindowHandler={toggleBetweenWindows} />)}
     </div>
   );
 }
