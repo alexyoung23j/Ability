@@ -107,14 +107,18 @@
     "framer-motion": "^4.1.17",
     "googleapis": "^76.0.0",
     "luxon": "^1.27.0",
+    "immer": "^9.0.3",
     "prettier": "^2.3.0",
     "react": "^17.0.2",
     "react-copy-to-clipboard": "^5.0.3",
     "react-dom": "^17.0.2",
     "react-google-login": "^5.2.2",
+    "reactjs-popup": "^2.0.4",
     "react-indiana-drag-scroll": "^2.0.1",
+    "react-modal": "^3.14.3",
     "react-tooltip": "^4.2.21",
     "ts-node": "^10.0.0",
-    "use-drag-scroll": "^1.0.1"
+    "use-drag-scroll": "^1.0.1",
+    "use-immer": "^0.5.2"
   }
 }

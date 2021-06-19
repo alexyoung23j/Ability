@@ -29,6 +29,12 @@ export default function CommandView() {
     useState('default');
   const [currentlyClearing, setCurrentClearing] = useState(false);
 
+  ipcRenderer.on('clear-command-line', () => {
+    clearCommandLine().then(() => {
+      setCurrentClearing(true);
+    });
+  })
+
   // // Performs the work of fetching text snippets (replace with real logic)
   // async function fetchSnippets() {
   //   var myContentState1 = ContentState.createFromText(
@@ -285,7 +291,7 @@ const commandStyle: CSS.Properties = {
   borderRadius: '12px',
   flexDirection: 'column',
   outline: 'none',
-  marginTop: "10%",
+  marginTop: "5%",
   boxShadow: '0 0 100px rgba(0,0,0, 0.4)',
 };
 

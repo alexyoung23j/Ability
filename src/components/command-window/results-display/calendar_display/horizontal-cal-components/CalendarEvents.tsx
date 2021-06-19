@@ -9,8 +9,8 @@ import { datetimeToOffset } from '../../../../util/CalendarUtil';
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
-export default function CalendarEvents(props: { events }) {
-    const { events } = props;
+export default function CalendarEvents(props: { events, setFocusIdx }) {
+    const { events, setFocusIdx } = props;
 
     useEffect(() => {
         ReactTooltip.rebuild()
@@ -28,7 +28,7 @@ export default function CalendarEvents(props: { events }) {
       >
         {events.map((event, idx) => (
           <div key={idx} style={{ display: 'flex', justifyContent: "center", alignItems: "center" }}>
-            <CalendarEvent event={event} event_idx={idx}/>
+            <CalendarEvent event={event} event_idx={idx} setFocusIdx={setFocusIdx}/>
           </div>
         ))}
          
@@ -36,8 +36,8 @@ export default function CalendarEvents(props: { events }) {
     );
   }
   
-  function CalendarEvent(props: {event, event_idx}) {
-    const {event_idx, event} = props
+  function CalendarEvent(props: {event, event_idx, setFocusIdx}) {
+    const {event_idx, event, setFocusIdx} = props
 
     const [dummyState, setDummyState] = useState(1)
  
@@ -56,17 +56,17 @@ export default function CalendarEvents(props: { events }) {
           cursor: 'pointer',
           zIndex: dummyState
         }}
-        onMouseEnter={() => {setDummyState(10)}}
-        onMouseLeave={() => {setDummyState(1)}}
+        onMouseEnter={() => {setDummyState(10); setFocusIdx(event_idx)}}
+        onMouseLeave={() => {setDummyState(1);setFocusIdx(event_idx)}}
         onClick={() => myConsole.log(event_idx)}
         data-tip
         data-for={"etip"}
       >
-        <ReactTooltip id="etip" place='bottom'>
+      {/*   <ReactTooltip id="etip" place='bottom'>
             <div>
-                {event.start_time}
+                {event_idx}
             </div>
-        </ReactTooltip>
+        </ReactTooltip> */}
       </div>
             
     )

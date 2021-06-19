@@ -69,6 +69,7 @@ const SnippetDisplayStyles: CSS.Properties = {
   alignItems: 'center',
   marginBottom: '25px',
   flexDirection: 'column',
+  marginTop: "25px"
 };
 
 const bottomBarStyle: CSS.Properties = {

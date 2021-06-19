@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
 import CSS from 'csstype';
-import ScrollContainer from 'react-indiana-drag-scroll';
 import useDragScroll from 'use-drag-scroll';
 import ReactDOM from 'react-dom';
 import { datetimeToOffset } from '../../../util/CalendarUtil';
@@ -22,6 +21,7 @@ interface HorizontalCalendar {
   ignoreHandler: any;
   events: any;
   index: number;
+  textSnippetOpen: boolean
 }
 
 export default function HorizontalCalendar(props: HorizontalCalendar) {
@@ -33,6 +33,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     ignoreHandler,
     events,
     index,
+    textSnippetOpen
   } = props;
 
   // -------------------------- HORIZONTAL SCROLL STUFF -------------------------- //
@@ -61,25 +62,33 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     }
   }
 
-  const arr = [1, 2,3, 4]
+
+  const [inFocusEventIdx, setInFocusEventIdx] = useState(0)
 
 
   return (
     <div ref={scrollRef} style={horizontalCalendarStyle}>
       <HorizontalBars />
       <LimitBars hard_start={hard_start} hard_end={hard_end} />
-      <CalendarEvents events={events}/>
+      <CalendarEvents events={events} setFocusIdx={setInFocusEventIdx}/>
       <FreeSlots
         free_blocks={free_blocks}
         day_idx={index}
         ignoreHandler={ignoreHandler}
+        textSnippetOpen={textSnippetOpen}
       />
       <FreeBlocks
         free_blocks={free_blocks}
         ignoreHandler={ignoreHandler}
         day_idx={index}
+        textSnippetOpen={textSnippetOpen}
       />
       <GradientEdges />
+     {/*  <ReactTooltip id="etip" place='bottom'>
+            <div>
+                {inFocusEventIdx}
+            </div>
+        </ReactTooltip> */}
     </div>
   );
 }
@@ -198,9 +207,10 @@ function LimitBars(props: { hard_start: string; hard_end: string }) {
   // Create offset and width for the start hard limit
   const [endOffset, endWidth] = datetimeToOffset(
     hard_end,
-    '2021-06-09T24:00:00Z',
+    '2021-06-09T23:55:00Z',
     0
   );
+
 
   return (
     <div

@@ -5,14 +5,16 @@ import useDragScroll from 'use-drag-scroll';
 import ReactDOM from 'react-dom';
 import ReactTooltip from 'react-tooltip'
 import { datetimeToOffset } from '../../../../util/CalendarUtil';
+import Popup from 'reactjs-popup';
+
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 
 
-export default function FreeSlots(props: { free_blocks; day_idx; ignoreHandler }) {
-    const { free_blocks, day_idx, ignoreHandler } = props;
+export default function FreeSlots(props: { free_blocks; day_idx; ignoreHandler; textSnippetOpen }) {
+    const { free_blocks, day_idx, ignoreHandler, textSnippetOpen } = props;
   
     useEffect(() => {
       ReactTooltip.rebuild()
@@ -38,6 +40,7 @@ export default function FreeSlots(props: { free_blocks; day_idx; ignoreHandler }
                 block_idx={block_idx}
                 day_idx={day_idx}
                 ignoreHandler={ignoreHandler}
+                textSnippetOpen={textSnippetOpen}
               />
               
             </div>
@@ -48,13 +51,60 @@ export default function FreeSlots(props: { free_blocks; day_idx; ignoreHandler }
     );
 }
   
-function Slot(props: { event; slot_idx; block_idx; day_idx; ignoreHandler }) {
-  const { event, slot_idx, block_idx, day_idx, ignoreHandler } = props;
+function Slot(props: { event; slot_idx; block_idx; day_idx; ignoreHandler; textSnippetOpen }) {
+  const { event, slot_idx, block_idx, day_idx, ignoreHandler, textSnippetOpen } = props;
+
+  const initialColor = (textSnippetOpen === false ) ? 'rgba(135, 220, 215, 0)' : 'rgba(135, 220, 215, 1)'
 
   const [isActive, setIsActive] = useState(true);
-  const [color, setColor] = useState('#C1ECEA');
+  const [color, setColor] = useState(initialColor);
   const [zIndex, setZIndex] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
+
+  function handleClick() {
+    if (textSnippetOpen) {
+      if (isActive) {
+        setColor('rgba(135, 220, 215, 0)');
+        setIsActive(false);
+        ignoreHandler([day_idx, block_idx, slot_idx], 'remove');
+      } else {
+        setColor('rgba(135, 220, 215, 1)');
+        setIsActive(true);
+        ignoreHandler([day_idx, block_idx, slot_idx], 'add-back');
+      }
+      
+    } else {
+      // launch create event modal
+    }
+  }
+
+  function handleMouseEnter() {
+    if (textSnippetOpen) {
+      if (isActive) {
+        setColor('rgba(135, 220, 215, .8)');
+      } else {
+        setColor('rgba(125, 125, 125, .3)');
+      }
+      setShowPopup(true);
+      setZIndex(10);
+    } else {
+      setColor('rgba(125, 125, 125, .3)');
+    }
+  }
+
+  function handleMouseLeave() {
+    if(textSnippetOpen) {
+      if (isActive) {
+        setColor('rgba(135, 220, 215, 1)');
+      } else {
+        setColor('rgba(135, 220, 215, 0)');
+      }
+        setZIndex(0);
+        setShowPopup(false);
+    } else {
+      setColor('rgba(135, 220, 215, 0)');
+    }
+  }
 
 return (
     <div
@@ -63,49 +113,23 @@ return (
         right: datetimeToOffset(event.start_time, event.end_time, 0)[0],
         width: datetimeToOffset(event.start_time, event.end_time, 1)[1],
         minHeight: '20px',
-        borderRadius: 5,
+        borderRadius: 3,
         borderColor: 'black',
         backgroundColor: color,
         cursor: 'pointer',
         zIndex: zIndex,
     }}
-    onClick={() => {
-        if (isActive) {
-        setColor('rgba(135, 220, 215, 0)');
-        setIsActive(false);
-        ignoreHandler([day_idx, block_idx, slot_idx], 'remove');
-        } else {
-        setColor('rgba(135, 220, 215, 1)');
-        setIsActive(true);
-        ignoreHandler([day_idx, block_idx, slot_idx], 'add-back');
-        }
-    }}
-    onMouseEnter={() => {
-        if (isActive) {
-        setColor('rgba(135, 220, 215, 1)');
-        } else {
-        setColor('rgba(125, 125, 125, .3)');
-        }
-        setShowPopup(true);
-        setZIndex(10);
-    }}
-    onMouseLeave={() => {
-        if (isActive) {
-        setColor('#C1ECEA');
-        } else {
-        setColor('rgba(135, 220, 215, 0)');
-        }
-        setZIndex(0);
-        setShowPopup(false);
-    }}
+    onClick={() => {handleClick()}}
+    onMouseEnter={() => {handleMouseEnter()}}
+    onMouseLeave={() => {handleMouseLeave()}}
     data-tip
     data-for={"slot-tip"}
     >
-    <ReactTooltip id="slot-tip">
+   {/*  <ReactTooltip id="slot-tip">
         <div>
         {slot_idx}
         </div>
-    </ReactTooltip>
+    </ReactTooltip> */}
     </div>
 );
 }

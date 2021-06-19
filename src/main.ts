@@ -180,6 +180,10 @@ function keyboardShortcutHandler() {
     windowDisplayHandler('COMMAND', false);
   } else {
     if (sentinelWindow.isVisible()) {
+      sentinelWindow.webContents.send(
+        'clear-command-line',
+        'keyboard shortcut triggered'
+      );
       sentinelWindow.hide();
     } else {
       sentinelWindow.show();

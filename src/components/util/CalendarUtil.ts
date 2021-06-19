@@ -1,8 +1,11 @@
 
 // -------------------------- Calculating Positioning -------------------------- //
+var nodeConsole = require('console');
+var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
+export const BAR_WIDTH = 40;
 
-export const BAR_WIDTH = 48;
 
+// TODO: Make this more fine grained to handle times not on the 15 30 45 marks
 function calculateMinutes(minutes: number) {
     var minOffset;
   
@@ -32,7 +35,7 @@ function calculateMinutes(minutes: number) {
     var minOffset = calculateMinutes(startMin);
     var minDifferenceOffset = calculateMinutes(endMin - startMin);
   
-    // Formula for finding the offset from right needed (assumes the size of each bar is 40px, as defined in index.css)
+    // Formula for finding the offset from right needed (assumes the size of each bar is BAR_WIDTH)
   
     const offset =
       BAR_WIDTH / 2 +
@@ -51,7 +54,8 @@ function calculateMinutes(minutes: number) {
         minDifferenceOffset * (BAR_WIDTH / 4) -
         borderAdjust;
   
-      return [String(offset - newWidth + 'px'), String(newWidth + 'px')];
-    }
+      return [String(offset + newWidth + 'px'), String(Math.abs(newWidth) + 'px')];
+    } 
+
     return [String(offset - width + 'px'), String(width + 'px')];
   }

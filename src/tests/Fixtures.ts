@@ -186,7 +186,7 @@ export const PREPOSITION_FIXTURES: Array<PrepositionPiece> = [
   {
     value: 'next',
     type: QueryPieceType.PREPOSITION,
-    allowedModifierCategories: [ModifierCategory.TIME, ModifierCategory.RANGE],
+    allowedModifierCategories: [ModifierCategory.RANGE, ModifierCategory.DATE],
   },
   {
     value: 'in',

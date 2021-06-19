@@ -26,6 +26,7 @@ export default function CalendarBody(props: CalendarBody) {
                         ignoreHandler={ignoreHandler}
                         events={data.events}
                         index={idx}
+                        textSnippetOpen={false}
                     />
                 </div>
             ))}
