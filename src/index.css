@@ -43,6 +43,14 @@
     display: flex;
 }
 
+.leftGradientBar {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0))
+}
+
+.rightGradientBar {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .95))
+}
+
 .timeBarText {
     font-family: 'Montserrat', sans-serif;
     font-weight: lighter;
@@ -55,5 +63,12 @@
     margin-left: 2px; 
     justify-content: center;
     align-items: center
-
 }
+
+.horizontalCalendarDateText {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: lighter;
+    color: #7D7D7D;
+    font-size: 13px;
+}
+

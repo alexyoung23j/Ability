@@ -9,14 +9,17 @@ var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 export default function ResultEngine() {
-  // dummy calendar index query response. This is the final time we query the calendar index.
+  // We recieve state from the calendar index query. This is the final time we query the calendar index.
   // Further changes to the data, and its relationship to the text snippet engine, all occur in ResultEngine state
   // effectively modifying our copy of the initial query. 
-
   // In general, we prefer to only REMOVE items from the result. 
-  const [calendarResultData, setCalendarResultData] = useState(calendarDummyResults)
-  const [ignoreSlots, setIgnoreSlots] = useState([])
 
+  // State
+  const [calendarResultData, setCalendarResultData] = useState(calendarDummyResults)
+  const [ignoreSlots, setIgnoreSlots] = useState([[0,0,0]])
+
+  // Handles the creation of our array that stores the free_slots that we plan to ignore when creating the text
+  // The text engine will set some initial slot state, then we can remove or add to it via the UI
   // Index of the form [x, y, z] where x = day_idx, y = free_block idx, z = free_slot idx
   const updateIgnoredSlots = (index: number[], action: string) => {
     if (action === "remove") {
@@ -27,9 +30,9 @@ export default function ResultEngine() {
     }
   }
 
-  useEffect(() => {
+/*   useEffect(() => {
     myConsole.log("ignored: ", ignoreSlots)
-  }, [ignoreSlots])
+  }, [ignoreSlots]) */
 
   // ---------------------------- DUMMY ------------------------- //
   // Filler for the text snippet (replace with the real values)
@@ -49,7 +52,7 @@ export default function ResultEngine() {
 
   return (
     <div style={{display: "flex", flexDirection: "column"}}>
-      <CalendarView calendar_data={calendarResultData} ignoreHandler={updateIgnoredSlots}/>
+      <CalendarView calendar_data={calendarResultData} ignoreHandler={updateIgnoredSlots} ignoredSlots={ignoreSlots}/>
       <TextSnippetDropdown snippetPayload={textSnippetArray} />
     </div>
   );

@@ -34,10 +34,10 @@ export default function FreeBlocks(props: { free_blocks; day_idx; ignoreHandler,
               right: datetimeToOffset(event.start_time, event.end_time, 0)[0],
               width: datetimeToOffset(event.start_time, event.end_time, 0)[1],
               minHeight: '20px',
-              borderTop: borderProps,
-              borderBottom: borderProps,
+              //borderLeft: borderProps,
+              //borderRight: borderProps,
               cursor: 'pointer',
-              backgroundColor: 'rgba(135, 220, 215, .1)'
+              backgroundColor: 'rgba(135, 220, 215, .3)'
             }}
             key={idx}
           ></div>

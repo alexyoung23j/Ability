@@ -12,9 +12,18 @@ var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 
+function checkIfIgnored(block_idx, slot_idx, ignoredSlots) {
+  for (const slot of ignoredSlots) {
+    if (slot[0] === block_idx && slot[1] === slot_idx) {
+      return true
+    }
+  }
 
-export default function FreeSlots(props: { free_blocks; day_idx; ignoreHandler; textSnippetOpen }) {
-    const { free_blocks, day_idx, ignoreHandler, textSnippetOpen } = props;
+  return false
+}
+
+export default function FreeSlots(props: { free_blocks; day_idx; ignoreHandler; textSnippetOpen; ignoredSlots }) {
+    const { free_blocks, day_idx, ignoreHandler, textSnippetOpen, ignoredSlots } = props;
   
     useEffect(() => {
       ReactTooltip.rebuild()
@@ -41,6 +50,7 @@ export default function FreeSlots(props: { free_blocks; day_idx; ignoreHandler; 
                 day_idx={day_idx}
                 ignoreHandler={ignoreHandler}
                 textSnippetOpen={textSnippetOpen}
+                slotIsIgnored={checkIfIgnored(block_idx, slot_idx, ignoredSlots)}
               />
               
             </div>
@@ -51,12 +61,18 @@ export default function FreeSlots(props: { free_blocks; day_idx; ignoreHandler; 
     );
 }
   
-function Slot(props: { event; slot_idx; block_idx; day_idx; ignoreHandler; textSnippetOpen }) {
-  const { event, slot_idx, block_idx, day_idx, ignoreHandler, textSnippetOpen } = props;
+function Slot(props: { event; slot_idx; block_idx; day_idx; ignoreHandler; textSnippetOpen; slotIsIgnored }) {
+  const { event, slot_idx, block_idx, day_idx, ignoreHandler, textSnippetOpen, slotIsIgnored} = props;
 
-  const initialColor = (textSnippetOpen === false ) ? 'rgba(135, 220, 215, 0)' : 'rgba(135, 220, 215, 1)'
+  let initialColor
 
-  const [isActive, setIsActive] = useState(true);
+  if (textSnippetOpen) {
+    initialColor = slotIsIgnored === false ? 'rgba(135, 220, 215, 1)' : 'rgba(135, 220, 215, 0)'
+  } else {
+    initialColor = 'rgba(135, 220, 215, 0)'
+  }
+
+  const [isActive, setIsActive] = useState(!slotIsIgnored);
   const [color, setColor] = useState(initialColor);
   const [zIndex, setZIndex] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
@@ -130,6 +146,7 @@ return (
         {slot_idx}
         </div>
     </ReactTooltip> */}
+    
     </div>
 );
 }

@@ -3,21 +3,38 @@ import CSS from 'csstype'
 import HorizontalCalendar from './HorizontalCalendar'
 
 
+var nodeConsole = require('console');
+var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
+
 interface CalendarBody {
     calendar_data: any
     ignoreHandler: any
+    ignoredSlots: Array<Array<number>>
 }
 
 export default function CalendarBody(props: CalendarBody) {
     
-    const {calendar_data, ignoreHandler} = props
+    const {calendar_data, ignoreHandler, ignoredSlots} = props
 
+    // Since each slot in our ignoredSlots array has a day index associated with it, we extract only the block and slot indices 
+    // for processing with the horizontal calendar itself
+    function reduceIgnoredSlotsArray(day_idx) {
+        let reducedArray = []
+
+        ignoredSlots.forEach((slot) => {
+            if (slot[0] === day_idx) {
+                reducedArray.push([slot[1], slot[2]])
+            }
+        })
+        
+        return reducedArray
+    }
     
     
     return (
         <div style={calendarBodyStyle}>
             {calendar_data.days.map((data, idx) => (
-                <div key={idx}>
+                <div key={idx} style={{display: "flex", minWidth: "430px", justifyContent: "center", alignItems: "center"}}>
                     <HorizontalCalendar 
                         date={data.calendar_date}
                         hard_start={data.hard_start}
@@ -27,10 +44,11 @@ export default function CalendarBody(props: CalendarBody) {
                         events={data.events}
                         index={idx}
                         textSnippetOpen={false}
+                        ignoredSlots={reduceIgnoredSlotsArray(idx)}
                     />
                 </div>
             ))}
-            <div style={{height: "15px"}}>
+            <div style={{height: "20px"}}>
 
             </div>
         </div>
@@ -41,9 +59,9 @@ const calendarBodyStyle: CSS.Properties = {
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-start",
-    width: "450px",
+    minWidth: "550px",
     borderRadius: "12px",
-    boxShadow: "inset 0 0 40px rgba(0, 0, 0, .05)",
+    boxShadow: "inset 0 0 20px rgba(0, 0, 0, .05)",
     flexDirection: "column",
     maxHeight: "600px",
     overflow: "auto"

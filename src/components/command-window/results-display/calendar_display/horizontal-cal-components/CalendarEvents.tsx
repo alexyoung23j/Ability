@@ -9,8 +9,8 @@ import { datetimeToOffset } from '../../../../util/CalendarUtil';
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
-export default function CalendarEvents(props: { events, setFocusIdx }) {
-    const { events, setFocusIdx } = props;
+export default function CalendarEvents(props: { events }) {
+    const { events } = props;
 
     useEffect(() => {
         ReactTooltip.rebuild()
@@ -28,7 +28,7 @@ export default function CalendarEvents(props: { events, setFocusIdx }) {
       >
         {events.map((event, idx) => (
           <div key={idx} style={{ display: 'flex', justifyContent: "center", alignItems: "center" }}>
-            <CalendarEvent event={event} event_idx={idx} setFocusIdx={setFocusIdx}/>
+            <CalendarEvent event={event} event_idx={idx} />
           </div>
         ))}
          
@@ -36,29 +36,21 @@ export default function CalendarEvents(props: { events, setFocusIdx }) {
     );
   }
   
-  function CalendarEvent(props: {event, event_idx, setFocusIdx}) {
-    const {event_idx, event, setFocusIdx} = props
-
-    const [dummyState, setDummyState] = useState(1)
- 
+  function CalendarEvent(props: {event, event_idx}) {
+    const {event_idx, event} = props
    
-  
     return (
       <div
         style={{
           position: 'absolute',
-          right: datetimeToOffset(event.start_time, event.end_time, 1)[0],
-          width: datetimeToOffset(event.start_time, event.end_time, 1)[1],
-          backgroundColor: 'gray',
+          right: datetimeToOffset(event.start_time, event.end_time, 0)[0],
+          width: datetimeToOffset(event.start_time, event.end_time, 0)[1],
+          backgroundColor: 'rgba(125,125,125.67)',
           opacity: '70%',
-          minHeight: '14px',
+          minHeight: '12px',
           borderRadius: 3,
           cursor: 'pointer',
-          zIndex: dummyState
         }}
-        onMouseEnter={() => {setDummyState(10); setFocusIdx(event_idx)}}
-        onMouseLeave={() => {setDummyState(1);setFocusIdx(event_idx)}}
-        onClick={() => myConsole.log(event_idx)}
         data-tip
         data-for={"etip"}
       >

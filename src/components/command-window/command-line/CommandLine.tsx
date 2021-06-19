@@ -485,7 +485,7 @@ export default function CommandLine(props: CommandLineProps) {
           style={{
             height: '12px',
             position: 'absolute',
-            marginLeft: '495px',
+            marginLeft: '545px',
             marginTop: '2px',
           }}
           src={enterIcon}
@@ -498,7 +498,7 @@ export default function CommandLine(props: CommandLineProps) {
           style={{
             height: '18px',
             position: 'absolute',
-            marginLeft: '495px',
+            marginLeft: '545px',
             marginTop: '2px',
           }}
           src={settingsIcon}

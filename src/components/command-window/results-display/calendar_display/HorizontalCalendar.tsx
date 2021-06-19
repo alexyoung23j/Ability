@@ -22,6 +22,7 @@ interface HorizontalCalendar {
   events: any;
   index: number;
   textSnippetOpen: boolean
+  ignoredSlots: Array<Array<number>>
 }
 
 export default function HorizontalCalendar(props: HorizontalCalendar) {
@@ -33,8 +34,10 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     ignoreHandler,
     events,
     index,
-    textSnippetOpen
+    textSnippetOpen,
+    ignoredSlots
   } = props;
+
 
   // -------------------------- HORIZONTAL SCROLL STUFF -------------------------- //
   const scrollRef = useRef(null);
@@ -51,51 +54,92 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     }
   }, []);
 
+  // Scrolls to the first occurence of a free slot
   function calculateScroll() {
     if (free_blocks.length > 0) {
       const earliestTime = new Date(free_blocks[0].start_time);
       const earliestHour = earliestTime.getUTCHours();
 
-      return earliestHour * BAR_WIDTH - BAR_WIDTH / 2;
+      return earliestHour * BAR_WIDTH - BAR_WIDTH*.25;
     } else {
       return 300; // TODO: Fix this
     }
   }
 
 
-  const [inFocusEventIdx, setInFocusEventIdx] = useState(0)
-
-
   return (
-    <div ref={scrollRef} style={horizontalCalendarStyle}>
-      <HorizontalBars />
-      <LimitBars hard_start={hard_start} hard_end={hard_end} />
-      <CalendarEvents events={events} setFocusIdx={setInFocusEventIdx}/>
-      <FreeSlots
-        free_blocks={free_blocks}
-        day_idx={index}
-        ignoreHandler={ignoreHandler}
-        textSnippetOpen={textSnippetOpen}
-      />
-      <FreeBlocks
-        free_blocks={free_blocks}
-        ignoreHandler={ignoreHandler}
-        day_idx={index}
-        textSnippetOpen={textSnippetOpen}
-      />
-      <GradientEdges />
-     {/*  <ReactTooltip id="etip" place='bottom'>
-            <div>
-                {inFocusEventIdx}
-            </div>
-        </ReactTooltip> */}
+    <div style={{display:"flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
+      <DateText dateText={date}/>
+      <div ref={scrollRef} style={horizontalCalendarStyle}>
+        <HorizontalBars />
+        <LimitBars hard_start={hard_start} hard_end={hard_end} />
+        <CalendarEvents events={events}/>
+        <FreeSlots
+          free_blocks={free_blocks}
+          day_idx={index}
+          ignoreHandler={ignoreHandler}
+          textSnippetOpen={textSnippetOpen}
+          ignoredSlots={ignoredSlots}
+        />
+        <FreeBlocks
+          free_blocks={free_blocks}
+          ignoreHandler={ignoreHandler}
+          day_idx={index}
+          textSnippetOpen={textSnippetOpen}
+        />
+        <GradientEdges /> 
+      {/*  <ReactTooltip id="etip" place='bottom'>
+              <div>
+                  {inFocusEventIdx}
+              </div>
+          </ReactTooltip> */}
+      </div>
     </div>
+    
   );
 }
 
 
 
 // -------------------------- IMMUTABLE COMPONENTS -------------------------- //
+
+function DateText(props: {dateText: string}) {
+  const {dateText} = props
+  const dateObj = new Date(dateText)
+
+  const weekdays = [
+    "SUN",
+    "MON",
+    "TUE", 
+    "WED",
+    "THU",
+    "FRI",
+    "SAT"
+  ]
+
+  const dayOfMonth = dateObj.getDate()
+  const monthOfYear = dateObj.getMonth()  
+  const dayOfWeek = dateObj.getDay()
+
+  const dayString = weekdays[dayOfWeek] + " " + (monthOfYear + 1).toString() + "/" + (dayOfMonth+1).toString() 
+
+  return (
+    <div 
+    className="horizontalCalendarDateText"
+    style={{display: "flex", 
+            justifyContent: "center", 
+            alignItems: "flex-start", 
+            flexDirection: "column",
+            marginTop: "26px",
+            marginRight: "5px",
+            minWidth: "70px",
+            maxWidth: "70px",
+            
+    }}>
+      {dayString}
+    </div>
+  )
+}
 
 // Creates the horizontal bars needed for
 function HorizontalBars() {
@@ -168,25 +212,23 @@ function HorizontalBars() {
 
 function GradientEdges() {
   return (
-    <div style={{ position: 'absolute', marginTop: '12px' }}>
+    <div style={{ position: 'absolute', }}>
       <div
+        className="leftGradientBar"
         style={{
           position: 'absolute',
-          minWidth: '10px',
-          minHeight: '30px',
-          backgroundColor: 'white',
-          opacity: '80%',
+          minWidth: '15px',
+          minHeight: '45px',
           zIndex: 11,
         }}
       ></div>
       <div
+        className="rightGradientBar"
         style={{
           position: 'absolute',
-          minWidth: '10px',
-          minHeight: '30px',
-          backgroundColor: 'white',
-          left: '360px',
-          opacity: '80%',
+          minWidth: '15px',
+          minHeight: '45px',
+          left: '415px',
           zIndex: 11,
         }}
       ></div>
@@ -254,7 +296,7 @@ const horizontalCalendarStyle: CSS.Properties = {
   overflowX: 'hidden',
   marginTop: '15px',
   flexFlow: 'nowrap',
-  width: '370px',
+  width: '430px',
   cursor: 'grab',
 };
 

@@ -285,8 +285,8 @@ export default function CommandView() {
 
 const commandStyle: CSS.Properties = {
   minHeight: '65px',
-  minWidth: '550px',
-  width: '550px',
+  minWidth: '600px',
+  width: '600px',
   backgroundColor: '#FFFFFF',
   borderRadius: '12px',
   flexDirection: 'column',
