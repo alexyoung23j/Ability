@@ -7,19 +7,10 @@ export const BAR_WIDTH = 40;
 
 // TODO: Make this more fine grained to handle times not on the 15 30 45 marks
 function calculateMinutes(minutes: number) {
-    var minOffset;
+    
+    const offset = (Math.abs(minutes)/60 * 4)
   
-    if (Math.abs(minutes) < 15) {
-      minOffset = 0;
-    } else if (Math.abs(minutes) < 30) {
-      minOffset = 1;
-    } else if (Math.abs(minutes) < 45) {
-      minOffset = 2;
-    } else {
-      minOffset = 3;
-    }
-  
-    return minutes >= 0 ? minOffset : -minOffset;
+    return minutes >= 0 ? offset : -offset;
   }
   
   export function datetimeToOffset(start: string, end: string, borderAdjust: number) {

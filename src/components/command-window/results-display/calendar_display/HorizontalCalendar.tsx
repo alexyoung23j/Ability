@@ -130,7 +130,7 @@ function DateText(props: {dateText: string}) {
             justifyContent: "center", 
             alignItems: "flex-start", 
             flexDirection: "column",
-            marginTop: "26px",
+            marginTop: "27px",
             marginRight: "5px",
             minWidth: "70px",
             maxWidth: "70px",
@@ -271,7 +271,7 @@ function LimitBars(props: { hard_start: string; hard_end: string }) {
           minWidth: startWidth,
           width: startWidth,
           backgroundColor: 'gray',
-          opacity: '15%',
+          opacity: '10%',
           minHeight: '20px',
         }}
       ></div>
@@ -283,7 +283,7 @@ function LimitBars(props: { hard_start: string; hard_end: string }) {
           minWidth: endWidth,
           width: endWidth,
           backgroundColor: 'gray',
-          opacity: '15%',
+          opacity: '10%',
           minHeight: '20px',
         }}
       ></div>

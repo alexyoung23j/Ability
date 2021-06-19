@@ -45,7 +45,7 @@ export default function CalendarEvents(props: { events }) {
           position: 'absolute',
           right: datetimeToOffset(event.start_time, event.end_time, 0)[0],
           width: datetimeToOffset(event.start_time, event.end_time, 0)[1],
-          backgroundColor: 'rgba(125,125,125.67)',
+          backgroundColor: 'rgba(125,125,125, .67)',
           opacity: '70%',
           minHeight: '12px',
           borderRadius: 3,

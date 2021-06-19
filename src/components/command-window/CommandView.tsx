@@ -292,7 +292,7 @@ const commandStyle: CSS.Properties = {
   flexDirection: 'column',
   outline: 'none',
   marginTop: "5%",
-  boxShadow: '0 0 100px rgba(0,0,0, 0.4)',
+  boxShadow: '0 0 100px rgba(0,0,0, 0.8)',
 };
 
 const commandAreaStyle: CSS.Properties = {

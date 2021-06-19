@@ -72,3 +72,7 @@
     font-size: 13px;
 }
 
+.freeBlock {
+    background: linear-gradient(90deg, rgba(135, 220, 215, .4), rgba(125, 189, 220, .4))
+}
+

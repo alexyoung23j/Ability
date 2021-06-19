@@ -15,6 +15,7 @@ export default function FreeBlocks(props: { free_blocks; day_idx; ignoreHandler,
     const { free_blocks, day_idx, ignoreHandler, textSnippetOpen } = props;
 
     const borderProps = (textSnippetOpen === false) ? '1px solid rgba(135, 220, 215, 1)': '0px'
+
   
     return (
       <div
@@ -29,15 +30,16 @@ export default function FreeBlocks(props: { free_blocks; day_idx; ignoreHandler,
       >
         {free_blocks.map((event, idx) => (
           <div
+            className="freeBlock"
             style={{
               position: 'absolute',
               right: datetimeToOffset(event.start_time, event.end_time, 0)[0],
               width: datetimeToOffset(event.start_time, event.end_time, 0)[1],
               minHeight: '20px',
-              //borderLeft: borderProps,
+              //border: borderProps,
               //borderRight: borderProps,
               cursor: 'pointer',
-              backgroundColor: 'rgba(135, 220, 215, .3)'
+              //backgroundColor: 'rgba(135, 220, 215, .3)'
             }}
             key={idx}
           ></div>

@@ -127,7 +127,7 @@ return (
     style={{
         position: 'absolute',
         right: datetimeToOffset(event.start_time, event.end_time, 0)[0],
-        width: datetimeToOffset(event.start_time, event.end_time, 1)[1],
+        width: datetimeToOffset(event.start_time, event.end_time, 0)[1],
         minHeight: '20px',
         borderRadius: 3,
         borderColor: 'black',
