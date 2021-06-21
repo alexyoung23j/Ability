@@ -4,6 +4,11 @@ import TextSnippetDropdown from './snippet_display/TextSnippetDropdown';
 import { textSnippet } from '../../../types';
 import { ContentState } from 'draft-js';
 import { calendarDummyResults } from '../constants';
+const dropdownArrowNormal = require('/src/content/svg/DropdownArrowNormal.svg');
+const dropdownArrowHighlight = require('/src/content/svg/DropdownArrowHighlight.svg');
+const redirect = require('/src/content/svg/Redirect.svg');
+
+
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -17,6 +22,7 @@ export default function ResultEngine() {
   // State
   const [calendarResultData, setCalendarResultData] = useState(calendarDummyResults)
   const [ignoreSlots, setIgnoreSlots] = useState([[0,0,0]])
+  const [textEngineLaunched, setTextEngineLaunched] = useState(false)
 
   // Handles the creation of our array that stores the free_slots that we plan to ignore when creating the text
   // The text engine will set some initial slot state, then we can remove or add to it via the UI
@@ -49,11 +55,50 @@ export default function ResultEngine() {
     { content: myContentState2, id: '2', title: 'slack' },
   ];
 
-
+  
   return (
     <div style={{display: "flex", flexDirection: "column"}}>
-      <CalendarView calendar_data={calendarResultData} ignoreHandler={updateIgnoredSlots} ignoredSlots={ignoreSlots}/>
-      <TextSnippetDropdown snippetPayload={textSnippetArray} />
+      <CalendarView 
+        calendar_data={calendarResultData} 
+        ignoreHandler={updateIgnoredSlots} 
+        ignoredSlots={ignoreSlots}
+        textEngineLaunched={textEngineLaunched}
+      />
+      <Scheduler textEngineLaunched={textEngineLaunched} setTextEngineLaunched={setTextEngineLaunched}/>
+      {textEngineLaunched && (<TextSnippetDropdown snippetPayload={textSnippetArray} />)}
     </div>
   );
 }
+
+// Button for opening up the text engine
+function Scheduler(props: {textEngineLaunched, setTextEngineLaunched}) {
+
+  const {textEngineLaunched, setTextEngineLaunched} = props;
+
+  const color = textEngineLaunched === true ? "#87DCD7" : "#7D7D7D"
+
+  const arrowToDisplay = textEngineLaunched === true ? dropdownArrowHighlight : dropdownArrowNormal
+
+
+  return (
+    <div
+      style={{display: "flex", alignItems: "center", marginTop: "15px", marginBottom: "20px"}}
+    >
+      <div
+        onClick={() => setTextEngineLaunched(!textEngineLaunched)}
+        style={{cursor: "pointer", display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}
+      >
+        <div 
+          style={{color: color, marginLeft: "35px", marginRight: "10px"}}
+          className="launchTextEngineText"
+        >
+          scheduler
+        </div>
+        <img src={arrowToDisplay} style={{height: "8px", width: "8px"}}/>
+      </div>
+      <img src={redirect} style={{height: "16px", marginLeft: "430px"}}/>
+      
+    </div>
+  )
+}
+

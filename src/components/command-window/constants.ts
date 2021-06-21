@@ -117,7 +117,7 @@ export const calendarDummyResults = {
           color: 'red',
         },
         {
-          start_time: '2021-06-09T05:30:00Z',
+          start_time: '2021-06-09T04:30:00Z',
           end_time: '2021-06-09T06:30:00Z',
           title: 'Event 1',
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',

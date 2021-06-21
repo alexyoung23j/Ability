@@ -6,6 +6,9 @@ import ReactDOM from 'react-dom';
 import ReactTooltip from 'react-tooltip'
 import { datetimeToOffset } from '../../../../util/CalendarUtil';
 import Popup from 'reactjs-popup';
+const plusIcon = require('/src/content/svg/Plus.svg');
+const minusIcon = require('/src/content/svg/Minus.svg');
+
 
 
 var nodeConsole = require('console');
@@ -76,6 +79,12 @@ function Slot(props: { event; slot_idx; block_idx; day_idx; ignoreHandler; textS
   const [color, setColor] = useState(initialColor);
   const [zIndex, setZIndex] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
+  const [showPlus, setShowPlus] = useState(false)
+  const [showMinus, setShowMinus] = useState(false)
+
+  useEffect(() => {
+    setColor(initialColor)
+  }, [textSnippetOpen])
 
   function handleClick() {
     if (textSnippetOpen) {
@@ -83,10 +92,12 @@ function Slot(props: { event; slot_idx; block_idx; day_idx; ignoreHandler; textS
         setColor('rgba(135, 220, 215, 0)');
         setIsActive(false);
         ignoreHandler([day_idx, block_idx, slot_idx], 'remove');
+        setShowMinus(false)
       } else {
         setColor('rgba(135, 220, 215, 1)');
         setIsActive(true);
         ignoreHandler([day_idx, block_idx, slot_idx], 'add-back');
+        setShowPlus(false)
       }
       
     } else {
@@ -98,13 +109,16 @@ function Slot(props: { event; slot_idx; block_idx; day_idx; ignoreHandler; textS
     if (textSnippetOpen) {
       if (isActive) {
         setColor('rgba(135, 220, 215, .8)');
+        setShowMinus(true)
       } else {
         setColor('rgba(125, 125, 125, .3)');
+        setShowPlus(true)
       }
       setShowPopup(true);
       setZIndex(10);
     } else {
       setColor('rgba(125, 125, 125, .3)');
+      setShowPlus(true)
     }
   }
 
@@ -112,13 +126,16 @@ function Slot(props: { event; slot_idx; block_idx; day_idx; ignoreHandler; textS
     if(textSnippetOpen) {
       if (isActive) {
         setColor('rgba(135, 220, 215, 1)');
+        setShowMinus(false)
       } else {
         setColor('rgba(135, 220, 215, 0)');
+        setShowPlus(false)
       }
         setZIndex(0);
         setShowPopup(false);
     } else {
       setColor('rgba(135, 220, 215, 0)');
+      setShowPlus(false)
     }
   }
 
@@ -134,6 +151,9 @@ return (
         backgroundColor: color,
         cursor: 'pointer',
         zIndex: zIndex,
+        display: "flex",
+        justifyContent: "center", 
+        alignItems: "center"
     }}
     onClick={() => {handleClick()}}
     onMouseEnter={() => {handleMouseEnter()}}
@@ -146,6 +166,8 @@ return (
         {slot_idx}
         </div>
     </ReactTooltip> */}
+    {showPlus && (<img src={plusIcon} style={{height: '8px'}}/>)}
+    {showMinus && (<img src={minusIcon} style={{height: '1px'}}/>)}
     
     </div>
 );

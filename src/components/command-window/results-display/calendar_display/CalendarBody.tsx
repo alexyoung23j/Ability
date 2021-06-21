@@ -10,11 +10,12 @@ interface CalendarBody {
     calendar_data: any
     ignoreHandler: any
     ignoredSlots: Array<Array<number>>
+    textEngineLaunched: boolean
 }
 
 export default function CalendarBody(props: CalendarBody) {
     
-    const {calendar_data, ignoreHandler, ignoredSlots} = props
+    const {calendar_data, ignoreHandler, ignoredSlots, textEngineLaunched} = props
 
     // Since each slot in our ignoredSlots array has a day index associated with it, we extract only the block and slot indices 
     // for processing with the horizontal calendar itself
@@ -30,7 +31,6 @@ export default function CalendarBody(props: CalendarBody) {
         return reducedArray
     }
     
-    
     return (
         <div style={calendarBodyStyle}>
             {calendar_data.days.map((data, idx) => (
@@ -43,7 +43,7 @@ export default function CalendarBody(props: CalendarBody) {
                         ignoreHandler={ignoreHandler}
                         events={data.events}
                         index={idx}
-                        textSnippetOpen={false}
+                        textSnippetOpen={textEngineLaunched}
                         ignoredSlots={reduceIgnoredSlotsArray(idx)}
                     />
                 </div>

@@ -9,16 +9,22 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 interface CalendarView {
   calendar_data: any;
   ignoreHandler: any;
-  ignoredSlots: Array<Array<number>>
+  ignoredSlots: Array<Array<number>>;
+  textEngineLaunched: boolean
 }
 
 export default function CalendarView(props: CalendarView) {
-  const { calendar_data, ignoreHandler, ignoredSlots } = props;
+  const { calendar_data, ignoreHandler, ignoredSlots, textEngineLaunched } = props;
 
   return (
     <div style={calendarViewStyle}>
       <CalendarHeader />
-      <CalendarBody calendar_data={calendar_data} ignoreHandler={ignoreHandler} ignoredSlots={ignoredSlots}/>
+      <CalendarBody 
+        calendar_data={calendar_data} 
+        ignoreHandler={ignoreHandler} 
+        ignoredSlots={ignoredSlots}
+        textEngineLaunched={textEngineLaunched}
+      />
     </div>
   );
 }

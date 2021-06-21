@@ -38,21 +38,41 @@ export default function CalendarEvents(props: { events }) {
   
   function CalendarEvent(props: {event, event_idx}) {
     const {event_idx, event} = props
+
+    const [depth, setDepth] = useState(1)
+    const [color, setColor] = useState('#A7A7A7')
+
+    function HandleMouseClick() {
+
+    }
+
+    function HandleMouseEnter() {
+      setColor('#8E8E8E')
+      setDepth(10)
+    }
+
+    function HandleMouseLeave() {
+      setColor('#A7A7A7')
+      setDepth(1)
+    }
    
     return (
       <div
         style={{
           position: 'absolute',
-          right: datetimeToOffset(event.start_time, event.end_time, 0)[0],
-          width: datetimeToOffset(event.start_time, event.end_time, 0)[1],
-          backgroundColor: 'rgba(125,125,125, .67)',
-          opacity: '70%',
+          right: datetimeToOffset(event.start_time, event.end_time, 1)[0],
+          width: datetimeToOffset(event.start_time, event.end_time, 1)[1],
+          backgroundColor: color,
           minHeight: '12px',
           borderRadius: 3,
           cursor: 'pointer',
+          zIndex: depth
         }}
         data-tip
         data-for={"etip"}
+        onClick={HandleMouseClick}
+        onMouseEnter={HandleMouseEnter}
+        onMouseLeave={HandleMouseLeave}
       >
       {/*   <ReactTooltip id="etip" place='bottom'>
             <div>

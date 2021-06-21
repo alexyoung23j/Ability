@@ -31,8 +31,7 @@ function calculateMinutes(minutes: number) {
     const offset =
       BAR_WIDTH / 2 +
       (24 - startHour) * BAR_WIDTH -
-      minOffset * (BAR_WIDTH / 4) -
-      borderAdjust;
+      minOffset * (BAR_WIDTH / 4) 
   
     const width =
       (endHour - startHour) * BAR_WIDTH +

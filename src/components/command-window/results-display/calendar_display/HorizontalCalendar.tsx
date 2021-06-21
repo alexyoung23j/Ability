@@ -39,6 +39,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
   } = props;
 
 
+
   // -------------------------- HORIZONTAL SCROLL STUFF -------------------------- //
   const scrollRef = useRef(null);
 

@@ -76,3 +76,10 @@
     background: linear-gradient(90deg, rgba(135, 220, 215, .4), rgba(125, 189, 220, .4))
 }
 
+.launchTextEngineText {
+    font-family: 'Montserrat';
+    font-weight: medium;
+    color: #7D7D7D;
+    font-size: 15px;
+}
+
