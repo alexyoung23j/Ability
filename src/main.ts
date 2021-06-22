@@ -63,6 +63,8 @@ const createSentinelWindow = (): void => {
   // Open the DevTools.
   sentinelWindow.webContents.openDevTools();
 
+  sentinelWindow.webContents.session.clearCache(() => {});
+
   // Make Transition a bit smoother between window views
   sentinelWindow.on('show', () => {
     setTimeout(() => {
@@ -109,6 +111,14 @@ const reactDevToolsPath = path.join(
 );
 app
   .whenReady()
+  .then(() => {
+    session.defaultSession.webRequest.onBeforeSendHeaders(
+      (details, callback) => {
+        details.requestHeaders['User-Agent'] = 'Chrome';
+        callback({ cancel: false, requestHeaders: details.requestHeaders });
+      }
+    );
+  })
   .then(() => {
     globalShortcut.register('CommandOrControl+E', () => {
       keyboardShortcutHandler();

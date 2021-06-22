@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Auth } from './auth';
 import CommandView from './components/command-window/CommandView';
 import SettingsView from './components/settings-window/SettingsView';
 const { ipcRenderer } = require('electron');
@@ -57,9 +58,10 @@ function App() {
 
   return (
     <div>
-      {(showCommand && <CommandView />) || (
+      {/* {(showCommand && <CommandView />) || (
         <SettingsView toggleWindowHandler={toggleBetweenWindows} />
-      )}
+      )} */}
+      <Auth />
     </div>
   );
 }
