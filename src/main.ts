@@ -5,13 +5,16 @@ import {
   screen,
   Tray,
   Menu,
+  session,
 } from 'electron';
 import {
   BrowserWindowConstructorOptions,
   HandlerDetails,
 } from 'electron/renderer';
 const { ipcMain } = require('electron');
-const path = require('path');
+import path from 'path';
+import os from 'os';
+
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
  
 // TODO: This isnt fixing anyting
@@ -100,12 +103,19 @@ const createTray = () => {
 /// -------------------------- APP EVENT HANDLERS -------------------- ///
 
 // Setup when app launches
+const reactDevToolsPath = path.join(
+  os.homedir(),
+  '/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.13.5_0'
+);
 app
   .whenReady()
   .then(() => {
     globalShortcut.register('CommandOrControl+E', () => {
       keyboardShortcutHandler();
     });
+  })
+  .then(async () => {
+    await session.defaultSession.loadExtension(reactDevToolsPath);
   })
   .then(createSentinelWindow);
 
