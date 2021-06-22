@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import CSS from 'csstype';
 import useDragScroll from 'use-drag-scroll';
 import ReactDOM from 'react-dom';
-import { datetimeToOffset } from '../../../util/CalendarUtil';
+import { datetimeToOffset, datetimeToRangeString } from '../../../util/CalendarUtil';
 import { BAR_WIDTH } from '../../../util/CalendarUtil';
 import FreeSlots from './horizontal-cal-components/FreeSlots';
 import FreeBlocks from './horizontal-cal-components/FreeBlocks';
@@ -23,6 +23,7 @@ interface HorizontalCalendar {
   index: number;
   textSnippetOpen: boolean
   ignoredSlots: Array<Array<number>>
+  eventTooltipId: string
 }
 
 export default function HorizontalCalendar(props: HorizontalCalendar) {
@@ -35,8 +36,12 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     events,
     index,
     textSnippetOpen,
-    ignoredSlots
+    ignoredSlots,
+    eventTooltipId
   } = props;
+
+  // State
+  const [currentlyHoveredEventIdx, setCurrentlyHoveredEventIdx] = useState(0) // refers to the index in "events" being hovered
 
 
 
@@ -67,14 +72,22 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     }
   }
 
+  // -------------------------- CALLBACKS -------------------------- //
 
+
+  
+ 
   return (
     <div style={{display:"flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
       <DateText dateText={date}/>
       <div ref={scrollRef} style={horizontalCalendarStyle}>
         <HorizontalBars />
         <LimitBars hard_start={hard_start} hard_end={hard_end} />
-        <CalendarEvents events={events}/>
+        <CalendarEvents 
+          events={events}
+          setCurrentlyHoveredEventIdx={setCurrentlyHoveredEventIdx}
+          eventTooltipId={eventTooltipId}
+        />
         <FreeSlots
           free_blocks={free_blocks}
           day_idx={index}
@@ -89,20 +102,65 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
           textSnippetOpen={textSnippetOpen}
         />
         <GradientEdges /> 
-      {/*  <ReactTooltip id="etip" place='bottom'>
-              <div>
-                  {inFocusEventIdx}
-              </div>
-          </ReactTooltip> */}
+        <EventTooltip 
+          events={events}
+          currentlyHoveredEventIdx={currentlyHoveredEventIdx}
+          eventTooltipId={eventTooltipId}
+        />
       </div>
     </div>
-    
   );
 }
 
 
 
 // -------------------------- IMMUTABLE COMPONENTS -------------------------- //
+
+function EventTooltip(props: {events; currentlyHoveredEventIdx, eventTooltipId}) {
+  const {events, currentlyHoveredEventIdx, eventTooltipId} = props
+
+  useEffect(() => {
+    ReactTooltip.rebuild()
+  })
+
+  const currentEvent = events[currentlyHoveredEventIdx]
+
+
+  return (
+      <ReactTooltip 
+          id={eventTooltipId}
+          place='bottom'
+          effect="solid"
+          backgroundColor="#FFFFFF"
+          className="event-tooltip"
+          offset={{'left': 30}}
+          arrowColor="rgba(0,0,0,0)"
+        > 
+        <div
+          style={{backgroundColor: "#FFFFFF", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}
+        >
+          <div style={{display: "flex", justifyContent: "center", alignItems: "flex-start"}}>
+            <div style={{borderRadius: 100, width: "6px", height: "6px", marginTop: "4px", backgroundColor: currentEvent.color, marginRight: "5px"}}>
+            </div>
+            <div
+              className="eventTooltipText"
+            >
+              {currentEvent.title}
+            </div>
+          </div>
+
+          <div
+            className="eventTooltipDateText"
+          >
+            {datetimeToRangeString(currentEvent.start_time, currentEvent.end_time, false)}
+          </div>
+        
+        </div>
+          
+   
+        </ReactTooltip>
+  )
+}
 
 function DateText(props: {dateText: string}) {
   const {dateText} = props

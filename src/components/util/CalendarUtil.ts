@@ -49,3 +49,73 @@ function calculateMinutes(minutes: number) {
 
     return [String(offset - width + 'px'), String(width + 'px')];
   }
+
+
+  export function datetimeToRangeString(start: string, end: string, militaryTime: boolean) {
+    const startTime = new Date(start)
+    const endTime = new Date(end)
+
+    const startHour = startTime.getUTCHours()
+    const endHour = endTime.getUTCHours()
+
+    let startHourString
+    let endHourString
+
+    let startStandardMofidier = ''
+    let endStandardMofidier = ''
+
+    if(!militaryTime) {
+      if (startHour > 12) {
+        startHourString = (startHour % 12).toString() 
+      } else {
+        startHourString = startHour.toString() 
+      }
+
+      if (endHour > 12) {
+        endHourString = (endHour % 12).toString() 
+      } else {
+        endHourString = startHour.toString() 
+      }
+
+      if (startHour > 11) {
+        startStandardMofidier = " PM"
+      } else {
+        startStandardMofidier = " AM"
+      }
+
+      if (endHour > 11) {
+        endStandardMofidier = " PM"
+      } else {
+        endStandardMofidier = " AM"
+      }
+
+
+    } else {
+      startHourString = startHour.toString()
+      endHourString = startHour.toString()
+
+    }
+
+    const startMin = startTime.getUTCMinutes()
+    let startMinString;
+
+    if (startMin < 10) {
+       startMinString = "0" + startMin.toString()
+    } else {
+       startMinString = startMin.toString()
+    }
+
+    
+    const endMin = endTime.getUTCMinutes()
+    let endMinString
+
+    if (endMin < 10) {
+       endMinString = "0" + endMin.toString()
+    } else {
+       endMinString = endMin.toString()
+    }
+
+    const dateString = startHourString + ":" + startMinString + startStandardMofidier + "  -  " + endHourString + ":" + endMinString + endStandardMofidier
+
+    return dateString
+  }

@@ -45,6 +45,7 @@ export default function CalendarBody(props: CalendarBody) {
                         index={idx}
                         textSnippetOpen={textEngineLaunched}
                         ignoredSlots={reduceIgnoredSlotsArray(idx)}
+                        eventTooltipId={idx.toString() + data.hard_start}
                     />
                 </div>
             ))}

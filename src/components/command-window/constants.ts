@@ -67,13 +67,10 @@ export const calendarDummyResults = {
       hard_end: '2021-06-09T21:00:00Z',
       free_blocks: [
         {
-          start_time: '2021-06-09T12:00:00Z',
+          start_time: '2021-06-09T13:00:00Z',
           end_time: '2021-06-09T16:00:00Z',
           free_slots: [
-            {
-              start_time: '2021-06-09T12:00:00Z',
-              end_time: '2021-06-09T13:00:00Z',
-            },
+          
             {
               start_time: '2021-06-09T13:00:00Z',
               end_time: '2021-06-09T14:00:00Z',
@@ -119,21 +116,28 @@ export const calendarDummyResults = {
         {
           start_time: '2021-06-09T04:30:00Z',
           end_time: '2021-06-09T06:30:00Z',
-          title: 'Event 1',
+          title: 'Event 2',
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: 'red',
         },
         {
           start_time: '2021-06-09T10:00:00Z',
           end_time: '2021-06-09T11:45:00Z',
-          title: 'Event 1',
+          title: 'Event 3',
+          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
+          color: 'red',
+        },
+        {
+          start_time: '2021-06-09T11:50:00Z',
+          end_time: '2021-06-09T12:45:00Z',
+          title: 'Event 3',
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: 'red',
         },
         {
           start_time: '2021-06-09T16:00:00Z',
           end_time: '2021-06-09T18:00:00Z',
-          title: 'Event 2',
+          title: 'Event 4 with my good',
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: 'blue',
         },
@@ -197,14 +201,14 @@ export const calendarDummyResults = {
         {
           start_time: '2021-06-09T10:00:00Z',
           end_time: '2021-06-09T11:45:00Z',
-          title: 'Event 1',
+          title: 'Event 2',
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: 'red',
         },
         {
           start_time: '2021-06-09T16:00:00Z',
           end_time: '2021-06-09T18:00:00Z',
-          title: 'Event 2',
+          title: 'Event 3',
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: 'blue',
         },

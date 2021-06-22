@@ -9,12 +9,10 @@ import { datetimeToOffset } from '../../../../util/CalendarUtil';
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
-export default function CalendarEvents(props: { events }) {
-    const { events } = props;
+export default function CalendarEvents(props: { events; setCurrentlyHoveredEventIdx; eventTooltipId }) {
+    const { events, setCurrentlyHoveredEventIdx, eventTooltipId } = props;
 
-    useEffect(() => {
-        ReactTooltip.rebuild()
-      }, [])
+    
 
     return (
       <div
@@ -28,7 +26,11 @@ export default function CalendarEvents(props: { events }) {
       >
         {events.map((event, idx) => (
           <div key={idx} style={{ display: 'flex', justifyContent: "center", alignItems: "center" }}>
-            <CalendarEvent event={event} event_idx={idx} />
+            <CalendarEvent 
+              event={event} 
+              event_idx={idx} 
+              setCurrentlyHoveredEventIdx={setCurrentlyHoveredEventIdx}
+              eventTooltipId={eventTooltipId}/>
           </div>
         ))}
          
@@ -36,19 +38,21 @@ export default function CalendarEvents(props: { events }) {
     );
   }
   
-  function CalendarEvent(props: {event, event_idx}) {
-    const {event_idx, event} = props
+  function CalendarEvent(props: {event; event_idx; setCurrentlyHoveredEventIdx; eventTooltipId}) {
+    const {event_idx, event, setCurrentlyHoveredEventIdx, eventTooltipId} = props
 
     const [depth, setDepth] = useState(1)
     const [color, setColor] = useState('#A7A7A7')
 
     function HandleMouseClick() {
-
+      // Open up the event url 
     }
 
     function HandleMouseEnter() {
       setColor('#8E8E8E')
       setDepth(10)
+      setCurrentlyHoveredEventIdx(event_idx)
+      ReactTooltip.rebuild()
     }
 
     function HandleMouseLeave() {
@@ -69,16 +73,12 @@ export default function CalendarEvents(props: { events }) {
           zIndex: depth
         }}
         data-tip
-        data-for={"etip"}
+        data-for={eventTooltipId}
         onClick={HandleMouseClick}
         onMouseEnter={HandleMouseEnter}
         onMouseLeave={HandleMouseLeave}
       >
-      {/*   <ReactTooltip id="etip" place='bottom'>
-            <div>
-                {event_idx}
-            </div>
-        </ReactTooltip> */}
+    
       </div>
             
     )

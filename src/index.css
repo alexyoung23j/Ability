@@ -83,3 +83,24 @@
     font-size: 15px;
 }
 
+.event-tooltip {
+    filter: drop-shadow(2px 2px 2px rgba(172, 170, 170, 0.5));
+    border-radius: 10px;
+    opacity: 1 !important
+}
+
+.eventTooltipText {
+    font-family: 'Montserrat';
+    font-weight: bolder;
+    color: #7D7D7D;
+    font-size: 12px;
+    max-width: 150px
+}
+
+.eventTooltipDateText {
+    font-family: 'Montserrat';
+    font-weight: bolder;
+    color: #7D7D7D;
+    font-size: 10px;
+    max-width: 150px
+}
