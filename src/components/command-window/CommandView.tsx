@@ -276,6 +276,11 @@ export default function CommandView() {
               value: currentQueryFragment,
               type: QueryPieceType.MODIFIER,
             }}
+            dirtyQueryFragment={{
+              value: currentQueryFragment,
+              type: QueryPieceType.MODIFIER,
+            }}
+            
           />
         )}
       </div>

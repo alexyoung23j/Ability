@@ -74,7 +74,7 @@ function calculateMinutes(minutes: number) {
       if (endHour > 12) {
         endHourString = (endHour % 12).toString() 
       } else {
-        endHourString = startHour.toString() 
+        endHourString = endHour.toString() 
       }
 
       if (startHour > 11) {
@@ -92,7 +92,7 @@ function calculateMinutes(minutes: number) {
 
     } else {
       startHourString = startHour.toString()
-      endHourString = startHour.toString()
+      endHourString = endHour.toString()
 
     }
 

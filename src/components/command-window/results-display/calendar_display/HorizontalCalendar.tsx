@@ -78,8 +78,9 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
   
  
   return (
-    <div style={{display:"flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
+    <div style={{display:"flex", flexDirection: "row", justifyContent: "center", alignItems: "center",}}>
       <DateText dateText={date}/>
+      <GradientEdges /> 
       <div ref={scrollRef} style={horizontalCalendarStyle}>
         <HorizontalBars />
         <LimitBars hard_start={hard_start} hard_end={hard_end} />
@@ -101,13 +102,14 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
           day_idx={index}
           textSnippetOpen={textSnippetOpen}
         />
-        <GradientEdges /> 
+        
         <EventTooltip 
           events={events}
           currentlyHoveredEventIdx={currentlyHoveredEventIdx}
           eventTooltipId={eventTooltipId}
         />
       </div>
+      
     </div>
   );
 }
@@ -137,10 +139,10 @@ function EventTooltip(props: {events; currentlyHoveredEventIdx, eventTooltipId})
           arrowColor="rgba(0,0,0,0)"
         > 
         <div
-          style={{backgroundColor: "#FFFFFF", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}
+          style={{backgroundColor: "#FFFFFF", display: "flex", justifyContent: "center", alignItems: "flex-start", flexDirection: "column"}}
         >
           <div style={{display: "flex", justifyContent: "center", alignItems: "flex-start"}}>
-            <div style={{borderRadius: 100, width: "6px", height: "6px", marginTop: "4px", backgroundColor: currentEvent.color, marginRight: "5px"}}>
+            <div style={{borderRadius: 100, width: "6px", height: "6px", marginTop: "6px", backgroundColor: currentEvent.color, marginRight: "5px"}}>
             </div>
             <div
               className="eventTooltipText"
@@ -271,7 +273,7 @@ function HorizontalBars() {
 
 function GradientEdges() {
   return (
-    <div style={{ position: 'absolute', }}>
+    <div style={{ position: 'relative', }}>
       <div
         className="leftGradientBar"
         style={{

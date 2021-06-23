@@ -64,7 +64,8 @@ const calendarBodyStyle: CSS.Properties = {
     borderRadius: "12px",
     boxShadow: "inset 0 0 20px rgba(0, 0, 0, .05)",
     flexDirection: "column",
-    maxHeight: "600px",
-    overflow: "auto"
+    maxHeight: "305px",
+    overflow: "overlay",
+    scrollMarginTop: "5px"
 
 }

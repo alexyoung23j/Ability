@@ -21,7 +21,7 @@ export default function ResultEngine() {
 
   // State
   const [calendarResultData, setCalendarResultData] = useState(calendarDummyResults)
-  const [ignoreSlots, setIgnoreSlots] = useState([[0,0,0]])
+  const [ignoreSlots, setIgnoreSlots] = useState([])
   const [textEngineLaunched, setTextEngineLaunched] = useState(false)
 
   // Handles the creation of our array that stores the free_slots that we plan to ignore when creating the text
@@ -75,7 +75,7 @@ function Scheduler(props: {textEngineLaunched, setTextEngineLaunched}) {
 
   const {textEngineLaunched, setTextEngineLaunched} = props;
 
-  const color = textEngineLaunched === true ? "#87DCD7" : "#7D7D7D"
+  const color = textEngineLaunched === true ? "rgb(125, 189, 220)" : "#7D7D7D"
 
   const arrowToDisplay = textEngineLaunched === true ? dropdownArrowHighlight : dropdownArrowNormal
 

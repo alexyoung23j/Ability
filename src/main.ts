@@ -171,6 +171,10 @@ ipcMain.on('settings-showing', () => {
   currentWindow = 'SETTINGS';
 });
 
+ipcMain.on('open-settings', () => {
+  openSettingsView()
+})
+
 /// ----------------------------- OTHER METHODS ------------------- ///
 
 // Handles global key shortcuts (incomplete, will add parametrized behavior)
