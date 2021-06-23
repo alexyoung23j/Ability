@@ -10,11 +10,12 @@ interface CalendarView {
   calendar_data: any;
   ignoreHandler: any;
   ignoredSlots: Array<Array<number>>;
-  textEngineLaunched: boolean
+  textEngineLaunched: boolean;
+  scheduleNewEvent: any
 }
 
 export default function CalendarView(props: CalendarView) {
-  const { calendar_data, ignoreHandler, ignoredSlots, textEngineLaunched } = props;
+  const { calendar_data, ignoreHandler, ignoredSlots, textEngineLaunched, scheduleNewEvent } = props;
 
   return (
     <div style={calendarViewStyle}>
@@ -24,6 +25,7 @@ export default function CalendarView(props: CalendarView) {
         ignoreHandler={ignoreHandler} 
         ignoredSlots={ignoredSlots}
         textEngineLaunched={textEngineLaunched}
+        scheduleNewEvent={scheduleNewEvent}
       />
     </div>
   );

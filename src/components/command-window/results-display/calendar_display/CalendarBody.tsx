@@ -10,12 +10,14 @@ interface CalendarBody {
     calendar_data: any
     ignoreHandler: any
     ignoredSlots: Array<Array<number>>
-    textEngineLaunched: boolean
+    textEngineLaunched: boolean;
+    scheduleNewEvent: any
+
 }
 
 export default function CalendarBody(props: CalendarBody) {
     
-    const {calendar_data, ignoreHandler, ignoredSlots, textEngineLaunched} = props
+    const {calendar_data, ignoreHandler, ignoredSlots, textEngineLaunched, scheduleNewEvent} = props
 
     // Since each slot in our ignoredSlots array has a day index associated with it, we extract only the block and slot indices 
     // for processing with the horizontal calendar itself
@@ -46,6 +48,7 @@ export default function CalendarBody(props: CalendarBody) {
                         textSnippetOpen={textEngineLaunched}
                         ignoredSlots={reduceIgnoredSlotsArray(idx)}
                         eventTooltipId={idx.toString() + data.hard_start}
+                        scheduleNewEvent={scheduleNewEvent}
                     />
                 </div>
             ))}

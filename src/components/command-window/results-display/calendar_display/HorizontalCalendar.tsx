@@ -23,7 +23,8 @@ interface HorizontalCalendar {
   index: number;
   textSnippetOpen: boolean
   ignoredSlots: Array<Array<number>>
-  eventTooltipId: string
+  eventTooltipId: string;
+  scheduleNewEvent: any
 }
 
 export default function HorizontalCalendar(props: HorizontalCalendar) {
@@ -37,7 +38,8 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     index,
     textSnippetOpen,
     ignoredSlots,
-    eventTooltipId
+    eventTooltipId,
+    scheduleNewEvent
   } = props;
 
   // State
@@ -109,6 +111,20 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
           eventTooltipId={eventTooltipId}
         />
       </div>
+
+      <button 
+        onClick={() => scheduleNewEvent(
+          '2021-06-09T13:30:00Z',
+          '2021-06-09T14:30:00Z',
+          'new event',
+          'hpttsss...//',
+          'green',
+          index
+        )}
+      
+      >
+        Hi
+      </button>
       
     </div>
   );
@@ -142,7 +158,7 @@ function EventTooltip(props: {events; currentlyHoveredEventIdx, eventTooltipId})
           style={{backgroundColor: "#FFFFFF", display: "flex", justifyContent: "center", alignItems: "flex-start", flexDirection: "column"}}
         >
           <div style={{display: "flex", justifyContent: "center", alignItems: "flex-start"}}>
-            <div style={{borderRadius: 100, width: "6px", height: "6px", marginTop: "6px", backgroundColor: currentEvent.color, marginRight: "5px"}}>
+            <div style={{borderRadius: 100, width: "6px", height: "6px", marginTop: "5px", backgroundColor: currentEvent.color, marginRight: "5px"}}>
             </div>
             <div
               className="eventTooltipText"

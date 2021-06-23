@@ -102,7 +102,7 @@
 }
 
 .eventTooltipText {
-    font-family: 'Montserrat';
+    font-family: 'Montserrat', sans-serif;
     font-weight: bolder;
     color: #7D7D7D;
     font-size: 13px;

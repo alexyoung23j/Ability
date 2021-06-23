@@ -119,3 +119,25 @@ function calculateMinutes(minutes: number) {
 
     return dateString
   }
+
+  // currently in use to generate free slots from free blocks
+  export function generateIntervals(start_time, end_time, interval_size) {
+    let intervals = []
+
+    let curTime = new Date(start_time)
+    const endTime = new Date(end_time)
+
+    while (curTime.getTime() <= endTime.getTime()) {
+      let newInterval = [curTime.toString()]
+
+      const newEnd = new Date(curTime.getTime() + 60000*interval_size).toString()
+      newInterval.push(newEnd)
+
+      intervals.push(newInterval)
+
+      curTime = new Date(curTime.getTime() + 60000*interval_size)
+
+    }
+
+    return intervals
+  } 

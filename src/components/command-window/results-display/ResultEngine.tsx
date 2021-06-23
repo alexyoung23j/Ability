@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useImmer } from "use-immer";
 import CalendarView from './calendar_display/CalendarView';
 import TextSnippetDropdown from './snippet_display/TextSnippetDropdown';
 import { textSnippet } from '../../../types';
 import { ContentState } from 'draft-js';
 import { calendarDummyResults } from '../constants';
+import { generateIntervals } from '../../util/CalendarUtil';
 const dropdownArrowNormal = require('/src/content/svg/DropdownArrowNormal.svg');
 const dropdownArrowHighlight = require('/src/content/svg/DropdownArrowHighlight.svg');
 const redirect = require('/src/content/svg/Redirect.svg');
@@ -20,9 +22,11 @@ export default function ResultEngine() {
   // In general, we prefer to only REMOVE items from the result. 
 
   // State
-  const [calendarResultData, setCalendarResultData] = useState(calendarDummyResults)
+  const [calendarResultData, setCalendarResultData] = useImmer(calendarDummyResults)
   const [ignoreSlots, setIgnoreSlots] = useState([])
   const [textEngineLaunched, setTextEngineLaunched] = useState(false)
+
+  // ----------------------------------- CALLBACKS ----------------------------------- //
 
   // Handles the creation of our array that stores the free_slots that we plan to ignore when creating the text
   // The text engine will set some initial slot state, then we can remove or add to it via the UI
@@ -36,9 +40,76 @@ export default function ResultEngine() {
     }
   }
 
-/*   useEffect(() => {
-    myConsole.log("ignored: ", ignoreSlots)
-  }, [ignoreSlots]) */
+
+  const scheduleNewEvent = (start_time: string, end_time: string, title: string, url: string, color: string, day_idx: number) => {
+    // TODO: Need to actually do the scheduling here
+
+    // We need to update the events, the free blocks, and the free slots
+    // For events, we just need to add the new event 
+    // For free blocks, we need to recalculate the edges, and then change the free slots to reflect that.
+
+    // Find position to insert into events
+    const newEventStartTime = new Date(end_time).getTime()
+    const newEventEndTime = new Date(end_time).getTime()
+    const events = calendarResultData.days[day_idx].events 
+
+    let insertIdx = 0
+    
+    while (insertIdx < events.length) {
+      const eventEndTime = new Date(events[insertIdx].end_time).getTime()
+
+      if (newEventEndTime < eventEndTime) {
+        break
+      }
+      insertIdx += 1
+    }
+
+    // Update the events array
+    setCalendarResultData(draft => {
+      draft.days[day_idx].events.splice(insertIdx, 0, {
+        start_time: start_time,
+        end_time: end_time,
+        title: title,
+        url: url,
+        color: color,
+      })
+    })
+
+    const freeBlocks = calendarResultData.days[day_idx].free_blocks 
+    
+    for (let i = 0; i < freeBlocks.length; i++) {
+      const block = freeBlocks[i]
+      const blockStartTime = new Date(block.start_time).getTime()
+      const blockEndTime = new Date(block.end_time).getTime()
+
+      myConsole.log(blockStartTime)
+      myConsole.log(generateIntervals(start_time, end_time, 30))
+
+      if (blockStartTime <= newEventStartTime && blockEndTime >= newEventEndTime) {
+
+      } else if (blockStartTime <= newEventStartTime) {
+        // Block starts before; update block to start at end time (as long as block still is long enough). Then update the slots
+
+        // ensure we start on the 30 min mark or the hour 
+        
+
+      } else if (blockEndTime >= newEventEndTime) {
+
+      }
+      
+
+
+    }
+
+
+
+
+
+
+
+  }
+
+
 
   // ---------------------------- DUMMY ------------------------- //
   // Filler for the text snippet (replace with the real values)
@@ -63,6 +134,7 @@ export default function ResultEngine() {
         ignoreHandler={updateIgnoredSlots} 
         ignoredSlots={ignoreSlots}
         textEngineLaunched={textEngineLaunched}
+        scheduleNewEvent={scheduleNewEvent}
       />
       <Scheduler textEngineLaunched={textEngineLaunched} setTextEngineLaunched={setTextEngineLaunched}/>
       {textEngineLaunched && (<TextSnippetDropdown snippetPayload={textSnippetArray} />)}

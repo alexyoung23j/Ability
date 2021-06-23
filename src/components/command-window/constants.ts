@@ -70,7 +70,6 @@ export const calendarDummyResults = {
           start_time: '2021-06-09T13:00:00Z',
           end_time: '2021-06-09T16:00:00Z',
           free_slots: [
-          
             {
               start_time: '2021-06-09T13:00:00Z',
               end_time: '2021-06-09T14:00:00Z',
@@ -106,20 +105,6 @@ export const calendarDummyResults = {
         },
       ],
       events: [
-        {
-          start_time: '2021-06-09T03:30:00Z',
-          end_time: '2021-06-09T05:30:00Z',
-          title: 'Morning Yoga',
-          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: 'red',
-        },
-        {
-          start_time: '2021-06-09T04:30:00Z',
-          end_time: '2021-06-09T06:30:00Z',
-          title: 'Team Meeting',
-          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: 'red',
-        },
         {
           start_time: '2021-06-09T10:00:00Z',
           end_time: '2021-06-09T11:45:00Z',
@@ -143,148 +128,7 @@ export const calendarDummyResults = {
         },
       ],
     },
-    {
-      calendar_date: '2021-12-31',
-      hard_start: '2021-06-09T08:00:00Z',
-      hard_end: '2021-06-09T21:00:00Z',
-      free_blocks: [
-        {
-          start_time: '2021-06-09T12:00:00Z',
-          end_time: '2021-06-09T16:00:00Z',
-          free_slots: [
-            {
-              start_time: '2021-06-09T12:00:00Z',
-              end_time: '2021-06-09T13:00:00Z',
-            },
-            {
-              start_time: '2021-06-09T13:00:00Z',
-              end_time: '2021-06-09T14:00:00Z',
-            },
-            {
-              start_time: '2021-06-09T14:00:00Z',
-              end_time: '2021-06-09T15:00:00Z',
-            },
-            {
-              start_time: '2021-06-09T15:00:00Z',
-              end_time: '2021-06-09T16:00:00Z',
-            },
-           
-          ]
-        },
-        {
-          start_time: '2021-06-09T18:00:00Z',
-          end_time: '2021-06-09T21:00:00Z',
-          free_slots: [
-            {
-              start_time: '2021-06-09T18:00:00Z',
-              end_time: '2021-06-09T19:00:00Z',
-            },
-            {
-              start_time: '2021-06-09T19:00:00Z',
-              end_time: '2021-06-09T20:00:00Z',
-            },
-            {
-              start_time: '2021-06-09T20:00:00Z',
-              end_time: '2021-06-09T21:00:00Z',
-            },
-          ]
-        },
-      ],
-      events: [
-        {
-          start_time: '2021-06-09T03:00:00Z',
-          end_time: '2021-06-09T05:30:00Z',
-          title: 'Event 1',
-          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: 'red',
-        },
-        {
-          start_time: '2021-06-09T10:00:00Z',
-          end_time: '2021-06-09T11:45:00Z',
-          title: 'Event 2',
-          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: 'red',
-        },
-        {
-          start_time: '2021-06-09T16:00:00Z',
-          end_time: '2021-06-09T18:00:00Z',
-          title: 'Event 3',
-          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: 'blue',
-        },
-      ],
-    },
-    {
-      calendar_date: '2021-12-31',
-      hard_start: '2021-06-09T08:00:00Z',
-      hard_end: '2021-06-09T21:00:00Z',
-      free_blocks: [
-        {
-          start_time: '2021-06-09T12:00:00Z',
-          end_time: '2021-06-09T16:00:00Z',
-          free_slots: [
-            {
-              start_time: '2021-06-09T12:00:00Z',
-              end_time: '2021-06-09T13:00:00Z',
-            },
-            {
-              start_time: '2021-06-09T13:00:00Z',
-              end_time: '2021-06-09T14:00:00Z',
-            },
-            {
-              start_time: '2021-06-09T14:00:00Z',
-              end_time: '2021-06-09T15:00:00Z',
-            },
-            {
-              start_time: '2021-06-09T15:00:00Z',
-              end_time: '2021-06-09T16:00:00Z',
-            },
-           
-          ]
-        },
-        {
-          start_time: '2021-06-09T18:00:00Z',
-          end_time: '2021-06-09T21:00:00Z',
-          free_slots: [
-            {
-              start_time: '2021-06-09T18:00:00Z',
-              end_time: '2021-06-09T19:00:00Z',
-            },
-            {
-              start_time: '2021-06-09T19:00:00Z',
-              end_time: '2021-06-09T20:00:00Z',
-            },
-            {
-              start_time: '2021-06-09T20:00:00Z',
-              end_time: '2021-06-09T21:00:00Z',
-            },
-          ]
-        },
-      ],
-      events: [
-        {
-          start_time: '2021-06-09T03:00:00Z',
-          end_time: '2021-06-09T05:30:00Z',
-          title: 'Event 1',
-          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: 'red',
-        },
-        {
-          start_time: '2021-06-09T10:00:00Z',
-          end_time: '2021-06-09T11:45:00Z',
-          title: 'Event 2',
-          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: 'red',
-        },
-        {
-          start_time: '2021-06-09T16:00:00Z',
-          end_time: '2021-06-09T18:00:00Z',
-          title: 'Event 3',
-          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: 'blue',
-        },
-      ],
-    },
+   
     
     
     
