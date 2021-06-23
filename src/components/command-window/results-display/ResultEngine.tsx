@@ -5,7 +5,7 @@ import TextSnippetDropdown from './snippet_display/TextSnippetDropdown';
 import { textSnippet } from '../../../types';
 import { ContentState } from 'draft-js';
 import { calendarDummyResults } from '../constants';
-import { generateIntervals } from '../../util/CalendarUtil';
+import { generateIntervals, roundToNearestInterval } from '../../util/CalendarUtil';
 const dropdownArrowNormal = require('/src/content/svg/DropdownArrowNormal.svg');
 const dropdownArrowHighlight = require('/src/content/svg/DropdownArrowHighlight.svg');
 const redirect = require('/src/content/svg/Redirect.svg');
@@ -49,7 +49,7 @@ export default function ResultEngine() {
     // For free blocks, we need to recalculate the edges, and then change the free slots to reflect that.
 
     // Find position to insert into events
-    const newEventStartTime = new Date(end_time).getTime()
+    const newEventStartTime = new Date(start_time).getTime()
     const newEventEndTime = new Date(end_time).getTime()
     const events = calendarResultData.days[day_idx].events 
 
@@ -82,22 +82,41 @@ export default function ResultEngine() {
       const blockStartTime = new Date(block.start_time).getTime()
       const blockEndTime = new Date(block.end_time).getTime()
 
-      myConsole.log(blockStartTime)
-      myConsole.log(generateIntervals(start_time, end_time, 30))
 
       if (blockStartTime <= newEventStartTime && blockEndTime >= newEventEndTime) {
-
-      } else if (blockStartTime <= newEventStartTime) {
-        // Block starts before; update block to start at end time (as long as block still is long enough). Then update the slots
-
-        // ensure we start on the 30 min mark or the hour 
         
 
-      } else if (blockEndTime >= newEventEndTime) {
+      } else if (blockStartTime < newEventEndTime && newEventEndTime < blockEndTime) {
 
+        // TODO: change to to allow for prop to dictate the minimum size of a free block; here defualting to 60 minutes
+        const newFreeSlots = generateIntervals(end_time, block.end_time, 15, true)
+        myConsole.log(newFreeSlots)
+
+        
+
+        setCalendarResultData(draft => {
+          draft.days[day_idx].free_blocks[i] = {
+            start_time: roundToNearestInterval(new Date(end_time), 15, true).toISOString(),
+            end_time: block.end_time,
+            free_slots: newFreeSlots
+          }
+        })
+        
+      } else if (blockStartTime < newEventStartTime && newEventStartTime < blockEndTime) {
+        myConsole.log("3")
+
+
+      } else if (blockStartTime >= newEventStartTime && blockEndTime <= newEventEndTime) {
+        // Free block starts sometime during the new event; update block to start at event 
+        // end time (as long as block still is long enough). Then update the slots
+        // ensure we start on the 30 min mark or the hour 
+        myConsole.log("4")
+
+        
+        
       }
-      
-
+    
+    
 
     }
 

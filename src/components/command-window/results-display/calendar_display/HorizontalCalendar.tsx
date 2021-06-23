@@ -76,6 +76,9 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
 
   // -------------------------- CALLBACKS -------------------------- //
 
+  /* useEffect(() => {
+    myConsole.log(free_blocks)
+  }, [free_blocks]) */
 
   
  
@@ -114,8 +117,8 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
 
       <button 
         onClick={() => scheduleNewEvent(
-          '2021-06-09T13:30:00Z',
-          '2021-06-09T14:30:00Z',
+          '2021-06-09T12:50:00Z',
+          '2021-06-09T14:35:00Z',
           'new event',
           'hpttsss...//',
           'green',
