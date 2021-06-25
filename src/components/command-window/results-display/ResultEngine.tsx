@@ -5,7 +5,7 @@ import TextSnippetDropdown from './snippet_display/TextSnippetDropdown';
 import { textSnippet } from '../../../types';
 import { ContentState } from 'draft-js';
 import { calendarDummyResults } from '../constants';
-import { generateIntervals, roundToNearestInterval } from '../../util/CalendarUtil';
+import { generateIntervals, roundToNearestInterval, CalculateFreeBlocks } from '../../util/CalendarUtil';
 const dropdownArrowNormal = require('/src/content/svg/DropdownArrowNormal.svg');
 const dropdownArrowHighlight = require('/src/content/svg/DropdownArrowHighlight.svg');
 const redirect = require('/src/content/svg/Redirect.svg');
@@ -40,7 +40,13 @@ export default function ResultEngine() {
     }
   }
 
+  useEffect(() => {
+    myConsole.log("here: ",CalculateFreeBlocks(calendarResultData.days[0].hard_start, calendarResultData.days[0].hard_end, 60, 60, 30, calendarResultData.days[0].events))
+  }, [calendarResultData])
 
+  
+
+  // Handles new events, makes API call to create them in the calendar, and updates local results to change ui
   const scheduleNewEvent = (start_time: string, end_time: string, title: string, url: string, color: string, day_idx: number) => {
     // TODO: Need to actually do the scheduling here
 
@@ -76,6 +82,7 @@ export default function ResultEngine() {
     })
 
     const freeBlocks = calendarResultData.days[day_idx].free_blocks 
+    let updates = []
     
     for (let i = 0; i < freeBlocks.length; i++) {
       const block = freeBlocks[i]
@@ -87,46 +94,58 @@ export default function ResultEngine() {
         
 
       } else if (blockStartTime < newEventEndTime && newEventEndTime < blockEndTime) {
+          // New event starts before a block and ends within it
 
-        // TODO: change to to allow for prop to dictate the minimum size of a free block; here defualting to 60 minutes
-        const newFreeSlots = generateIntervals(end_time, block.end_time, 15, true)
-        myConsole.log(newFreeSlots)
+          // TODO: change to to allow for prop to dictate the minimum size of a free block; here defualting to 60 minutes
+          const newFreeSlots = generateIntervals(end_time, block.end_time, 30, 60, true)        
 
-        
-
-        setCalendarResultData(draft => {
-          draft.days[day_idx].free_blocks[i] = {
-            start_time: roundToNearestInterval(new Date(end_time), 15, true).toISOString(),
-            end_time: block.end_time,
-            free_slots: newFreeSlots
-          }
-        })
-        
+          const update = {index: i, free_slots: newFreeSlots, start_time: roundToNearestInterval(new Date(end_time), 30, true).toISOString(), end_time: block.end_time, action: "MODIFY"}
+          updates.push(update)
+          
       } else if (blockStartTime < newEventStartTime && newEventStartTime < blockEndTime) {
-        myConsole.log("3")
+        // New Event starts in a block and ends after it
+        // TODO: change to to allow for prop to dictate the minimum size of a free block; here defualting to 60 minutes
+          const newFreeSlots = generateIntervals(block.start_time, start_time, 30, 60, true)        
 
+          const update = {index: i, free_slots: newFreeSlots, start_time: roundToNearestInterval(new Date(block.start_time), 30, true).toISOString(), end_time: start_time, action: "MODIFY"}
+          updates.push(update)
 
       } else if (blockStartTime >= newEventStartTime && blockEndTime <= newEventEndTime) {
-        // Free block starts sometime during the new event; update block to start at event 
-        // end time (as long as block still is long enough). Then update the slots
-        // ensure we start on the 30 min mark or the hour 
-        myConsole.log("4")
-
-        
-        
+        // New Event completely covers a free slot
+        const update = {index: i, free_slots: [], start_time: "", end_time: "", action: "REMOVE"}
+        updates.push(update)
       }
-    
-    
-
     }
 
-
-
-
-
-
+    performBatchBlockUpdate({updates: updates, day_idx: day_idx})
 
   }
+
+
+function performBatchBlockUpdate(props: {updates: Array<{index: number, free_slots: any, start_time: string, end_time: string, action: string}>, day_idx: number}) {
+
+  const {updates, day_idx} = props
+  
+  setCalendarResultData(draft => {
+
+    let indexOffset = 0
+
+    updates.map(({index, free_slots, start_time, end_time, action}) => {
+      if (action == "MODIFY") {
+        draft.days[day_idx].free_blocks[index-indexOffset] = {
+          start_time: start_time,
+          end_time: end_time,
+          free_slots: free_slots
+        }
+      } else if (action == "REMOVE") {
+        draft.days[day_idx].free_blocks.splice(index-indexOffset, 1)
+        indexOffset+=1
+      }
+    })
+    
+  })
+
+}
 
 
 

@@ -125,28 +125,28 @@ export function datetimeToRangeString(start: string, end: string, militaryTime: 
 
 // Generates a series of intervals with format {start_time: ISOString, end_time: ISOString}
 // Returns an array of these intervals 
-export function generateIntervals(start_time, end_time, interval_size, roundUp) {
+export function generateIntervals(start_time, end_time, interval_size, slot_size, roundUp) {
   let intervals = []
 
   // Find start and End times, rounded to the desired precision (set by interal_size)
   let curTime = new Date(start_time)
-  curTime = roundToNearestInterval(curTime, interval_size, true)
+  curTime = roundToNearestInterval(curTime, interval_size, roundUp)
   let endTime = new Date(end_time)
-  endTime = roundToNearestInterval(endTime, interval_size, true)
+  endTime = roundToNearestInterval(endTime, interval_size, roundUp)
 
-  let currentPlusOneHour = new Date(curTime.getTime() + 3600000).getTime()
+  
 
-  while (currentPlusOneHour <= endTime.getTime()) {
+  let currentPlusOneHour = new Date(curTime.getTime() + slot_size*60000)
+
+  while (currentPlusOneHour <= endTime) {
     // Find an interval from current to current + 1 hour
-    const newEnd = new Date(curTime.getTime() + 3600000).toISOString()
+    const newEnd = new Date(curTime.getTime() + slot_size*60000).toISOString()
     let newInterval = {start_time: curTime.toISOString(), end_time: newEnd}
     intervals.push(newInterval)
 
     // Move forward
     curTime = new Date(curTime.getTime() + 60000*interval_size)
-    currentPlusOneHour = new Date(curTime.getTime() + 3600000).getTime()
-
-    myConsole.log(currentPlusOneHour, endTime.getTime())
+    currentPlusOneHour = new Date(curTime.getTime() + slot_size*60000)
 
   }
 
@@ -161,12 +161,103 @@ export function roundToNearestInterval(time, interval: number, roundUp: boolean)
     const roundedMinutes = Math.ceil(preciseMinutes/interval)*interval
     time.setMinutes(roundedMinutes)
 
-    if (roundedMinutes == 0) {
+    if (roundedMinutes == 0 && preciseMinutes != 0) {
       time.setHours(time.getHours() + 1)
     }
+  } else {
+    const preciseMinutes = time.getMinutes()
+    const roundedMinutes = Math.floor(preciseMinutes/interval)*interval
+    time.setMinutes(roundedMinutes)
   }
 
   return time
+}
+
+// ------------------------------------- RESULT ENGINE STUFF ---------------------------- // 
+
+// Takes in information about a given day, creates the free blocks and slots corresponding to that day
+export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_duration: number, slot_size: number, 
+  interval_size: number, events: Array<{start_time: string,end_time: string, title: string, url: string, color: string}>) {
+
+
+  // we want to start at our hard start, and move forward until we hit an event. 
+  // as long as we have a minimum duration, we can create a block and a slot
+
+
+  // need to notice when events overlap
+
+
+  let blocks = []
+
+  // Establish a pointer to this moment and the end of this slot
+  let currentBlockStartTime = new Date(hard_start)
+  currentBlockStartTime = roundToNearestInterval(currentBlockStartTime, interval_size, true)
+  let currentSlotEnd = new Date(currentBlockStartTime.getTime() + 60000*slot_size)
+
+  let endTime = new Date(hard_stop)
+  endTime = roundToNearestInterval(endTime, interval_size, true)
+
+  let eventIdx = 0
+
+  // Ignore events that start before our hard start
+  while (new Date(events[eventIdx].start_time) < new Date(hard_start)) {
+    // if we need to move the first block forward, do so
+    if (new Date(events[eventIdx].end_time) > new Date(hard_start)) {
+      currentBlockStartTime = roundToNearestInterval(new Date(events[eventIdx].end_time), interval_size, true)
+    }
+    eventIdx+=1
+
+  }
+
+  while (eventIdx < events.length) {
+    // Find start of event, round down to nearest interval
+    let eventStart = new Date(events[eventIdx].start_time)
+    eventStart = roundToNearestInterval(eventStart, interval_size, false)
+
+    // Find end of event, round up to nearest interval
+    let eventEnd = new Date(events[eventIdx].end_time)
+    eventEnd = roundToNearestInterval(eventEnd, interval_size, true)
+
+    // If our event ends after the hard stop, ignore it
+    if (eventEnd.getTime() > new Date(hard_stop).getTime()) {
+      break
+    }
+
+    let blockSizeInMilli = eventStart.getTime() - currentBlockStartTime.getTime(); // This will give difference in milliseconds
+    let blockSizeInMinutes = Math.round(blockSizeInMilli / 60000);
+
+
+    // check if the Block is large enough 
+    if (blockSizeInMinutes < min_duration) {
+      currentBlockStartTime = eventEnd
+      eventIdx+=1
+      continue
+    }
+
+    // Create a block, fill it up with free slots, moving the currentSlotEnd forward 
+    const newBlock = {start_time: currentBlockStartTime.toISOString(), end_time: eventStart.toISOString(), free_slots: generateIntervals(currentBlockStartTime, eventStart, interval_size, slot_size, true)}
+    blocks.push(newBlock)
+
+    // find next currentTime (may have to move event idx forward more than once)
+    currentBlockStartTime = eventEnd
+    eventIdx += 1
+
+  }
+
+  let blockSizeInMilli = new Date(hard_stop).getTime() - currentBlockStartTime.getTime(); // This will give difference in milliseconds
+  let blockSizeInMinutes = Math.round(blockSizeInMilli / 60000);
+
+  if (blockSizeInMinutes >= min_duration) {
+    // Round down the hard end
+    let finalEndTime = roundToNearestInterval(new Date(hard_stop), interval_size, false)
+    const newBlock = {start_time: currentBlockStartTime.toISOString(), end_time: finalEndTime.toISOString(), free_slots: generateIntervals(currentBlockStartTime, new Date(hard_stop), interval_size, slot_size, true)}
+    blocks.push(newBlock)
+  }
+
+
+  return blocks
 
 
 }
+
+
