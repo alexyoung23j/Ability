@@ -12,8 +12,6 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 export default function CalendarEvents(props: { events; setCurrentlyHoveredEventIdx; eventTooltipId }) {
     const { events, setCurrentlyHoveredEventIdx, eventTooltipId } = props;
 
-    
-
     return (
       <div
         style={{
@@ -41,8 +39,14 @@ export default function CalendarEvents(props: { events; setCurrentlyHoveredEvent
   function CalendarEvent(props: {event; event_idx; setCurrentlyHoveredEventIdx; eventTooltipId}) {
     const {event_idx, event, setCurrentlyHoveredEventIdx, eventTooltipId} = props
 
-    const [depth, setDepth] = useState(1)
+    // Ensure that the "longer" event in an overlap is the one that gets highlighted on hover
+    const overlapping_events = event.index_of_overlapped_events
+    const start_depth = 1 + overlapping_events.length
+
+    const [depth, setDepth] = useState(start_depth)
     const [color, setColor] = useState('#A7A7A7')
+
+    
 
     function HandleMouseClick() {
       // Open up the event url 
@@ -57,7 +61,7 @@ export default function CalendarEvents(props: { events; setCurrentlyHoveredEvent
 
     function HandleMouseLeave() {
       setColor('#A7A7A7')
-      setDepth(1)
+      setDepth(start_depth)
     }
    
     return (
@@ -67,10 +71,11 @@ export default function CalendarEvents(props: { events; setCurrentlyHoveredEvent
           right: datetimeToOffset(event.start_time, event.end_time, 1)[0],
           width: datetimeToOffset(event.start_time, event.end_time, 1)[1],
           backgroundColor: color,
-          minHeight: '12px',
+          minHeight: '10px',
           borderRadius: 3,
           cursor: 'pointer',
-          zIndex: depth
+          zIndex: depth,
+         // marginBottom: marginBottomSetting
         }}
         data-tip
         data-for={eventTooltipId}

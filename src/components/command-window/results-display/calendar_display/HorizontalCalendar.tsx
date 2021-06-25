@@ -8,6 +8,7 @@ import FreeSlots from './horizontal-cal-components/FreeSlots';
 import FreeBlocks from './horizontal-cal-components/FreeBlocks';
 import CalendarEvents from './horizontal-cal-components/CalendarEvents';
 import ReactTooltip from 'react-tooltip';
+import EventTooltip from './horizontal-cal-components/EventTooltip';
 
 
 var nodeConsole = require('console');
@@ -24,6 +25,7 @@ interface HorizontalCalendar {
   textSnippetOpen: boolean
   ignoredSlots: Array<Array<number>>
   eventTooltipId: string;
+  event_overlap_depth: number,
   scheduleNewEvent: any
 }
 
@@ -39,6 +41,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     textSnippetOpen,
     ignoredSlots,
     eventTooltipId,
+    event_overlap_depth,
     scheduleNewEvent
   } = props;
 
@@ -87,7 +90,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
       <DateText dateText={date}/>
       <GradientEdges /> 
       <div ref={scrollRef} style={horizontalCalendarStyle}>
-        <HorizontalBars />
+        <HorizontalBars overlap_depth={event_overlap_depth}/>
         <LimitBars hard_start={hard_start} hard_end={hard_end} />
         <CalendarEvents 
           events={events}
@@ -136,51 +139,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
 
 // -------------------------- IMMUTABLE COMPONENTS -------------------------- //
 
-function EventTooltip(props: {events; currentlyHoveredEventIdx, eventTooltipId}) {
-  const {events, currentlyHoveredEventIdx, eventTooltipId} = props
 
-  useEffect(() => {
-    ReactTooltip.rebuild()
-  })
-
-  const currentEvent = events[currentlyHoveredEventIdx]
-
-
-  return (
-      <ReactTooltip 
-          id={eventTooltipId}
-          place='bottom'
-          effect="solid"
-          backgroundColor="#FFFFFF"
-          className="event-tooltip"
-          offset={{'left': 30}}
-          arrowColor="rgba(0,0,0,0)"
-        > 
-        <div
-          style={{backgroundColor: "#FFFFFF", display: "flex", justifyContent: "center", alignItems: "flex-start", flexDirection: "column"}}
-        >
-          <div style={{display: "flex", justifyContent: "center", alignItems: "flex-start"}}>
-            <div style={{borderRadius: 100, width: "6px", height: "6px", marginTop: "5px", backgroundColor: currentEvent.color, marginRight: "5px"}}>
-            </div>
-            <div
-              className="eventTooltipText"
-            >
-              {currentEvent.title}
-            </div>
-          </div>
-
-          <div
-            className="eventTooltipDateText"
-          >
-            {datetimeToRangeString(currentEvent.start_time, currentEvent.end_time, false)}
-          </div>
-        
-        </div>
-          
-   
-        </ReactTooltip>
-  )
-}
 
 function DateText(props: {dateText: string}) {
   const {dateText} = props
@@ -221,7 +180,9 @@ function DateText(props: {dateText: string}) {
 }
 
 // Creates the horizontal bars needed for
-function HorizontalBars() {
+function HorizontalBars(props: {overlap_depth: number}) {
+
+  const {overlap_depth} = props
   // MARKERS
   const timeMarkersAM = [
     '12 AM',

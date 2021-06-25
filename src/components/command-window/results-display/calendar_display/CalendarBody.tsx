@@ -49,6 +49,7 @@ export default function CalendarBody(props: CalendarBody) {
                         ignoredSlots={reduceIgnoredSlotsArray(idx)}
                         eventTooltipId={idx.toString() + data.hard_start}
                         scheduleNewEvent={scheduleNewEvent}
+                        event_overlap_depth={data.event_overlap_depth}
                     />
                 </div>
             ))}

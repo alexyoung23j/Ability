@@ -1,8 +1,10 @@
 
-// -------------------------- Calculating Positioning -------------------------- //
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 export const BAR_WIDTH = 40;
+
+
+// -------------------------- UI STUFF -------------------------- //
 
 
 // Calculates a pixel offset for the minutes. 
@@ -173,6 +175,18 @@ export function roundToNearestInterval(time, interval: number, roundUp: boolean)
   return time
 }
 
+export function calculateEventOffsetFromBottom(overlap_position: number, overlapping_events: number, max_depth: number, event_height: number) {
+
+
+  const spaceFromTop = 5
+
+
+}
+
+export function calculateHorizontalBarsHeight(max_overlap_depth: number) {
+  // 28px seems to work fine for 1 event
+}
+
 // ------------------------------------- RESULT ENGINE STUFF ---------------------------- // 
 
 // Takes in information about a given day, creates the free blocks and slots corresponding to that day
@@ -256,7 +270,6 @@ export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_d
 
 
   return blocks
-
 
 }
 

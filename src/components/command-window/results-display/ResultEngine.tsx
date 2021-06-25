@@ -49,11 +49,7 @@ export default function ResultEngine() {
 
   // Handles new events, makes API call to create them in the calendar, and updates local results to change ui
   const scheduleNewEvent = (start_time: string, end_time: string, title: string, url: string, color: string, day_idx: number) => {
-    // TODO: Need to actually do the scheduling here
-
-    // We need to update the events, the free blocks, and the free slots
-    // For events, we just need to add the new event 
-    // For free blocks, we need to recalculate the edges, and then change the free slots to reflect that.
+    // TODO: Need to actually do the scheduling here with the calendar API
 
     // Find position to insert into events
     const newEventStartTime = new Date(start_time).getTime()
@@ -80,6 +76,8 @@ export default function ResultEngine() {
       title: title,
       url: url,
       color: color,
+      overlap_position: 0,
+      overlapping_events: 1
     })
 
     // Update the events array

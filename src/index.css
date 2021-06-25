@@ -97,9 +97,21 @@
 
 .event-tooltip {
     filter: drop-shadow(0 0 4px rgba(172, 170, 170, 0.5));
-    border-radius: 10px;
-    opacity: 1 !important
+    border-radius: 8px;
+    border-width: 0px;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    cursor: pointer;
+
+
 }
+
+.event-tooltip:hover {
+    visibility: visible !important;
+    opacity: 1 !important;
+
+}
+
 
 .eventTooltipText {
     font-family: 'Montserrat', sans-serif;
