@@ -41,7 +41,8 @@ export default function ResultEngine() {
   }
 
   useEffect(() => {
-    myConsole.log("here: ",CalculateFreeBlocks(calendarResultData.days[0].hard_start, calendarResultData.days[0].hard_end, 60, 60, 30, calendarResultData.days[0].events))
+    //myConsole.log("updated: ", calendarResultData.days[0].events)
+    //myConsole.log("here: ",
   }, [calendarResultData])
 
   
@@ -57,7 +58,9 @@ export default function ResultEngine() {
     // Find position to insert into events
     const newEventStartTime = new Date(start_time).getTime()
     const newEventEndTime = new Date(end_time).getTime()
-    const events = calendarResultData.days[day_idx].events 
+
+    // Copy events into variable for manipulation in this funciton
+    let events = JSON.parse(JSON.stringify(calendarResultData.days[day_idx].events))
 
     let insertIdx = 0
     
@@ -70,82 +73,29 @@ export default function ResultEngine() {
       insertIdx += 1
     }
 
+    // Add the event into our local copy of the events
+    events.splice(insertIdx, 0, {
+      start_time: start_time,
+      end_time: end_time,
+      title: title,
+      url: url,
+      color: color,
+    })
+
     // Update the events array
     setCalendarResultData(draft => {
-      draft.days[day_idx].events.splice(insertIdx, 0, {
-        start_time: start_time,
-        end_time: end_time,
-        title: title,
-        url: url,
-        color: color,
-      })
+      draft.days[day_idx].events = events
     })
 
-    const freeBlocks = calendarResultData.days[day_idx].free_blocks 
-    let updates = []
+    // Update the free blocks to reflect change
+    setCalendarResultData(draft => {
+      draft.days[day_idx].free_blocks = CalculateFreeBlocks(draft.days[day_idx].hard_start, draft.days[day_idx].hard_end, 60, 60, 30, events)
+    })
+
+  
     
-    for (let i = 0; i < freeBlocks.length; i++) {
-      const block = freeBlocks[i]
-      const blockStartTime = new Date(block.start_time).getTime()
-      const blockEndTime = new Date(block.end_time).getTime()
-
-
-      if (blockStartTime <= newEventStartTime && blockEndTime >= newEventEndTime) {
-        
-
-      } else if (blockStartTime < newEventEndTime && newEventEndTime < blockEndTime) {
-          // New event starts before a block and ends within it
-
-          // TODO: change to to allow for prop to dictate the minimum size of a free block; here defualting to 60 minutes
-          const newFreeSlots = generateIntervals(end_time, block.end_time, 30, 60, true)        
-
-          const update = {index: i, free_slots: newFreeSlots, start_time: roundToNearestInterval(new Date(end_time), 30, true).toISOString(), end_time: block.end_time, action: "MODIFY"}
-          updates.push(update)
-          
-      } else if (blockStartTime < newEventStartTime && newEventStartTime < blockEndTime) {
-        // New Event starts in a block and ends after it
-        // TODO: change to to allow for prop to dictate the minimum size of a free block; here defualting to 60 minutes
-          const newFreeSlots = generateIntervals(block.start_time, start_time, 30, 60, true)        
-
-          const update = {index: i, free_slots: newFreeSlots, start_time: roundToNearestInterval(new Date(block.start_time), 30, true).toISOString(), end_time: start_time, action: "MODIFY"}
-          updates.push(update)
-
-      } else if (blockStartTime >= newEventStartTime && blockEndTime <= newEventEndTime) {
-        // New Event completely covers a free slot
-        const update = {index: i, free_slots: [], start_time: "", end_time: "", action: "REMOVE"}
-        updates.push(update)
-      }
-    }
-
-    performBatchBlockUpdate({updates: updates, day_idx: day_idx})
-
   }
 
-
-function performBatchBlockUpdate(props: {updates: Array<{index: number, free_slots: any, start_time: string, end_time: string, action: string}>, day_idx: number}) {
-
-  const {updates, day_idx} = props
-  
-  setCalendarResultData(draft => {
-
-    let indexOffset = 0
-
-    updates.map(({index, free_slots, start_time, end_time, action}) => {
-      if (action == "MODIFY") {
-        draft.days[day_idx].free_blocks[index-indexOffset] = {
-          start_time: start_time,
-          end_time: end_time,
-          free_slots: free_slots
-        }
-      } else if (action == "REMOVE") {
-        draft.days[day_idx].free_blocks.splice(index-indexOffset, 1)
-        indexOffset+=1
-      }
-    })
-    
-  })
-
-}
 
 
 

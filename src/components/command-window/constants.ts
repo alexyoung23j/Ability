@@ -113,13 +113,6 @@ export const calendarDummyResults = {
           color: 'red',
         },
         {
-          start_time: '2021-06-09T10:00:00Z',
-          end_time: '2021-06-09T11:50:00Z',
-          title: 'Company All Hands',
-          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: 'red',
-        },
-        {
           start_time: '2021-06-09T11:00:00Z',
           end_time: '2021-06-09T12:30:00Z',
           title: 'Company All Hands',
@@ -187,20 +180,7 @@ export const calendarDummyResults = {
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: 'red',
         },
-        {
-          start_time: '2021-06-09T11:50:00Z',
-          end_time: '2021-06-09T12:45:00Z',
-          title: 'Lunch',
-          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: 'red',
-        },
-        {
-          start_time: '2021-06-09T16:00:00Z',
-          end_time: '2021-06-09T18:00:00Z',
-          title: 'Meeting w/ James',
-          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: 'blue',
-        },
+       
       ],
     },
    
