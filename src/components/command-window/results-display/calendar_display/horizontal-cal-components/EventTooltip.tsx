@@ -6,8 +6,8 @@ import { datetimeToRangeString } from '../../../../util/CalendarUtil';
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
-export default function EventTooltip(props: {events; currentlyHoveredEventIdx, eventTooltipId}) {
-    const {events, currentlyHoveredEventIdx, eventTooltipId} = props
+export default function EventTooltip(props: {events; currentlyHoveredEventIdx, eventTooltipId, setExternalHighlightIdx}) {
+    const {events, currentlyHoveredEventIdx, eventTooltipId, setExternalHighlightIdx} = props
 
     useEffect(() => {
         ReactTooltip.rebuild()
@@ -36,7 +36,11 @@ export default function EventTooltip(props: {events; currentlyHoveredEventIdx, e
 
             {eventsArr.map((event, stupid_idx) => ( 
                 <div key={stupid_idx}>
-                    <EventDescriptionView currentEvent={event[0]} eventIdx={event[1]}/>
+                    <EventDescriptionView 
+                        currentEvent={event[0]} 
+                        eventIdx={event[1]}
+                        setExternalHighlightIdx={setExternalHighlightIdx} 
+                    />
 
                 </div>
             ))}
@@ -46,18 +50,20 @@ export default function EventTooltip(props: {events; currentlyHoveredEventIdx, e
     )
 }
 
-function EventDescriptionView(props: {currentEvent, eventIdx}) {
+function EventDescriptionView(props: {currentEvent, eventIdx, setExternalHighlightIdx}) {
 
-    const {currentEvent, eventIdx} = props
+    const {currentEvent, eventIdx, setExternalHighlightIdx} = props
 
     const [backgroundColor, setBackgroundColor] = useState('rgba(135, 220, 215, 0)')
 
     function onMouseEnter() {
         setBackgroundColor('#E9E9E9')
+        setExternalHighlightIdx(eventIdx)
     }
 
     function onMouseLeave() {
         setBackgroundColor('rgba(135, 220, 215, 0)')
+        setExternalHighlightIdx(-1)
     }
 
     function onClick() {
@@ -72,7 +78,7 @@ function EventDescriptionView(props: {currentEvent, eventIdx}) {
             onClick={onClick}
         >
             <div style={{marginLeft: "15px", marginRight: "15px", marginTop: "5px", marginBottom: "5px"}}>
-                <div style={{display: "flex", justifyContent: "center", alignItems: "flex-start",}}>
+                <div style={{display: "flex", justifyContent: "flex-start", alignItems: "flex-start",}}>
                     <div style={{borderRadius: 100, width: "6px", height: "6px", marginTop: "5px", backgroundColor: currentEvent.color, marginRight: "5px"}}>
                     </div>
                     <div

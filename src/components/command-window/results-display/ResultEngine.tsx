@@ -5,7 +5,7 @@ import TextSnippetDropdown from './snippet_display/TextSnippetDropdown';
 import { textSnippet } from '../../../types';
 import { ContentState } from 'draft-js';
 import { calendarDummyResults } from '../constants';
-import { generateIntervals, roundToNearestInterval, CalculateFreeBlocks } from '../../util/CalendarUtil';
+import { generateIntervals, roundToNearestInterval, CalculateFreeBlocks, HydrateOverlapEvents } from '../../util/CalendarUtil';
 const dropdownArrowNormal = require('/src/content/svg/DropdownArrowNormal.svg');
 const dropdownArrowHighlight = require('/src/content/svg/DropdownArrowHighlight.svg');
 const redirect = require('/src/content/svg/Redirect.svg');
@@ -41,7 +41,7 @@ export default function ResultEngine() {
   }
 
   useEffect(() => {
-    //myConsole.log("updated: ", calendarResultData.days[0].events)
+    myConsole.log("updated: ", calendarResultData.days[0].events)
     //myConsole.log("here: ",
   }, [calendarResultData])
 
@@ -60,10 +60,11 @@ export default function ResultEngine() {
 
     let insertIdx = 0
     
+    // Insert Event into correct position (by start time, as is convention for events)
     while (insertIdx < events.length) {
-      const eventEndTime = new Date(events[insertIdx].end_time).getTime()
+      const eventStartTime = new Date(events[insertIdx].start_time).getTime()
 
-      if (newEventEndTime < eventEndTime) {
+      if (newEventStartTime < eventStartTime) {
         break
       }
       insertIdx += 1
@@ -76,9 +77,10 @@ export default function ResultEngine() {
       title: title,
       url: url,
       color: color,
-      overlap_position: 0,
-      overlapping_events: 1
+      index_of_overlapped_events: []
     })
+
+    events = HydrateOverlapEvents(events)
 
     // Update the events array
     setCalendarResultData(draft => {

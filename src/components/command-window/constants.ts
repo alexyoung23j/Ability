@@ -65,7 +65,6 @@ export const calendarDummyResults = {
       calendar_date: '2021-12-30',
       hard_start: '2021-06-09T08:00:00Z',
       hard_end: '2021-06-09T21:10:00Z',
-      event_overlap_depth: 2,
       free_blocks: [
         {
           start_time: '2021-06-09T13:00:00Z',
@@ -108,18 +107,18 @@ export const calendarDummyResults = {
       events: [
         {
           start_time: '2021-06-09T11:00:00Z',
-          end_time: '2021-06-09T12:30:00Z',
+          end_time: '2021-06-09T13:30:00Z',
           title: 'Company All Hands',
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: 'red',
-          index_of_overlapped_events: [1],
+          index_of_overlapped_events: [],
         },
         {
           start_time: '2021-06-09T11:30:00Z',
           end_time: '2021-06-09T12:30:00Z',
-          title: 'Meet n greet',
+          title: 'Hidden Event',
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: 'blue',
+          color: 'green',
           index_of_overlapped_events: [],
         },
         {

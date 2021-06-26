@@ -47,7 +47,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
 
   // State
   const [currentlyHoveredEventIdx, setCurrentlyHoveredEventIdx] = useState(0) // refers to the index in "events" being hovered
-
+  const [externallyHighlightedCalendarEventIdx, setExternallyHighlightedCalendarEventIdx] = useState(-1)
 
 
   // -------------------------- HORIZONTAL SCROLL STUFF -------------------------- //
@@ -96,6 +96,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
           events={events}
           setCurrentlyHoveredEventIdx={setCurrentlyHoveredEventIdx}
           eventTooltipId={eventTooltipId}
+          externallyHighlightedIdx={externallyHighlightedCalendarEventIdx}
         />
         <FreeSlots
           free_blocks={free_blocks}
@@ -115,16 +116,17 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
           events={events}
           currentlyHoveredEventIdx={currentlyHoveredEventIdx}
           eventTooltipId={eventTooltipId}
+          setExternalHighlightIdx={setExternallyHighlightedCalendarEventIdx}
         />
       </div>
 
       <button 
         onClick={() => scheduleNewEvent(
+          '2021-06-09T10:30:00Z',
           '2021-06-09T12:30:00Z',
-          '2021-06-09T13:30:00Z',
           'new event',
           'hpttsss...//',
-          'green',
+          'blue',
           index
         )}
       

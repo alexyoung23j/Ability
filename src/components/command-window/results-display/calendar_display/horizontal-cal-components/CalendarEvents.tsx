@@ -9,8 +9,8 @@ import { datetimeToOffset } from '../../../../util/CalendarUtil';
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
-export default function CalendarEvents(props: { events; setCurrentlyHoveredEventIdx; eventTooltipId }) {
-    const { events, setCurrentlyHoveredEventIdx, eventTooltipId } = props;
+export default function CalendarEvents(props: { events; setCurrentlyHoveredEventIdx; eventTooltipId; externallyHighlightedIdx }) {
+    const { events, setCurrentlyHoveredEventIdx, eventTooltipId, externallyHighlightedIdx } = props;
 
     return (
       <div
@@ -28,7 +28,9 @@ export default function CalendarEvents(props: { events; setCurrentlyHoveredEvent
               event={event} 
               event_idx={idx} 
               setCurrentlyHoveredEventIdx={setCurrentlyHoveredEventIdx}
-              eventTooltipId={eventTooltipId}/>
+              eventTooltipId={eventTooltipId}
+              externallyHighlightedIdx={externallyHighlightedIdx}
+              />
           </div>
         ))}
          
@@ -36,15 +38,23 @@ export default function CalendarEvents(props: { events; setCurrentlyHoveredEvent
     );
   }
   
-  function CalendarEvent(props: {event; event_idx; setCurrentlyHoveredEventIdx; eventTooltipId}) {
-    const {event_idx, event, setCurrentlyHoveredEventIdx, eventTooltipId} = props
+  function CalendarEvent(props: {event; event_idx; setCurrentlyHoveredEventIdx; eventTooltipId; externallyHighlightedIdx}) {
+    const {event_idx, event, setCurrentlyHoveredEventIdx, eventTooltipId, externallyHighlightedIdx} = props
 
     // Ensure that the "longer" event in an overlap is the one that gets highlighted on hover
     const overlapping_events = event.index_of_overlapped_events
     const start_depth = 1 + overlapping_events.length
 
-    const [depth, setDepth] = useState(start_depth)
+    const [depth, setDepth] = useState(start_depth)    
     const [color, setColor] = useState('#A7A7A7')
+
+    // Listen for changes caused by the tooltip
+    useEffect(() => {
+      const new_color = (externallyHighlightedIdx == event_idx) ? '#8E8E8E' : '#A7A7A7'
+      const new_depth = (externallyHighlightedIdx == event_idx) ? 10 : start_depth
+      setColor(new_color)
+      setDepth(new_depth)
+    }, [externallyHighlightedIdx])
 
     
 

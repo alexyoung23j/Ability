@@ -175,31 +175,14 @@ export function roundToNearestInterval(time, interval: number, roundUp: boolean)
   return time
 }
 
-export function calculateEventOffsetFromBottom(overlap_position: number, overlapping_events: number, max_depth: number, event_height: number) {
 
-
-  const spaceFromTop = 5
-
-
-}
-
-export function calculateHorizontalBarsHeight(max_overlap_depth: number) {
-  // 28px seems to work fine for 1 event
-}
 
 // ------------------------------------- RESULT ENGINE STUFF ---------------------------- // 
 
 // Takes in information about a given day, creates the free blocks and slots corresponding to that day
+// Remember, events are listed in order of start time
 export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_duration: number, slot_size: number, 
-  interval_size: number, events: Array<{start_time: string,end_time: string, title: string, url: string, color: string}>) {
-
-
-  // we want to start at our hard start, and move forward until we hit an event. 
-  // as long as we have a minimum duration, we can create a block and a slot
-
-
-  // need to notice when events overlap
-
+  interval_size: number, events: Array<{start_time: string,end_time: string, title: string, url: string, color: string, index_of_overlapped_events: Array<number>}>) {
 
   let blocks = []
 
@@ -223,6 +206,12 @@ export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_d
 
   }
 
+
+  let eventEnd = new Date(events[eventIdx].end_time)
+  eventEnd = roundToNearestInterval(eventEnd, interval_size, true)
+
+  let latestEndSoFar = eventEnd
+
   while (eventIdx < events.length) {
     // Find start of event, round down to nearest interval
     let eventStart = new Date(events[eventIdx].start_time)
@@ -231,6 +220,13 @@ export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_d
     // Find end of event, round up to nearest interval
     let eventEnd = new Date(events[eventIdx].end_time)
     eventEnd = roundToNearestInterval(eventEnd, interval_size, true)
+
+    // Make sure we aren't moving our block start to the end of an event thats sooner than a previously visited event's end
+    if (eventEnd < latestEndSoFar) {
+      eventEnd = latestEndSoFar
+    } else {
+      latestEndSoFar = eventEnd
+    }
 
     // If our event ends after the hard stop, ignore it
     if (eventEnd.getTime() > new Date(hard_stop).getTime()) {
@@ -271,6 +267,36 @@ export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_d
 
   return blocks
 
+}
+
+// Takes in an events array, ensures its organized correctly and overlaps are accounted for correctly. Returns Events
+export function HydrateOverlapEvents(events: Array<{start_time: string,end_time: string, title: string, url: string, color: string, index_of_overlapped_events: Array<number>}> ) {
+  // hold onto the event with the earliest start time. On seeing a new event, if that events ENDS earlier than the held onto event, its index is put into
+  // the overlap array for the held onto event. Do nothing, more forward
+
+  // if the new event ends later, proceed as normal and 
+
+  if (events.length == 0) {
+    return events
+  }
+
+
+  let lagEventIdx = 0
+  let lagEventEndTime = new Date(events[0].end_time)
+
+  for (let i = 1; i < events.length; i++) {
+    const newEventEnd = new Date(events[i].end_time)
+
+    if (newEventEnd < lagEventEndTime) {
+      events[lagEventIdx].index_of_overlapped_events.push(i)
+    } else {
+      lagEventIdx = i
+      lagEventEndTime = newEventEnd
+    }
+
+  }
+
+  return events
 }
 
 
