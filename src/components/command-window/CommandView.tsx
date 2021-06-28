@@ -240,8 +240,14 @@ export default function CommandView() {
   }, [alertCommandLineToClear]);
 
   return (
-    <div style={commandAreaStyle} onClick={() => triggerBrowserWindowBlur()}>
-      <div style={commandStyle} onClick={(e) => e.stopPropagation()}>
+    <div 
+      style={commandAreaStyle} 
+      onClick={() => triggerBrowserWindowBlur()}
+    >
+      <div 
+        style={commandStyle} 
+        onClick={(e) => e.stopPropagation()}
+      >
         <CommandLine
           queryPiecePositions={queryPiecePositions}
           autocompleteInProgress={autocompleteInProgress}
@@ -283,7 +289,7 @@ export default function CommandView() {
             
           />
         )}
-      </div>
+       </div>
     </div>
   );
 }

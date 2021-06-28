@@ -130,3 +130,25 @@
     margin-left: 12px;
     margin-top: 5px;
 }
+
+.eventModalTitle {
+    font-family: 'Montserrat';
+    font-weight: lighter;
+    color: #7D7D7D;
+    font-size: 20px;
+    border: none;
+    outline: none;
+    width: 350px;
+    
+    
+}
+
+::-webkit-input-placeholder { 
+    color: rgba(172, 170, 170, 0.7);
+}
+
+.datePicker {
+    font-family: 'Montserrat';
+    font-weight: lighter;
+}
+

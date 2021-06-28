@@ -6,6 +6,10 @@ import { textSnippet } from '../../../types';
 import { ContentState } from 'draft-js';
 import { calendarDummyResults } from '../constants';
 import { generateIntervals, roundToNearestInterval, CalculateFreeBlocks, HydrateOverlapEvents } from '../../util/CalendarUtil';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+
+// pick a date util library
+import DateFnsUtils from '@date-io/date-fns';
 const dropdownArrowNormal = require('/src/content/svg/DropdownArrowNormal.svg');
 const dropdownArrowHighlight = require('/src/content/svg/DropdownArrowHighlight.svg');
 const redirect = require('/src/content/svg/Redirect.svg');
@@ -41,7 +45,7 @@ export default function ResultEngine() {
   }
 
   useEffect(() => {
-    myConsole.log("updated: ", calendarResultData.days[0].events)
+    //myConsole.log("updated: ", calendarResultData.days[0].events)
     //myConsole.log("here: ",
   }, [calendarResultData])
 
@@ -60,7 +64,7 @@ export default function ResultEngine() {
 
     let insertIdx = 0
     
-    // Insert Event into correct position (by start time, as is convention for events)
+    // Insert Event into correct position (by START time, as is convention for events)
     while (insertIdx < events.length) {
       const eventStartTime = new Date(events[insertIdx].start_time).getTime()
 
@@ -80,6 +84,8 @@ export default function ResultEngine() {
       index_of_overlapped_events: []
     })
 
+
+    // Reset the overlaps 
     events = HydrateOverlapEvents(events)
 
     // Update the events array
@@ -116,17 +122,20 @@ export default function ResultEngine() {
 
   
   return (
-    <div style={{display: "flex", flexDirection: "column"}}>
-      <CalendarView 
-        calendar_data={calendarResultData} 
-        ignoreHandler={updateIgnoredSlots} 
-        ignoredSlots={ignoreSlots}
-        textEngineLaunched={textEngineLaunched}
-        scheduleNewEvent={scheduleNewEvent}
-      />
-      <Scheduler textEngineLaunched={textEngineLaunched} setTextEngineLaunched={setTextEngineLaunched}/>
-      {textEngineLaunched && (<TextSnippetDropdown snippetPayload={textSnippetArray} />)}
-    </div>
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <div style={{display: "flex", flexDirection: "column"}}>
+            <CalendarView 
+              calendar_data={calendarResultData} 
+              ignoreHandler={updateIgnoredSlots} 
+              ignoredSlots={ignoreSlots}
+              textEngineLaunched={textEngineLaunched}
+              scheduleNewEvent={scheduleNewEvent}
+            />
+            <Scheduler textEngineLaunched={textEngineLaunched} setTextEngineLaunched={setTextEngineLaunched}/>
+            {textEngineLaunched && (<TextSnippetDropdown snippetPayload={textSnippetArray} />)}
+          </div>
+    </MuiPickersUtilsProvider>
+    
   );
 }
 

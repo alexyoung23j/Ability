@@ -67,7 +67,7 @@ function EventDescriptionView(props: {currentEvent, eventIdx, setExternalHighlig
     }
 
     function onClick() {
-        myConsole.log(eventIdx)
+        //myConsole.log(eventIdx)
     }
 
     return ( 

@@ -15,7 +15,7 @@ export default function Tab(props: Tab) {
 
     const [largeFont, setLargeFont] = useState(false)
 
-    var highlightColor = highlighted === true ? "#FBFBFB" : "#E7E7E7"
+    var highlightColor = highlighted === true ? "#E7E7E7" : "#FBFBFB"
     var height = highlighted === true ? "24px" : "20px"
     var fontColor = highlighted === true ? "#87BDDC" : "#7D7D7D"
 

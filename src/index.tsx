@@ -4,11 +4,12 @@ import App from './App'
 import './index.css'
 
 
+
 function render() {
   ReactDOM.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>,
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>,
     document.getElementById('root')
   )
 }
