@@ -1,9 +1,6 @@
 import React, { useRef, useEffect, useState, Fragment } from 'react';
 import CSS from 'csstype';
-import { DatePicker, KeyboardDatePicker } from "@material-ui/pickers";
-import dayjs from 'dayjs';
-
-const clockIcon = require('/src/content/svg/ClockIcon.svg');
+import DatePickerComponent from './DatePickerComponent';
 
 
 interface EventModalProps {
@@ -57,29 +54,6 @@ export default function EventModal(props: EventModalProps) {
     )
 }
 
-function DatePickerComponent() {
-
-    const [selectedDate, handleDateChange] = useState(new Date())
-    useEffect(() => {
-        myConsole.log(selectedDate)
-    }, [selectedDate])
-
-
-    return (
-        <div
-            style={{marginLeft: "5px"}}
-        >
-            <img src={clockIcon} style={{height: "15px", width: "15px"}}/>
-                <DatePicker
-                    disableToolbar
-                    variant="inline"
-                    value={selectedDate}
-                    onChange={handleDateChange}
-                />
-           
-        </div>
-    )
-}
 
 const ModalStyles: CSS.Properties = {
     minWidth: "400px",

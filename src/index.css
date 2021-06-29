@@ -152,3 +152,6 @@
     font-weight: lighter;
 }
 
+.MuiInputBase-input {
+    color: "blue"
+}
