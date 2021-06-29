@@ -1,26 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { google } from 'googleapis';
 import { OAuth2Client } from 'googleapis-common';
 import { GoogleLogin, GoogleLoginResponse } from 'react-google-login';
 
 import { assert } from './assert';
-import { fetchEvents } from './DAO/CalendarDAO';
+import * as CalendarDAO from './DAO/CalendarDAO';
 import { writeJSONToFile } from './util';
-
-// TODO kedar: move these to react_env files and don't store in commit!!!!
-const CLIENT_ID =
-  '942672633691-1tb2ma14qnkg2so4j4v21opephmmt34o.apps.googleusercontent.com';
-const CLIENT_SECRET = 'K_JxXW7e7EFLV0kcJ4ievQCY';
+import { CalendarContext } from './App';
 
 const CALENDAR_ID = 'abilityapptester01@gmail.com';
 
 // Helpers for testing in CDT
-window.fetchEvents = fetchEvents;
+window.CalendarDAO = CalendarDAO;
 window.write = writeJSONToFile;
 
 export function Auth() {
   const [authResponse, setAuthResponse] = useState<null | AuthResponse>(null);
   const [calendar, setCalendar] = useState(null);
+  const [number, setNumber] = useState(0);
+
+  const calendarIndex = useContext(CalendarContext);
 
   const signIn = async (oauth2Client: OAuth2Client, token: string) => {
     // TODO Kedar: figure out another way to get credentials
@@ -39,17 +38,24 @@ export function Auth() {
   };
 
   useEffect(() => {
-    let oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET);
+    let client_id = process.env.GCAL_CLIENT_ID;
+
+    let oauth2Client = new google.auth.OAuth2(
+      process.env.GCAL_CLIENT_ID,
+      process.env.GCAL_CLIENT_SECRET
+    );
     oauth2Client.apiKey = 'AIzaSyCWaZAxZJ3fPv2mT_dQW5WSBiI1B7bK61k';
     if (authResponse) {
       signIn(oauth2Client, authResponse.access_token);
     }
   }, [authResponse]);
 
+  console.log('calendar index:', calendarIndex[0]);
+
   return (
     <div>
       <GoogleLogin
-        clientId={CLIENT_ID}
+        clientId={process.env.GCAL_CLIENT_ID}
         scope={'https://www.googleapis.com/auth/calendar.readonly'}
         onSuccess={(loginResponse: GoogleLoginResponse) => {
           console.log('Sign-in succeeded!');
@@ -60,6 +66,7 @@ export function Auth() {
           console.log(error);
         }}
       />
+      <button onClick={() => setNumber(number + 1)}>refresh</button>
     </div>
   );
 }

@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { Auth } from './auth';
 import CommandView from './components/command-window/CommandView';
+import { EVENTS } from './tests/EventsFixtures';
 import SettingsView from './components/settings-window/SettingsView';
 const { ipcRenderer } = require('electron');
 const css = require('./index.css');
+
+import { config } from 'dotenv';
+config();
 
 ipcRenderer.setMaxListeners(Infinity);
 
@@ -35,9 +39,14 @@ function parseCSS(css: any): String {
   return cssString;
 }
 
+type CalendarIndex = any;
+export const CalendarContext = React.createContext<CalendarIndex | null>(null);
+
 function App() {
   // State
   const [showCommand, setShowCommand] = useState(true);
+  const [calendarIndex, setCalendarIndex] =
+    useState<CalendarIndex | null>(EVENTS);
 
   /// ---------------- IPC HANDLERS -------------- ///
 
@@ -57,12 +66,13 @@ function App() {
   });
 
   return (
-    <div>
-      {/* {(showCommand && <CommandView />) || (
-        <SettingsView toggleWindowHandler={toggleBetweenWindows} />
-      )} */}
-      <Auth />
-    </div>
+    <CalendarContext.Provider value={calendarIndex}>
+      <div>
+        {(showCommand && <CommandView />) || (
+          <SettingsView toggleWindowHandler={toggleBetweenWindows} />
+        )}
+      </div>
+    </CalendarContext.Provider>
   );
 }
 
