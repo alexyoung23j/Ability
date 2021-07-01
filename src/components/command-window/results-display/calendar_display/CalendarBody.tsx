@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react'
 import CSS from 'csstype'
 import HorizontalCalendar from './HorizontalCalendar'
-import { Modal } from 'react-responsive-modal';
 import EventModal from './EventModal';
 
 

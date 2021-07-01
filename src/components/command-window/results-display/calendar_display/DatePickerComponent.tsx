@@ -5,7 +5,11 @@ import { createMuiTheme } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/styles";
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { MuiPickersOverrides } from '@material-ui/pickers/typings/overrides';
+import { Multiselect } from 'multiselect-react-dropdown';
 
+
+
+// Stuff for the MUI component
 type overridesNameToClassKey = {
   [P in keyof MuiPickersOverrides]: keyof MuiPickersOverrides[P];
 };
@@ -18,9 +22,8 @@ const clockIcon = require('/src/content/svg/ClockIcon.svg');
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
-const stylee: CSS.Properties = {
-    color: "blue"
-}
+
+
 const materialTheme = createMuiTheme({
     typography: {
         fontFamily: 'Montserrat, sans serif',
@@ -54,8 +57,10 @@ export default function DatePickerComponent() {
     const [selectedDate, handleDateChange] = useState(new Date())
     const [datePickerColor, setDatePickerColor] = useState("rgba(172, 170, 170, 0.5)")
 
-    const DatePickerRef = useRef(null)
-    
+    const [startTime, setStartTime] = useState(["12:30"])
+
+    const [options, setOptions] = useState(["12:30", "12:00", "12:00","12:00","12:00","12:00","12:00","12:00"])
+
 
 
     return (
@@ -76,17 +81,43 @@ export default function DatePickerComponent() {
                         InputProps={{disableUnderline: true}}
                         onOpen={() => setDatePickerColor("rgb(125, 189, 220)")}
                         onClose={() => setDatePickerColor("rgba(172, 170, 170, 0.5)")}
-                        ref={DatePickerRef}
-
                     />
                 </ThemeProvider>
                 <div style={{height: "1px", marginTop: "-2px", marginLeft: "1px", width: "100px", backgroundColor: datePickerColor}}></div>
             </div>
-           
+            <Multiselect 
+                options={options}
+                isObject={false}
+                singleSelect={true}
+                placeholder="12:30"
+                selectedValues={startTime}
+                showArrow={false}
+                style={{
+                    searchBox: {
+                      border: 'none',
+                      fontFamily: "Montserrat, sans serif",
+                      width: "60px"
+                    },
+                    multiselectContainer: {
+                        height: "15px",
+                        arrow: 'none',
+                        width: "60px"
+                    },
+                    chips: {
+                        
+                        height: "15px"
+                    }
+                    
+                }}                
+            />
+
+            
+            
 
                 
            
         </div>
     )
 }
+
 

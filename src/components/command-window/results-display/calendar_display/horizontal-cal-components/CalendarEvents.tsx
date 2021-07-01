@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
 import CSS from 'csstype';
-import ScrollContainer from 'react-indiana-drag-scroll';
 import useDragScroll from 'use-drag-scroll';
 import ReactDOM from 'react-dom';
 import ReactTooltip from 'react-tooltip'

@@ -42,7 +42,7 @@ export default function EventModal(props: EventModalProps) {
                     <div style={{height: "1px", marginLeft: "3px", width: "350px", backgroundColor: titleBarColor}}></div>
                 </div>
                 <div
-                    style={{marginTop: "20px"}}
+                    style={{marginTop: "10px"}}
                 >
                     <DatePickerComponent />
                 </div>
@@ -72,7 +72,7 @@ const ModalStyles: CSS.Properties = {
 const ModalAreaStyles: CSS.Properties = {
     position: "absolute",
     width: "600px", 
-    height: "600px", 
+    minHeight: "300px", 
     backgroundColor: "rgba(211,211,211,0.0)", 
     zIndex: 100,
     display: "flex",
