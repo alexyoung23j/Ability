@@ -4,10 +4,6 @@ import _ from 'underscore';
 import { assert } from '../assert';
 
 // TODO kedar: move these to react_env files and don't store in commit!!!!
-const CLIENT_ID =
-  '942672633691-1tb2ma14qnkg2so4j4v21opephmmt34o.apps.googleusercontent.com';
-const CLIENT_SECRET = 'K_JxXW7e7EFLV0kcJ4ievQCY';
-
 const CALENDAR_ID = 'abilityapptester01@gmail.com';
 
 // Default end date string
