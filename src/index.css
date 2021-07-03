@@ -102,6 +102,7 @@
     opacity: 1 !important;
     pointer-events: auto !important;
     cursor: pointer;
+    z-index: 20 !important
 
 
 }

@@ -25,7 +25,8 @@ export default function CalendarBody(props: CalendarBody) {
     const bodyRef = useRef(null)
 
     // State
-    const [modalShow, setModalShow] = useState(true)
+    const [modalShow, setModalShow] = useState(false)
+    const [modalShowsNewEvent, setModalShowsNewEvent] = useState(false)
     const [modalEventStart, setModalEventStart] = useState<Date>(new Date('2021-06-09T13:10:00Z'))
     const [modalEventEnd, setModalEventEnd] = useState<Date>(new Date("2021-06-09T14:10:00Z"))
     const [modalEventTitle, setModalEventTitle] = useState('')
@@ -35,7 +36,7 @@ export default function CalendarBody(props: CalendarBody) {
 
 
     useEffect(() => {
-        myConsole.log(modalEventStart, modalEventEnd)
+        //myConsole.log(modalEventStart, modalEventEnd)
     }, [modalEventStart])
 
 
@@ -70,6 +71,14 @@ export default function CalendarBody(props: CalendarBody) {
                         eventTooltipId={idx.toString() + data.hard_start}
                         scheduleNewEvent={scheduleNewEvent}
                         event_overlap_depth={data.event_overlap_depth}
+                        setModalShow={setModalShow}
+                        setShowsNewEvent={setModalShowsNewEvent}
+                        setModalEventEnd={setModalEventEnd}
+                        setModalEventStart={setModalEventStart}
+                        setModalEventTitle={setModalEventTitle}
+                        setModalEventLocation={setModalEventLocation}
+                        setModalEventDescription={setModalEventDescription}
+                        setModalEventCalendar={setModalEventCalendar}
                     />
                 </div>
             ))}
@@ -81,6 +90,7 @@ export default function CalendarBody(props: CalendarBody) {
             </button>
             <EventModal 
                 isOpen={modalShow}
+                isNewEvent={modalShowsNewEvent}
                 eventStart={modalEventStart}
                 eventEnd={modalEventEnd}    
                 eventTitle={modalEventTitle}
@@ -89,12 +99,15 @@ export default function CalendarBody(props: CalendarBody) {
                 eventDescription={modalEventDescription}
 
                 setIsOpen={setModalShow}
+                setShowsNewEvent={setModalShowsNewEvent}
                 setEventStart={setModalEventStart}
                 setEventEnd={setModalEventEnd}
                 setEventTitle={setModalEventTitle}
                 setEventLocation={setModalEventLocation}
                 setEventCalendar={setModalEventCalendar}
                 setEventDescription={setModalEventDescription}
+
+                scheduleNewEvent={scheduleNewEvent}
             />    
         </div>
     )

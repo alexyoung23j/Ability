@@ -7,6 +7,7 @@ const textIcon = require('/src/content/svg/TextIcon.svg');
 
 interface EventModalProps {
     isOpen: boolean
+    isNewEvent: boolean
     eventStart: Date
     eventEnd: Date
     eventTitle: string
@@ -15,12 +16,15 @@ interface EventModalProps {
     eventDescription: string
 
     setIsOpen: any
+    setShowsNewEvent: any
     setEventStart: any
     setEventEnd: any
     setEventTitle: any
     setEventLocation: any
     setEventCalendar: any
     setEventDescription: any
+
+    scheduleNewEvent: any
 }
 
 var nodeConsole = require('console');
@@ -28,7 +32,25 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 export default function EventModal(props: EventModalProps) {
 
-    const {isOpen, eventStart, eventEnd, eventTitle, eventLocation, eventCalendar, eventDescription, setIsOpen, setEventStart, setEventEnd, setEventLocation, setEventTitle, setEventCalendar, setEventDescription} = props
+    const {isOpen,
+        isNewEvent,
+        eventStart,
+        eventEnd, 
+        eventTitle,
+        eventLocation, 
+        eventCalendar, 
+        eventDescription, 
+        setIsOpen, 
+        setShowsNewEvent,
+        setEventStart, 
+        setEventEnd, 
+        setEventLocation, 
+        setEventTitle, 
+        setEventCalendar, 
+        setEventDescription,
+        scheduleNewEvent
+    
+    } = props
 
     // State
     const [titleBarColor, setTitleBarColor] = useState("rgba(172, 170, 170, 0.5)")
@@ -38,12 +60,13 @@ export default function EventModal(props: EventModalProps) {
         isOpen && ( 
         <div
             style={ModalAreaStyles}
+            onClick={() => setIsOpen(false)}
         >
             <div
                 style={ModalStyles}
             >
                 <div
-                    style={{marginTop: "20px"}}
+                    style={{marginTop: "30px"}}
                 >
                      <input 
                         className="eventModalTitle" 
@@ -57,7 +80,7 @@ export default function EventModal(props: EventModalProps) {
                     <div style={{height: "1px", marginLeft: "3px", width: "350px", backgroundColor: titleBarColor}}></div>
                 </div>
                 <div
-                    style={{marginTop: "10px"}}
+                    style={{marginTop: "20px"}}
                 >
                     <DatePickerComponent 
                         eventStart={eventStart}
@@ -137,16 +160,17 @@ const ModalStyles: CSS.Properties = {
     alignItems: "flex-start",
     flexDirection: "column",
     paddingLeft: "20px", 
+    marginTop: "50px"
 }
 
 const ModalAreaStyles: CSS.Properties = {
     position: "absolute",
-    width: "600px", 
-    minHeight: "300px", 
+    width: "800px", 
+    minHeight: "800px",
+    marginTop: "-200px", 
     backgroundColor: "rgba(211,211,211,0.0)", 
     zIndex: 100,
     display: "flex",
     justifyContent: "center",
-    alignItems: "flex-start",
-    marginTop: "20px"
+    alignItems: "center",
 }

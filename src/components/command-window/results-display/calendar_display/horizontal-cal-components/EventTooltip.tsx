@@ -6,8 +6,27 @@ import { datetimeToRangeString } from '../../../../util/CalendarUtil';
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
-export default function EventTooltip(props: {events; currentlyHoveredEventIdx, eventTooltipId, setExternalHighlightIdx}) {
-    const {events, currentlyHoveredEventIdx, eventTooltipId, setExternalHighlightIdx} = props
+interface EventTooltipProps {
+    events: Array<any>
+    currentlyHoveredEventIdx: number
+    eventTooltipId: string;
+    setExternalHighlightIdx: any;
+    launchModal: any
+    setCurrentlySelectedEventIdx: any
+
+}
+
+export default function EventTooltip(props: EventTooltipProps) {
+    const { 
+        events,
+        currentlyHoveredEventIdx, 
+        eventTooltipId, 
+        setExternalHighlightIdx, 
+        launchModal,
+        setCurrentlySelectedEventIdx
+        
+      } = props;
+
 
     useEffect(() => {
         ReactTooltip.rebuild()
@@ -20,6 +39,7 @@ export default function EventTooltip(props: {events; currentlyHoveredEventIdx, e
         const hiddenEvent = events[hiddenEventIdx] // The event corresponding to to the index storred in the array of overlaps
         eventsArr.push([hiddenEvent, hiddenEventIdx])
     }
+
 
 
     return (
@@ -40,6 +60,9 @@ export default function EventTooltip(props: {events; currentlyHoveredEventIdx, e
                         currentEvent={event[0]} 
                         eventIdx={event[1]}
                         setExternalHighlightIdx={setExternalHighlightIdx} 
+                        launchModal={launchModal}
+                        setCurrentlySelectedEventIdx={setCurrentlySelectedEventIdx}
+                        
                     />
 
                 </div>
@@ -50,15 +73,31 @@ export default function EventTooltip(props: {events; currentlyHoveredEventIdx, e
     )
 }
 
-function EventDescriptionView(props: {currentEvent, eventIdx, setExternalHighlightIdx}) {
+interface EventDescriptionViewProps {
+    currentEvent: any
+    eventIdx: number,
+    setExternalHighlightIdx: any
+    launchModal: any
+    setCurrentlySelectedEventIdx: any
+   
 
-    const {currentEvent, eventIdx, setExternalHighlightIdx} = props
+}
+function EventDescriptionView(props: EventDescriptionViewProps) {
+
+    const {currentEvent, 
+            eventIdx, 
+            setExternalHighlightIdx,
+            launchModal,
+            setCurrentlySelectedEventIdx
+           
+        } = props
 
     const [backgroundColor, setBackgroundColor] = useState('rgba(135, 220, 215, 0)')
 
     function onMouseEnter() {
         setBackgroundColor('#E9E9E9')
         setExternalHighlightIdx(eventIdx)
+        setCurrentlySelectedEventIdx(eventIdx)
     }
 
     function onMouseLeave() {
@@ -67,7 +106,7 @@ function EventDescriptionView(props: {currentEvent, eventIdx, setExternalHighlig
     }
 
     function onClick() {
-        //myConsole.log(eventIdx)
+       launchModal()
     }
 
     return ( 

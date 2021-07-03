@@ -97,10 +97,9 @@ export default function ResultEngine() {
     setCalendarResultData(draft => {
       draft.days[day_idx].free_blocks = CalculateFreeBlocks(draft.days[day_idx].hard_start, draft.days[day_idx].hard_end, 60, 60, 30, events)
     })
+  }
 
   
-    
-  }
 
 
 

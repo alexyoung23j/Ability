@@ -8,8 +8,25 @@ import { datetimeToOffset } from '../../../../util/CalendarUtil';
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
-export default function CalendarEvents(props: { events; setCurrentlyHoveredEventIdx; eventTooltipId; externallyHighlightedIdx }) {
-    const { events, setCurrentlyHoveredEventIdx, eventTooltipId, externallyHighlightedIdx } = props;
+interface CalendarEventsProps {
+  events: Array<any>
+  setCurrentlyHoveredEventIdx: any
+  setCurrentlySelectedEventIdx: any
+  eventTooltipId: string;
+  externallyHighlightedIdx: number;
+
+  launchModalFromExistingEvent:any
+}
+
+export default function CalendarEvents(props: CalendarEventsProps) {
+    const { 
+      events,
+      setCurrentlyHoveredEventIdx, 
+      setCurrentlySelectedEventIdx,
+      eventTooltipId, 
+      externallyHighlightedIdx, 
+      launchModalFromExistingEvent
+    } = props;
 
     return (
       <div
@@ -27,8 +44,10 @@ export default function CalendarEvents(props: { events; setCurrentlyHoveredEvent
               event={event} 
               event_idx={idx} 
               setCurrentlyHoveredEventIdx={setCurrentlyHoveredEventIdx}
+              setCurrentlySelectedEventIdx={setCurrentlySelectedEventIdx}
               eventTooltipId={eventTooltipId}
               externallyHighlightedIdx={externallyHighlightedIdx}
+              launchModalFromExistingEvent={launchModalFromExistingEvent}
               />
           </div>
         ))}
@@ -37,8 +56,28 @@ export default function CalendarEvents(props: { events; setCurrentlyHoveredEvent
     );
   }
   
-  function CalendarEvent(props: {event; event_idx; setCurrentlyHoveredEventIdx; eventTooltipId; externallyHighlightedIdx}) {
-    const {event_idx, event, setCurrentlyHoveredEventIdx, eventTooltipId, externallyHighlightedIdx} = props
+  interface CalendarEventProps {
+    event: any
+    event_idx: number
+    setCurrentlyHoveredEventIdx: any
+    setCurrentlySelectedEventIdx: any,
+    eventTooltipId: string;
+    externallyHighlightedIdx: number;
+  
+    launchModalFromExistingEvent: any
+  }
+
+  function CalendarEvent(props: CalendarEventProps) {
+
+    const { 
+      event,
+      event_idx,
+      setCurrentlyHoveredEventIdx, 
+      setCurrentlySelectedEventIdx,
+      eventTooltipId, 
+      externallyHighlightedIdx, 
+      launchModalFromExistingEvent
+    } = props;
 
     // Ensure that the "longer" event in an overlap is the one that gets highlighted on hover
     const overlapping_events = event.index_of_overlapped_events
@@ -59,12 +98,15 @@ export default function CalendarEvents(props: { events; setCurrentlyHoveredEvent
 
     function HandleMouseClick() {
       // Open up the event url 
+      launchModalFromExistingEvent()
+
     }
 
     function HandleMouseEnter() {
       setColor('#8E8E8E')
       setDepth(10)
       setCurrentlyHoveredEventIdx(event_idx)
+      setCurrentlySelectedEventIdx(event_idx)
       ReactTooltip.rebuild()
     }
 

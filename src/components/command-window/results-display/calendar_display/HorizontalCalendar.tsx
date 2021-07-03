@@ -9,6 +9,7 @@ import FreeBlocks from './horizontal-cal-components/FreeBlocks';
 import CalendarEvents from './horizontal-cal-components/CalendarEvents';
 import ReactTooltip from 'react-tooltip';
 import EventTooltip from './horizontal-cal-components/EventTooltip';
+import { current } from 'immer';
 
 
 var nodeConsole = require('console');
@@ -27,6 +28,15 @@ interface HorizontalCalendar {
   eventTooltipId: string;
   event_overlap_depth: number,
   scheduleNewEvent: any
+
+  setModalShow: any
+  setShowsNewEvent: any
+  setModalEventStart: any;
+  setModalEventEnd: any
+  setModalEventTitle: any
+  setModalEventLocation: any
+  setModalEventDescription: any
+  setModalEventCalendar: any
 }
 
 export default function HorizontalCalendar(props: HorizontalCalendar) {
@@ -42,12 +52,23 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     ignoredSlots,
     eventTooltipId,
     event_overlap_depth,
-    scheduleNewEvent
+    scheduleNewEvent, 
+    setModalShow,
+    setShowsNewEvent,
+    setModalEventStart,
+    setModalEventEnd,
+    setModalEventTitle,
+    setModalEventLocation,
+    setModalEventDescription,
+    setModalEventCalendar,
   } = props;
 
   // State
   const [currentlyHoveredEventIdx, setCurrentlyHoveredEventIdx] = useState(0) // refers to the index in "events" being hovered
+  const [currentlySelectedEventIdx, setCurrentlySelectedEventIdx] = useState(0) // refers to the index in "events" being selected (via a click)
   const [externallyHighlightedCalendarEventIdx, setExternallyHighlightedCalendarEventIdx] = useState(-1)
+
+  
 
 
   // -------------------------- HORIZONTAL SCROLL STUFF -------------------------- //
@@ -83,6 +104,18 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     myConsole.log(free_blocks)
   }, [free_blocks]) */
 
+  // --------------------- UTILITY METHODS --------------------- //
+  function LaunchModalFromExistingEvent() {
+    setModalShow(true)
+    setShowsNewEvent(false)
+    setModalEventStart(new Date(events[currentlySelectedEventIdx].start_time))
+    setModalEventEnd(new Date(events[currentlySelectedEventIdx].end_time))
+    setModalEventTitle(events[currentlySelectedEventIdx].title)
+    setModalEventLocation('') // TODO: Add location info to the event object
+    setModalEventDescription("hiii") // TODO: Set description on the event object
+    setModalEventCalendar('') // TODO: Add this to object
+  }
+
   
  
   return (
@@ -95,8 +128,10 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
         <CalendarEvents 
           events={events}
           setCurrentlyHoveredEventIdx={setCurrentlyHoveredEventIdx}
+          setCurrentlySelectedEventIdx={setCurrentlySelectedEventIdx}
           eventTooltipId={eventTooltipId}
           externallyHighlightedIdx={externallyHighlightedCalendarEventIdx}
+          launchModalFromExistingEvent={LaunchModalFromExistingEvent}
         />
         <FreeSlots
           free_blocks={free_blocks}
@@ -115,8 +150,11 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
         <EventTooltip 
           events={events}
           currentlyHoveredEventIdx={currentlyHoveredEventIdx}
+          setCurrentlySelectedEventIdx={setCurrentlySelectedEventIdx}
           eventTooltipId={eventTooltipId}
           setExternalHighlightIdx={setExternallyHighlightedCalendarEventIdx}
+          launchModal={LaunchModalFromExistingEvent}
+       
         />
       </div>
 
