@@ -7,12 +7,14 @@ import { assert } from './assert';
 import * as CalendarDAO from './DAO/CalendarDAO';
 import { writeJSONToFile } from './util';
 import { CalendarContext } from './App';
+import CalendarIndexUtil from './components/command-window/CalendarIndexUtil';
 
 const CALENDAR_ID = 'abilityapptester01@gmail.com';
 
 // Helpers for testing in CDT
 window.CalendarDAO = CalendarDAO;
 window.write = writeJSONToFile;
+window.calendarIndexUtil = CalendarIndexUtil;
 
 export function Auth() {
   const [authResponse, setAuthResponse] = useState<null | AuthResponse>(null);

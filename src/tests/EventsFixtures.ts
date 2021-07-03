@@ -1,3 +1,224 @@
+import { calendar_v3 } from '@googleapis/calendar';
+
+export function buildEventFixture(start): calendar_v3.Schema$Event {
+  return {
+    kind: 'calendar#event',
+    etag: '"3249018082346000"',
+    id: '551fdccsompjpkrqje1c9hld2q_20210703T060000Z',
+    status: 'confirmed',
+    htmlLink:
+      'https://www.google.com/calendar/event?eid=NTUxZmRjY3NvbXBqcGtycWplMWM5aGxkMnFfMjAyMTA3MDNUMDYwMDAwWiBhYmlsaXR5YXBwdGVzdGVyMDFAbQ',
+    created: '2021-06-24T04:30:41.000Z',
+    updated: '2021-06-24T04:30:41.173Z',
+    summary: 'Midnight Fun',
+    creator: { email: 'abilityapptester01@gmail.com', self: true },
+    organizer: { email: 'abilityapptester01@gmail.com', self: true },
+    start: {
+      dateTime: '2021-07-02T23:00:00-07:00',
+      timeZone: 'America/Los_Angeles',
+    },
+    end: {
+      dateTime: '2021-07-03T01:00:00-07:00',
+      timeZone: 'America/Los_Angeles',
+    },
+    recurringEventId: '551fdccsompjpkrqje1c9hld2q',
+    originalStartTime: {
+      dateTime: '2021-07-02T23:00:00-07:00',
+      timeZone: 'America/Los_Angeles',
+    },
+    iCalUID: '551fdccsompjpkrqje1c9hld2q@google.com',
+    sequence: 0,
+    reminders: { useDefault: true },
+    eventType: 'default',
+  };
+}
+
+export const EVENT_1A = {
+  kind: 'calendar#event',
+  etag: '"3244660126582000"',
+  id: '6jds1ovgdd06hnaell6i379ql2_20210705T150000Z',
+  status: 'confirmed',
+  htmlLink:
+    'https://www.google.com/calendar/event?eid=NmpkczFvdmdkZDA2aG5hZWxsNmkzNzlxbDJfMjAyMTA3MDVUMTUwMDAwWiBhYmlsaXR5YXBwdGVzdGVyMDFAbQ',
+  created: '2021-05-29T23:14:23.000Z',
+  updated: '2021-05-29T23:14:23.291Z',
+  summary: 'Event 1',
+  creator: { email: 'abilityapptester01@gmail.com', self: true },
+  organizer: { email: 'abilityapptester01@gmail.com', self: true },
+  start: {
+    dateTime: '2021-07-05T08:00:00-07:00',
+    timeZone: 'America/Los_Angeles',
+  },
+  end: {
+    dateTime: '2021-07-05T10:00:00-07:00',
+    timeZone: 'America/Los_Angeles',
+  },
+  recurringEventId: '6jds1ovgdd06hnaell6i379ql2',
+  originalStartTime: {
+    dateTime: '2021-07-05T08:00:00-07:00',
+    timeZone: 'America/Los_Angeles',
+  },
+  iCalUID: '6jds1ovgdd06hnaell6i379ql2@google.com',
+  sequence: 0,
+  reminders: { useDefault: true },
+  eventType: 'default',
+};
+
+export const EVENT_1B = {
+  kind: 'calendar#event',
+  etag: '"3244660126582000"',
+  id: '6jds1ovgdd06hnaell6i379ql2_20211206T160000Z',
+  status: 'confirmed',
+  htmlLink:
+    'https://www.google.com/calendar/event?eid=NmpkczFvdmdkZDA2aG5hZWxsNmkzNzlxbDJfMjAyMTEyMDZUMTYwMDAwWiBhYmlsaXR5YXBwdGVzdGVyMDFAbQ',
+  created: '2021-05-29T23:14:23.000Z',
+  updated: '2021-05-29T23:14:23.291Z',
+  summary: 'Event 1',
+  creator: { email: 'abilityapptester01@gmail.com', self: true },
+  organizer: { email: 'abilityapptester01@gmail.com', self: true },
+  start: {
+    dateTime: '2021-12-06T08:00:00-08:00',
+    timeZone: 'America/Los_Angeles',
+  },
+  end: {
+    dateTime: '2021-12-06T10:00:00-08:00',
+    timeZone: 'America/Los_Angeles',
+  },
+  recurringEventId: '6jds1ovgdd06hnaell6i379ql2',
+  originalStartTime: {
+    dateTime: '2021-12-06T08:00:00-08:00',
+    timeZone: 'America/Los_Angeles',
+  },
+  iCalUID: '6jds1ovgdd06hnaell6i379ql2@google.com',
+  sequence: 0,
+  reminders: { useDefault: true },
+  eventType: 'default',
+};
+
+export const EVENT_2A = {
+  kind: 'calendar#event',
+  etag: '"3249018082346000"',
+  id: '551fdccsompjpkrqje1c9hld2q_20210703T060000Z',
+  status: 'confirmed',
+  htmlLink:
+    'https://www.google.com/calendar/event?eid=NTUxZmRjY3NvbXBqcGtycWplMWM5aGxkMnFfMjAyMTA3MDNUMDYwMDAwWiBhYmlsaXR5YXBwdGVzdGVyMDFAbQ',
+  created: '2021-06-24T04:30:41.000Z',
+  updated: '2021-06-24T04:30:41.173Z',
+  summary: 'Midnight Fun',
+  creator: { email: 'abilityapptester01@gmail.com', self: true },
+  organizer: { email: 'abilityapptester01@gmail.com', self: true },
+  start: {
+    dateTime: '2021-07-02T23:00:00-07:00',
+    timeZone: 'America/Los_Angeles',
+  },
+  end: {
+    dateTime: '2021-07-03T01:00:00-07:00',
+    timeZone: 'America/Los_Angeles',
+  },
+  recurringEventId: '551fdccsompjpkrqje1c9hld2q',
+  originalStartTime: {
+    dateTime: '2021-07-02T23:00:00-07:00',
+    timeZone: 'America/Los_Angeles',
+  },
+  iCalUID: '551fdccsompjpkrqje1c9hld2q@google.com',
+  sequence: 0,
+  reminders: { useDefault: true },
+  eventType: 'default',
+};
+
+export const EVENT_2B = {
+  kind: 'calendar#event',
+  etag: '"3249018082346000"',
+  id: '551fdccsompjpkrqje1c9hld2q_20210918T060000Z',
+  status: 'confirmed',
+  htmlLink:
+    'https://www.google.com/calendar/event?eid=NTUxZmRjY3NvbXBqcGtycWplMWM5aGxkMnFfMjAyMTA5MThUMDYwMDAwWiBhYmlsaXR5YXBwdGVzdGVyMDFAbQ',
+  created: '2021-06-24T04:30:41.000Z',
+  updated: '2021-06-24T04:30:41.173Z',
+  summary: 'Midnight Fun',
+  creator: { email: 'abilityapptester01@gmail.com', self: true },
+  organizer: { email: 'abilityapptester01@gmail.com', self: true },
+  start: {
+    dateTime: '2021-09-17T23:00:00-07:00',
+    timeZone: 'America/Los_Angeles',
+  },
+  end: {
+    dateTime: '2021-09-18T01:00:00-07:00',
+    timeZone: 'America/Los_Angeles',
+  },
+  recurringEventId: '551fdccsompjpkrqje1c9hld2q',
+  originalStartTime: {
+    dateTime: '2021-09-17T23:00:00-07:00',
+    timeZone: 'America/Los_Angeles',
+  },
+  iCalUID: '551fdccsompjpkrqje1c9hld2q@google.com',
+  sequence: 0,
+  reminders: { useDefault: true },
+  eventType: 'default',
+};
+
+export const EVENT_3A = {
+  kind: 'calendar#event',
+  etag: '"3244660166504000"',
+  id: '4a4ma5802bktn2d1risusravm8_20210916T180000Z',
+  status: 'confirmed',
+  htmlLink:
+    'https://www.google.com/calendar/event?eid=NGE0bWE1ODAyYmt0bjJkMXJpc3VzcmF2bThfMjAyMTA5MTZUMTgwMDAwWiBhYmlsaXR5YXBwdGVzdGVyMDFAbQ',
+  created: '2021-05-29T23:14:43.000Z',
+  updated: '2021-05-29T23:14:43.252Z',
+  summary: 'Lunch Break',
+  creator: { email: 'abilityapptester01@gmail.com', self: true },
+  organizer: { email: 'abilityapptester01@gmail.com', self: true },
+  start: {
+    dateTime: '2021-09-16T11:00:00-07:00',
+    timeZone: 'America/Los_Angeles',
+  },
+  end: {
+    dateTime: '2021-09-16T12:30:00-07:00',
+    timeZone: 'America/Los_Angeles',
+  },
+  recurringEventId: '4a4ma5802bktn2d1risusravm8',
+  originalStartTime: {
+    dateTime: '2021-09-16T11:00:00-07:00',
+    timeZone: 'America/Los_Angeles',
+  },
+  iCalUID: '4a4ma5802bktn2d1risusravm8@google.com',
+  sequence: 0,
+  reminders: { useDefault: true },
+  eventType: 'default',
+};
+
+export const EVENT_3B = {
+  kind: 'calendar#event',
+  etag: '"3244660166504000"',
+  id: '4a4ma5802bktn2d1risusravm8_20211011T180000Z',
+  status: 'confirmed',
+  htmlLink:
+    'https://www.google.com/calendar/event?eid=NGE0bWE1ODAyYmt0bjJkMXJpc3VzcmF2bThfMjAyMTEwMTFUMTgwMDAwWiBhYmlsaXR5YXBwdGVzdGVyMDFAbQ',
+  created: '2021-05-29T23:14:43.000Z',
+  updated: '2021-05-29T23:14:43.252Z',
+  summary: 'Lunch Break',
+  creator: { email: 'abilityapptester01@gmail.com', self: true },
+  organizer: { email: 'abilityapptester01@gmail.com', self: true },
+  start: {
+    dateTime: '2021-10-11T11:00:00-07:00',
+    timeZone: 'America/Los_Angeles',
+  },
+  end: {
+    dateTime: '2021-10-11T12:30:00-07:00',
+    timeZone: 'America/Los_Angeles',
+  },
+  recurringEventId: '4a4ma5802bktn2d1risusravm8',
+  originalStartTime: {
+    dateTime: '2021-10-11T11:00:00-07:00',
+    timeZone: 'America/Los_Angeles',
+  },
+  iCalUID: '4a4ma5802bktn2d1risusravm8@google.com',
+  sequence: 0,
+  reminders: { useDefault: true },
+  eventType: 'default',
+};
+
 export const EVENTS = [
   {
     kind: 'calendar#event',

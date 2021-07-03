@@ -52,15 +52,16 @@ export async function fetchEvents(
 
 export async function fetchInstances(
   calendar: calendar_v3.Calendar,
-  {
-    // TODO: Change this to be 00:00 of the current day
-    timeMin = new Date().toISOString(),
-    timeMax,
-  }: {
+  options: {
     timeMin?: string;
     timeMax?: string;
+  } = {
+    // TODO: Change this to be 00:00 of the current day
+    timeMin: new Date().toISOString(),
+    timeMax: undefined,
   }
 ) {
+  const { timeMin, timeMax } = options;
   const { items } = await fetchEvents(calendar, { timeMin, timeMax });
   const instancesPromises = [];
   for (const item of items) {

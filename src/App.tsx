@@ -67,11 +67,12 @@ function App() {
 
   return (
     <CalendarContext.Provider value={calendarIndex}>
-      <div>
+      <Auth />
+      {/* <div>
         {(showCommand && <CommandView />) || (
           <SettingsView toggleWindowHandler={toggleBetweenWindows} />
         )}
-      </div>
+      </div> */}
     </CalendarContext.Provider>
   );
 }
