@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import CSS from 'csstype'
 import HorizontalCalendar from './HorizontalCalendar'
 import EventModal from './EventModal';
@@ -16,13 +16,29 @@ interface CalendarBody {
 
 }
 
+// State needs to contain the folllwing information about the event that is currently selected (or none is selected):
+// event start time, event end time, event date, event description, event location, event calendar, event title
 export default function CalendarBody(props: CalendarBody) {
     
     const {calendar_data, ignoreHandler, ignoredSlots, textEngineLaunched, scheduleNewEvent} = props
 
     const bodyRef = useRef(null)
 
+    // State
     const [modalShow, setModalShow] = useState(true)
+    const [modalEventStart, setModalEventStart] = useState<Date>(new Date('2021-06-09T13:10:00Z'))
+    const [modalEventEnd, setModalEventEnd] = useState<Date>(new Date("2021-06-09T14:10:00Z"))
+    const [modalEventTitle, setModalEventTitle] = useState('')
+    const [modalEventLocation, setModalEventLocation] = useState('')
+    const [modalEventCalendar, setModalEventCalendar] = useState('')
+    const [modalEventDescription, setModalEventDescription] = useState('')
+
+
+    useEffect(() => {
+        myConsole.log(modalEventStart, modalEventEnd)
+    }, [modalEventStart])
+
+
     // Since each slot in our ignoredSlots array has a day index associated with it, we extract only the block and slot indices 
     // for processing with the horizontal calendar itself
     function reduceIgnoredSlotsArray(day_idx) {
@@ -63,10 +79,23 @@ export default function CalendarBody(props: CalendarBody) {
             <button onClick={() => setModalShow(true)}>
                 Open
             </button>
-            <EventModal isOpen={modalShow}/>
-            
-            
-            
+            <EventModal 
+                isOpen={modalShow}
+                eventStart={modalEventStart}
+                eventEnd={modalEventEnd}    
+                eventTitle={modalEventTitle}
+                eventLocation={modalEventLocation}
+                eventCalendar={modalEventCalendar}
+                eventDescription={modalEventDescription}
+
+                setIsOpen={setModalShow}
+                setEventStart={setModalEventStart}
+                setEventEnd={setModalEventEnd}
+                setEventTitle={setModalEventTitle}
+                setEventLocation={setModalEventLocation}
+                setEventCalendar={setModalEventCalendar}
+                setEventDescription={setModalEventDescription}
+            />    
         </div>
     )
 }

@@ -3,9 +3,13 @@ import CSS from 'csstype';
 import { DatePicker, KeyboardDatePicker } from "@material-ui/pickers";
 import { createMuiTheme } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/styles";
-import { Overrides } from '@material-ui/core/styles/overrides';
 import { MuiPickersOverrides } from '@material-ui/pickers/typings/overrides';
 import { Multiselect } from 'multiselect-react-dropdown';
+const clockIcon = require('/src/content/svg/ClockIcon.svg');
+import ReactModal from 'react-modal'
+
+var nodeConsole = require('console');
+var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 
 
@@ -17,12 +21,6 @@ type overridesNameToClassKey = {
 declare module '@material-ui/core/styles/overrides' {
   export interface ComponentNameToClassKey extends overridesNameToClassKey {}
 }
-
-const clockIcon = require('/src/content/svg/ClockIcon.svg');
-
-var nodeConsole = require('console');
-var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
-
 
 const materialTheme = createMuiTheme({
     typography: {
@@ -51,16 +49,45 @@ const materialTheme = createMuiTheme({
     }   
 });
 
+interface DatePickerProps {
+    eventStart: Date
+    eventEnd: Date
+    setEventStart: any
+    setEventEnd: any
+}
+ 
 
-export default function DatePickerComponent() {
 
-    const [selectedDate, handleDateChange] = useState(new Date())
+export default function DatePickerComponent(props: DatePickerProps) {
+
+    const {eventStart, eventEnd, setEventStart, setEventEnd} = props
+
     const [datePickerColor, setDatePickerColor] = useState("rgba(172, 170, 170, 0.5)")
 
     const [startTime, setStartTime] = useState(["12:30"])
-
     const [options, setOptions] = useState(["12:30", "12:00", "12:00","12:00","12:00","12:00","12:00","12:00"])
 
+    // Resets the start and end times to reflect a change in date
+    function setEventTimesOnDateChange(date: Date) {
+        let newStartHours = eventStart.getHours()
+        let newStartMinutes = eventStart.getMinutes()
+
+        let newEndHours = eventEnd.getHours()
+        let newEndMinutes = eventEnd.getMinutes()
+
+        let newStart = new Date(date)
+        let newEnd = new Date(date)
+
+        myConsole.log(newStartHours)
+        newStart.setHours(newStartHours)
+        newStart.setMinutes(newStartMinutes)
+
+        newEnd.setHours(newEndHours)
+        newEnd.setMinutes(newEndMinutes)
+
+        setEventStart(newStart)
+        setEventEnd(newEnd)
+    }
 
 
     return (
@@ -75,8 +102,8 @@ export default function DatePickerComponent() {
                     <DatePicker
                         disableToolbar
                         variant="inline"
-                        value={selectedDate}
-                        onChange={handleDateChange}
+                        value={eventStart}
+                        onChange={(date) => setEventTimesOnDateChange(date)}
                         className="datePicker"
                         InputProps={{disableUnderline: true}}
                         onOpen={() => setDatePickerColor("rgb(125, 189, 220)")}
@@ -91,17 +118,15 @@ export default function DatePickerComponent() {
                 singleSelect={true}
                 placeholder="12:30"
                 selectedValues={startTime}
-                showArrow={false}
                 style={{
                     searchBox: {
                       border: 'none',
                       fontFamily: "Montserrat, sans serif",
-                      width: "60px"
+                      width: "80px"
                     },
                     multiselectContainer: {
-                        height: "15px",
-                        arrow: 'none',
-                        width: "60px"
+                        height: "10px",
+                        width: "80px"
                     },
                     chips: {
                         
@@ -109,13 +134,7 @@ export default function DatePickerComponent() {
                     }
                     
                 }}                
-            />
-
-            
-            
-
-                
-           
+            />   
         </div>
     )
 }

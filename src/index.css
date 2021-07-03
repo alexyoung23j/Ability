@@ -139,8 +139,34 @@
     border: none;
     outline: none;
     width: 350px;
-    
-    
+}
+
+.eventModalLocation {
+    font-family: 'Montserrat';
+    font-weight: lighter;
+    color: #7D7D7D;
+    font-size: 14px;
+    border: none;
+    outline: none;
+    width: 200px;
+}
+
+.eventModalDescription {
+    font-family: 'Montserrat';
+    font-weight: lighter;
+    color: #7D7D7D;
+    font-size: 14px;
+    border: none;
+    outline: none;
+    width: 350px;
+    min-height: 200px;
+}
+
+.eventModalSaveButtonText {
+    font-family: 'Montserrat';
+    font-weight: lighter;
+    color: #FFFFFF;
+    font-size: 14px
 }
 
 ::-webkit-input-placeholder { 
@@ -150,6 +176,7 @@
 .datePicker {
     font-family: 'Montserrat';
     font-weight: lighter;
+    height: 26px
 }
 
 .MuiInputBase-input {

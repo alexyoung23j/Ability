@@ -311,7 +311,7 @@ const commandAreaStyle: CSS.Properties = {
   alignItems: 'flex-start',
   justifyContent: 'center',
   height: '100%',
-  backgroundColor: 'rgba(211,211,211, 0.09)',
+  backgroundColor: 'rgba(211,211,211, 0.05)',
   position: "fixed",
   width: "100%"
 };
