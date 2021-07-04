@@ -7,6 +7,8 @@ import { ContentState } from 'draft-js';
 import { calendarDummyResults } from '../constants';
 import { generateIntervals, roundToNearestInterval, CalculateFreeBlocks, HydrateOverlapEvents } from '../../util/CalendarUtil';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+const { DateTime } = require("luxon");
+
 
 // pick a date util library
 import DateFnsUtils from '@date-io/date-fns';
@@ -56,8 +58,8 @@ export default function ResultEngine() {
     // TODO: Need to actually do the scheduling here with the calendar API
 
     // Find position to insert into events
-    const newEventStartTime = new Date(start_time).getTime()
-    const newEventEndTime = new Date(end_time).getTime()
+    const newEventStartTime = DateTime.fromISO(start_time)
+    const newEventEndTime = DateTime.fromISO(end_time)
 
     // Copy events into variable for manipulation in this funciton
     let events = JSON.parse(JSON.stringify(calendarResultData.days[day_idx].events))
@@ -66,7 +68,7 @@ export default function ResultEngine() {
     
     // Insert Event into correct position (by START time, as is convention for events)
     while (insertIdx < events.length) {
-      const eventStartTime = new Date(events[insertIdx].start_time).getTime()
+      const eventStartTime = DateTime.fromISO(events[insertIdx].start_time)
 
       if (newEventStartTime < eventStartTime) {
         break

@@ -64,6 +64,7 @@ export default function EventModal(props: EventModalProps) {
         >
             <div
                 style={ModalStyles}
+                onClick={(e) => e.stopPropagation()}
             >
                 <div
                     style={{marginTop: "30px"}}

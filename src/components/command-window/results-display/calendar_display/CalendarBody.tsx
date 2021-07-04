@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react'
 import CSS from 'csstype'
 import HorizontalCalendar from './HorizontalCalendar'
 import EventModal from './EventModal';
+const { DateTime } = require("luxon");
 
 
 var nodeConsole = require('console');
@@ -27,8 +28,8 @@ export default function CalendarBody(props: CalendarBody) {
     // State
     const [modalShow, setModalShow] = useState(false)
     const [modalShowsNewEvent, setModalShowsNewEvent] = useState(false)
-    const [modalEventStart, setModalEventStart] = useState<Date>(new Date('2021-06-09T13:10:00Z'))
-    const [modalEventEnd, setModalEventEnd] = useState<Date>(new Date("2021-06-09T14:10:00Z"))
+    const [modalEventStart, setModalEventStart] = useState(DateTime.fromISO('2021-06-09T13:10:00Z'))
+    const [modalEventEnd, setModalEventEnd] = useState(DateTime.fromISO("2021-06-09T14:10:00Z"))
     const [modalEventTitle, setModalEventTitle] = useState('')
     const [modalEventLocation, setModalEventLocation] = useState('')
     const [modalEventCalendar, setModalEventCalendar] = useState('')
@@ -85,9 +86,6 @@ export default function CalendarBody(props: CalendarBody) {
             <div style={{height: "20px"}}>
 
             </div>
-            <button onClick={() => setModalShow(true)}>
-                Open
-            </button>
             <EventModal 
                 isOpen={modalShow}
                 isNewEvent={modalShowsNewEvent}

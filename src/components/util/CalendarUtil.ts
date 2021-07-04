@@ -1,3 +1,4 @@
+const { DateTime } = require("luxon");
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -19,14 +20,14 @@ function calculateMinutes(minutes: number) {
 
 // Calculates a pixel offset value for use within Horizontal Calendar. 
 export function datetimeToOffset(start: string, end: string, borderAdjust: number) {
-  const startTime = new Date(start);
-  const endTime = new Date(end);
+  const startTime = DateTime.fromISO(start);
+  const endTime = DateTime.fromISO(end);
 
-  const startHour = startTime.getUTCHours();
-  const endHour = endTime.getUTCHours();
+  const startHour = startTime.hour;
+  const endHour = endTime.hour;
 
-  const startMin = startTime.getUTCMinutes();
-  const endMin = endTime.getUTCMinutes();
+  const startMin = startTime.minute;
+  const endMin = endTime.minute;
 
   var minOffset = calculateMinutes(startMin);
   var minDifferenceOffset = calculateMinutes(endMin - startMin);
@@ -43,25 +44,18 @@ export function datetimeToOffset(start: string, end: string, borderAdjust: numbe
     minDifferenceOffset * (BAR_WIDTH / 4) -
     borderAdjust;
 
-  if (end === '2021-06-09T24:00:00Z') {
-    const newWidth =
-      (BAR_WIDTH / 2 - (startHour - endHour)) * BAR_WIDTH +
-      minDifferenceOffset * (BAR_WIDTH / 4) -
-      borderAdjust;
-
-    return [String(offset + newWidth + 'px'), String(Math.abs(newWidth) + 'px')];
-  } 
+  
 
   return [String(offset - width + 'px'), String(width + 'px')];
 }
 
 
 export function datetimeToRangeString(start: string, end: string, militaryTime: boolean) {
-  const startTime = new Date(start)
-  const endTime = new Date(end)
+  const startTime = DateTime.fromISO(start)
+  const endTime = DateTime.fromISO(end)
 
-  const startHour = startTime.getUTCHours()
-  const endHour = endTime.getUTCHours()
+  const startHour = startTime.hour
+  const endHour = endTime.hour
 
   let startHourString
   let endHourString
@@ -101,7 +95,7 @@ export function datetimeToRangeString(start: string, end: string, militaryTime: 
 
   }
 
-  const startMin = startTime.getUTCMinutes()
+  const startMin = startTime.minute
   let startMinString;
 
   if (startMin < 10) {
@@ -111,7 +105,7 @@ export function datetimeToRangeString(start: string, end: string, militaryTime: 
   }
 
   
-  const endMin = endTime.getUTCMinutes()
+  const endMin = endTime.minute
   let endMinString
 
   if (endMin < 10) {
@@ -130,25 +124,20 @@ export function datetimeToRangeString(start: string, end: string, militaryTime: 
 export function generateIntervals(start_time, end_time, interval_size, slot_size, roundUp) {
   let intervals = []
 
-  // Find start and End times, rounded to the desired precision (set by interal_size)
-  let curTime = new Date(start_time)
-  curTime = roundToNearestInterval(curTime, interval_size, roundUp)
-  let endTime = new Date(end_time)
-  endTime = roundToNearestInterval(endTime, interval_size, roundUp)
+  var curTime = roundToNearestInterval(DateTime.fromISO(start_time), interval_size, roundUp)
+  var endTime = roundToNearestInterval(DateTime.fromISO(end_time), interval_size, roundUp)
 
+  let currentPlusSlotSize = curTime.plus({minute: slot_size})
   
-
-  let currentPlusOneHour = new Date(curTime.getTime() + slot_size*60000)
-
-  while (currentPlusOneHour <= endTime) {
+  while (currentPlusSlotSize <= endTime) {
     // Find an interval from current to current + 1 hour
-    const newEnd = new Date(curTime.getTime() + slot_size*60000).toISOString()
-    let newInterval = {start_time: curTime.toISOString(), end_time: newEnd}
+    const newEnd = curTime.plus({minute: slot_size}).toISO()
+    let newInterval = {start_time: curTime.toISO(), end_time: newEnd}
     intervals.push(newInterval)
 
     // Move forward
-    curTime = new Date(curTime.getTime() + 60000*interval_size)
-    currentPlusOneHour = new Date(curTime.getTime() + slot_size*60000)
+    curTime = curTime.plus({minute: interval_size})
+    currentPlusSlotSize = curTime.plus({minutes: slot_size})
 
   }
 
@@ -156,23 +145,27 @@ export function generateIntervals(start_time, end_time, interval_size, slot_size
 } 
 
 // Rounds a time to the nearest value with precision specified by interval (i.e. 8:42 -> 8:45 with interval = 15)
+// Accepts "time" as an Luxon DateTime Object
 export function roundToNearestInterval(time, interval: number, roundUp: boolean) {
 
+  var roundedTime = time
+  //myConsole.log(roundedTime)
+  
   if (roundUp) {
-    const preciseMinutes = time.getMinutes()
+    const preciseMinutes = time.minute
     const roundedMinutes = Math.ceil(preciseMinutes/interval)*interval
-    time.setMinutes(roundedMinutes)
+    roundedTime = roundedTime.set({minute: roundedMinutes})
 
     if (roundedMinutes == 0 && preciseMinutes != 0) {
-      time.setHours(time.getHours() + 1)
+      roundedTime = roundedTime.set({hour: time.hour + 1})
     }
   } else {
-    const preciseMinutes = time.getMinutes()
+    const preciseMinutes = time.minute
     const roundedMinutes = Math.floor(preciseMinutes/interval)*interval
-    time.setMinutes(roundedMinutes)
+    roundedTime = roundedTime.set({minute: roundedMinutes})
   }
 
-  return time
+  return roundedTime
 }
 
 
@@ -187,38 +180,38 @@ export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_d
   let blocks = []
 
   // Establish a pointer to this moment and the end of this slot
-  let currentBlockStartTime = new Date(hard_start)
+  let currentBlockStartTime = DateTime.fromISO(hard_start)
   currentBlockStartTime = roundToNearestInterval(currentBlockStartTime, interval_size, true)
-  let currentSlotEnd = new Date(currentBlockStartTime.getTime() + 60000*slot_size)
+  let currentSlotEnd = currentBlockStartTime.plus({minutes: slot_size})
 
-  let endTime = new Date(hard_stop)
+  let endTime = DateTime.fromISO(hard_stop) 
   endTime = roundToNearestInterval(endTime, interval_size, true)
 
   let eventIdx = 0
 
   // Ignore events that start before our hard start
-  while (new Date(events[eventIdx].start_time) < new Date(hard_start)) {
+  while (DateTime.fromISO(events[eventIdx].start_time) < DateTime.fromISO(hard_start)) {
     // if we need to move the first block forward, do so
-    if (new Date(events[eventIdx].end_time) > new Date(hard_start)) {
-      currentBlockStartTime = roundToNearestInterval(new Date(events[eventIdx].end_time), interval_size, true)
+    if (DateTime.fromISO(events[eventIdx].end_time) > DateTime.fromISO(hard_start)) {
+      currentBlockStartTime = roundToNearestInterval(DateTime.fromISO(events[eventIdx].end_time), interval_size, true)
     }
     eventIdx+=1
 
   }
 
 
-  let eventEnd = new Date(events[eventIdx].end_time)
+  let eventEnd = DateTime.fromISO(events[eventIdx].end_time)
   eventEnd = roundToNearestInterval(eventEnd, interval_size, true)
 
   let latestEndSoFar = eventEnd
 
   while (eventIdx < events.length) {
     // Find start of event, round down to nearest interval
-    let eventStart = new Date(events[eventIdx].start_time)
+    let eventStart = DateTime.fromISO(events[eventIdx].start_time)
     eventStart = roundToNearestInterval(eventStart, interval_size, false)
 
     // Find end of event, round up to nearest interval
-    let eventEnd = new Date(events[eventIdx].end_time)
+    let eventEnd = DateTime.fromISO(events[eventIdx].end_time)
     eventEnd = roundToNearestInterval(eventEnd, interval_size, true)
 
     // Make sure we aren't moving our block start to the end of an event thats sooner than a previously visited event's end
@@ -229,12 +222,13 @@ export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_d
     }
 
     // If our event ends after the hard stop, ignore it
-    if (eventEnd.getTime() > new Date(hard_stop).getTime()) {
+    if (eventEnd > DateTime.fromISO(hard_stop)) {
       break
     }
 
-    let blockSizeInMilli = eventStart.getTime() - currentBlockStartTime.getTime(); // This will give difference in milliseconds
-    let blockSizeInMinutes = Math.round(blockSizeInMilli / 60000);
+    //let blockSizeInMilli = eventStart.getTime() - currentBlockStartTime.getTime(); // This will give difference in milliseconds
+    let blockSizeInMinutes = eventStart.diff(currentBlockStartTime, "minutes")
+    //Math.round(blockSizeInMilli / 60000);
 
 
     // check if the Block is large enough 
@@ -245,7 +239,7 @@ export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_d
     }
 
     // Create a block, fill it up with free slots, moving the currentSlotEnd forward 
-    const newBlock = {start_time: currentBlockStartTime.toISOString(), end_time: eventStart.toISOString(), free_slots: generateIntervals(currentBlockStartTime, eventStart, interval_size, slot_size, true)}
+    const newBlock = {start_time: currentBlockStartTime.toISO(), end_time: eventStart.toISO(), free_slots: generateIntervals(currentBlockStartTime, eventStart, interval_size, slot_size, true)}
     blocks.push(newBlock)
 
     // find next currentTime (may have to move event idx forward more than once)
@@ -254,13 +248,12 @@ export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_d
 
   }
 
-  let blockSizeInMilli = new Date(hard_stop).getTime() - currentBlockStartTime.getTime(); // This will give difference in milliseconds
-  let blockSizeInMinutes = Math.round(blockSizeInMilli / 60000);
+  let blockSizeInMinutes = DateTime.fromISO(hard_stop).diff(currentBlockStartTime, "minutes") 
 
   if (blockSizeInMinutes >= min_duration) {
     // Round down the hard end
-    let finalEndTime = roundToNearestInterval(new Date(hard_stop), interval_size, false)
-    const newBlock = {start_time: currentBlockStartTime.toISOString(), end_time: finalEndTime.toISOString(), free_slots: generateIntervals(currentBlockStartTime, new Date(hard_stop), interval_size, slot_size, true)}
+    let finalEndTime = roundToNearestInterval(DateTime.fromISO(hard_stop), interval_size, false)
+    const newBlock = {start_time: currentBlockStartTime.toISO(), end_time: finalEndTime.toISO(), free_slots: generateIntervals(currentBlockStartTime.toISO(), DateTime.fromISO(hard_stop).toISO(), interval_size, slot_size, true)}
     blocks.push(newBlock)
   }
 
@@ -282,10 +275,10 @@ export function HydrateOverlapEvents(events: Array<{start_time: string,end_time:
 
 
   let lagEventIdx = 0
-  let lagEventEndTime = new Date(events[0].end_time)
+  let lagEventEndTime = DateTime.fromISO(events[0].end_time)
 
   for (let i = 1; i < events.length; i++) {
-    const newEventEnd = new Date(events[i].end_time)
+    const newEventEnd = DateTime.fromISO(events[i].end_time)
 
     if (newEventEnd < lagEventEndTime) {
       events[lagEventIdx].index_of_overlapped_events.push(i)

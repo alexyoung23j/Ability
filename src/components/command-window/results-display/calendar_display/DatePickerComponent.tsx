@@ -7,6 +7,8 @@ import { MuiPickersOverrides } from '@material-ui/pickers/typings/overrides';
 import { Multiselect } from 'multiselect-react-dropdown';
 const clockIcon = require('/src/content/svg/ClockIcon.svg');
 import ReactModal from 'react-modal'
+const { DateTime } = require("luxon");
+
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -50,8 +52,8 @@ const materialTheme = createMuiTheme({
 });
 
 interface DatePickerProps {
-    eventStart: Date
-    eventEnd: Date
+    eventStart: any
+    eventEnd: any
     setEventStart: any
     setEventEnd: any
 }
@@ -68,22 +70,15 @@ export default function DatePickerComponent(props: DatePickerProps) {
     const [options, setOptions] = useState(["12:30", "12:00", "12:00","12:00","12:00","12:00","12:00","12:00"])
 
     // Resets the start and end times to reflect a change in date
-    function setEventTimesOnDateChange(date: Date) {
-        let newStartHours = eventStart.getHours()
-        let newStartMinutes = eventStart.getMinutes()
+    function setEventTimesOnDateChange(date) {
+        let newStartHours = eventStart.hour
+        let newStartMinutes = eventStart.minute
 
-        let newEndHours = eventEnd.getHours()
-        let newEndMinutes = eventEnd.getMinutes()
+        let newEndHours = eventEnd.hour
+        let newEndMinutes = eventEnd.minute
 
-        let newStart = new Date(date)
-        let newEnd = new Date(date)
-
-        myConsole.log(newStartHours)
-        newStart.setHours(newStartHours)
-        newStart.setMinutes(newStartMinutes)
-
-        newEnd.setHours(newEndHours)
-        newEnd.setMinutes(newEndMinutes)
+        let newStart = date.set({hour: newStartHours, minute: newStartMinutes})
+        let newEnd = date.set({hour: newEndHours, minute: newEndMinutes})
 
         setEventStart(newStart)
         setEventEnd(newEnd)
@@ -101,9 +96,10 @@ export default function DatePickerComponent(props: DatePickerProps) {
                 <ThemeProvider theme={materialTheme}>
                     <DatePicker
                         disableToolbar
+                        autoOk={true}
                         variant="inline"
                         value={eventStart}
-                        onChange={(date) => setEventTimesOnDateChange(date)}
+                        onChange={(date) => setEventTimesOnDateChange(DateTime.fromISO(date.toISOString()))}
                         className="datePicker"
                         InputProps={{disableUnderline: true}}
                         onOpen={() => setDatePickerColor("rgb(125, 189, 220)")}

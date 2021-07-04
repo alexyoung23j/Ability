@@ -160,6 +160,7 @@
     border: none;
     outline: none;
     width: 350px;
+    resize: none;
     min-height: 200px;
 }
 

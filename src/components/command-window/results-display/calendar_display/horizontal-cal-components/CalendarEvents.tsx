@@ -119,8 +119,8 @@ export default function CalendarEvents(props: CalendarEventsProps) {
       <div
         style={{
           position: 'absolute',
-          right: datetimeToOffset(event.start_time, event.end_time, 1)[0],
-          width: datetimeToOffset(event.start_time, event.end_time, 1)[1],
+          right: datetimeToOffset(event.start_time, event.end_time, 0)[0],
+          width: datetimeToOffset(event.start_time, event.end_time, 0)[1],
           backgroundColor: color,
           minHeight: '10px',
           borderRadius: 3,

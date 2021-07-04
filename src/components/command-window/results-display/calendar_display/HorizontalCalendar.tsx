@@ -10,6 +10,7 @@ import CalendarEvents from './horizontal-cal-components/CalendarEvents';
 import ReactTooltip from 'react-tooltip';
 import EventTooltip from './horizontal-cal-components/EventTooltip';
 import { current } from 'immer';
+const { DateTime } = require("luxon");
 
 
 var nodeConsole = require('console');
@@ -89,8 +90,8 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
   // Scrolls to the first occurence of a free slot
   function calculateScroll() {
     if (free_blocks.length > 0) {
-      const earliestTime = new Date(free_blocks[0].start_time);
-      const earliestHour = earliestTime.getUTCHours();
+      const earliestTime = DateTime.fromISO(free_blocks[0].start_time);
+      const earliestHour = earliestTime.hour
 
       return earliestHour * BAR_WIDTH - BAR_WIDTH*.25;
     } else {
@@ -100,16 +101,16 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
 
   // -------------------------- CALLBACKS -------------------------- //
 
-  /* useEffect(() => {
-    myConsole.log(free_blocks)
-  }, [free_blocks]) */
+  useEffect(() => {
+    myConsole.log(free_blocks[0].free_slots[0])
+  }, [free_blocks])
 
   // --------------------- UTILITY METHODS --------------------- //
   function LaunchModalFromExistingEvent() {
     setModalShow(true)
     setShowsNewEvent(false)
-    setModalEventStart(new Date(events[currentlySelectedEventIdx].start_time))
-    setModalEventEnd(new Date(events[currentlySelectedEventIdx].end_time))
+    setModalEventStart(DateTime.fromISO(events[currentlySelectedEventIdx].start_time))
+    setModalEventEnd(DateTime.fromISO(events[currentlySelectedEventIdx].end_time))
     setModalEventTitle(events[currentlySelectedEventIdx].title)
     setModalEventLocation('') // TODO: Add location info to the event object
     setModalEventDescription("hiii") // TODO: Set description on the event object
@@ -183,7 +184,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
 
 function DateText(props: {dateText: string}) {
   const {dateText} = props
-  const dateObj = new Date(dateText)
+  const dateObj = DateTime.fromISO(dateText)
 
   const weekdays = [
     "SUN",
@@ -195,9 +196,9 @@ function DateText(props: {dateText: string}) {
     "SAT"
   ]
 
-  const dayOfMonth = dateObj.getDate()
-  const monthOfYear = dateObj.getMonth()  
-  const dayOfWeek = dateObj.getDay()
+  const dayOfMonth = dateObj.day
+  const monthOfYear = dateObj.month  
+  const dayOfWeek = dateObj.weekday
 
   const dayString = weekdays[dayOfWeek] + " " + (monthOfYear + 1).toString() + "/" + (dayOfMonth+1).toString() 
 
@@ -321,7 +322,7 @@ function LimitBars(props: { hard_start: string; hard_end: string }) {
   const { hard_start, hard_end } = props;
   // Create offset and width for the start hard limit
   const [startOffset, startWidth] = datetimeToOffset(
-    '2021-06-09T00:00:00Z',
+    '2021-06-09T00:00:00-07:00',
     hard_start,
     0
   );
@@ -329,7 +330,7 @@ function LimitBars(props: { hard_start: string; hard_end: string }) {
   // Create offset and width for the start hard limit
   const [endOffset, endWidth] = datetimeToOffset(
     hard_end,
-    '2021-06-09T23:55:00Z',
+    '2021-06-09T23:59:59-07:00',
     0
   );
 
