@@ -26,10 +26,10 @@ export default function CalendarBody(props: CalendarBody) {
     const bodyRef = useRef(null)
 
     // State
-    const [modalShow, setModalShow] = useState(false)
+    const [modalShow, setModalShow] = useState(true)
     const [modalShowsNewEvent, setModalShowsNewEvent] = useState(false)
-    const [modalEventStart, setModalEventStart] = useState(DateTime.fromISO('2021-06-09T13:10:00Z'))
-    const [modalEventEnd, setModalEventEnd] = useState(DateTime.fromISO("2021-06-09T14:10:00Z"))
+    const [modalEventStart, setModalEventStart] = useState(DateTime.fromISO('2021-06-09T16:10:00-07:00'))
+    const [modalEventEnd, setModalEventEnd] = useState(DateTime.fromISO("2021-06-09T17:10:00-07:00"))
     const [modalEventTitle, setModalEventTitle] = useState('')
     const [modalEventLocation, setModalEventLocation] = useState('')
     const [modalEventCalendar, setModalEventCalendar] = useState('')

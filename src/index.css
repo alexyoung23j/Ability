@@ -171,6 +171,14 @@
     font-size: 14px
 }
 
+.eventModalStartTime {
+    font-family: 'Montserrat';
+    font-weight: bolder;
+    color: #7D7D7D;
+    font-size: 13px;
+    
+}
+
 ::-webkit-input-placeholder { 
     color: rgba(172, 170, 170, 0.7);
 }

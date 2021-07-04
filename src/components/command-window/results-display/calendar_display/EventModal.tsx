@@ -170,7 +170,7 @@ const ModalAreaStyles: CSS.Properties = {
     minHeight: "800px",
     marginTop: "-200px", 
     backgroundColor: "rgba(211,211,211,0.0)", 
-    zIndex: 100,
+    zIndex: 60,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",

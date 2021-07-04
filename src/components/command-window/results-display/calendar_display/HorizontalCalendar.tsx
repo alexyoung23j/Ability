@@ -113,7 +113,19 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     setModalEventEnd(DateTime.fromISO(events[currentlySelectedEventIdx].end_time))
     setModalEventTitle(events[currentlySelectedEventIdx].title)
     setModalEventLocation('') // TODO: Add location info to the event object
-    setModalEventDescription("hiii") // TODO: Set description on the event object
+    setModalEventDescription("Some description that already exists") // TODO: Set description on the event object
+    setModalEventCalendar('') // TODO: Add this to object
+  }
+
+  // Accepts start and end times as Luxon DateTime objects
+  function LaunchModalFromFreeSlot(start_time, end_time) {
+    setModalShow(true)
+    setShowsNewEvent(true)
+    setModalEventStart(start_time)
+    setModalEventEnd(end_time)
+    setModalEventTitle('')
+    setModalEventLocation('') // TODO: Add location info to the event object
+    setModalEventDescription("") // TODO: Set description on the event object
     setModalEventCalendar('') // TODO: Add this to object
   }
 
@@ -140,6 +152,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
           ignoreHandler={ignoreHandler}
           textSnippetOpen={textSnippetOpen}
           ignoredSlots={ignoredSlots}
+          launchModalFromFreeSlot={LaunchModalFromFreeSlot}
         />
         <FreeBlocks
           free_blocks={free_blocks}
@@ -200,7 +213,7 @@ function DateText(props: {dateText: string}) {
   const monthOfYear = dateObj.month  
   const dayOfWeek = dateObj.weekday
 
-  const dayString = weekdays[dayOfWeek] + " " + (monthOfYear + 1).toString() + "/" + (dayOfMonth+1).toString() 
+  const dayString = weekdays[dayOfWeek] + " " + (monthOfYear).toString() + "/" + (dayOfMonth).toString() 
 
   return (
     <div 

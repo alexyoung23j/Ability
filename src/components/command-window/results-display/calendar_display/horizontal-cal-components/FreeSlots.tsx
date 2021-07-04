@@ -7,11 +7,20 @@ import { datetimeToOffset } from '../../../../util/CalendarUtil';
 import Popup from 'reactjs-popup';
 const plusIcon = require('/src/content/svg/Plus.svg');
 const minusIcon = require('/src/content/svg/Minus.svg');
-
+const { DateTime } = require("luxon");
 
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
+
+interface FreeSlotsProps {
+  free_blocks: Array<any>
+  day_idx: number;
+  ignoreHandler: any;
+  textSnippetOpen: boolean;
+  ignoredSlots: Array<any>
+  launchModalFromFreeSlot: any
+}
 
 
 function checkIfIgnored(block_idx, slot_idx, ignoredSlots) {
@@ -24,8 +33,8 @@ function checkIfIgnored(block_idx, slot_idx, ignoredSlots) {
   return false
 }
 
-export default function FreeSlots(props: { free_blocks; day_idx; ignoreHandler; textSnippetOpen; ignoredSlots }) {
-    const { free_blocks, day_idx, ignoreHandler, textSnippetOpen, ignoredSlots } = props;
+export default function FreeSlots(props: FreeSlotsProps) {
+    const { free_blocks, day_idx, ignoreHandler, textSnippetOpen, ignoredSlots, launchModalFromFreeSlot } = props;
   
     useEffect(() => {
       ReactTooltip.rebuild()
@@ -43,16 +52,17 @@ export default function FreeSlots(props: { free_blocks; day_idx; ignoreHandler; 
         }}
       >
         {free_blocks.map((block, block_idx) =>
-          block.free_slots.map((event, slot_idx) => (
+          block.free_slots.map((slot, slot_idx) => (
             <div key={slot_idx} style={{ display: 'flex', justifyContent: "center", alignItems: "center" }}>
               <Slot
-                event={event}
+                slot={slot}
                 slot_idx={slot_idx}
                 block_idx={block_idx}
                 day_idx={day_idx}
                 ignoreHandler={ignoreHandler}
                 textSnippetOpen={textSnippetOpen}
                 slotIsIgnored={checkIfIgnored(block_idx, slot_idx, ignoredSlots)}
+                launchModalFromFreeSlot={launchModalFromFreeSlot}
               />
               
             </div>
@@ -62,9 +72,20 @@ export default function FreeSlots(props: { free_blocks; day_idx; ignoreHandler; 
       </div>
     );
 }
+
+interface FreeSlotProps {
+  slot: any;
+  slot_idx: number;
+  block_idx: number;
+  day_idx: number;
+  ignoreHandler: any;
+  textSnippetOpen: boolean;
+  slotIsIgnored: boolean
+  launchModalFromFreeSlot: any
+}
   
-function Slot(props: { event; slot_idx; block_idx; day_idx; ignoreHandler; textSnippetOpen; slotIsIgnored }) {
-  const { event, slot_idx, block_idx, day_idx, ignoreHandler, textSnippetOpen, slotIsIgnored} = props;
+function Slot(props: FreeSlotProps) {
+  const { slot, slot_idx, block_idx, day_idx, ignoreHandler, textSnippetOpen, slotIsIgnored, launchModalFromFreeSlot} = props;
 
   let initialColor
 
@@ -101,6 +122,9 @@ function Slot(props: { event; slot_idx; block_idx; day_idx; ignoreHandler; textS
       
     } else {
       // launch create event modal
+      const newEventStart = DateTime.fromISO(slot.start_time)
+      const newEventEnd = DateTime.fromISO(slot.end_time)
+      launchModalFromFreeSlot(newEventStart, newEventEnd)
     }
   }
 
@@ -142,8 +166,8 @@ return (
     <div
     style={{
         position: 'absolute',
-        right: datetimeToOffset(event.start_time, event.end_time, 0)[0],
-        width: datetimeToOffset(event.start_time, event.end_time, 0)[1],
+        right: datetimeToOffset(slot.start_time, slot.end_time, 0)[0],
+        width: datetimeToOffset(slot.start_time, slot.end_time, 0)[1],
         minHeight: '20px',
         borderRadius: 3,
         borderColor: 'black',
@@ -160,11 +184,7 @@ return (
     data-tip
     data-for={"slot-tip"}
     >
-   {/*  <ReactTooltip id="slot-tip">
-        <div>
-        {slot_idx}
-        </div>
-    </ReactTooltip> */}
+
     {showPlus && (<img src={plusIcon} style={{height: '8px'}}/>)}
     {showMinus && (<img src={minusIcon} style={{height: '1px'}}/>)}
     
