@@ -51,7 +51,7 @@ function App() {
   /// ---------------- IPC HANDLERS -------------- ///
 
   // Handle toggling between windows
-  const toggleBetweenWindows = (toDisable: string, toEnable: string) => {};
+  const toggleBetweenWindows = (toDisable: string, toEnable: string) => { };
 
   // Force Command Line to be Shown
   ipcRenderer.on('show-command', (event, message) => {
@@ -67,12 +67,12 @@ function App() {
 
   return (
     <CalendarContext.Provider value={calendarIndex}>
-      <Auth />
-      {/* <div>
+      {/* <Auth /> */}
+      <div>
         {(showCommand && <CommandView />) || (
           <SettingsView toggleWindowHandler={toggleBetweenWindows} />
         )}
-      </div> */}
+      </div>
     </CalendarContext.Provider>
   );
 }
