@@ -75,6 +75,8 @@ export default function EventModal(props: EventModalProps) {
                         style={{}}
                         onFocus={() => setTitleBarColor("rgb(125, 189, 220)")}
                         onBlur={() => setTitleBarColor("rgba(172, 170, 170, 0.5)")}
+                        onMouseEnter={() => setTitleBarColor("rgb(125, 189, 220)")}
+                        onMouseLeave={() => setTitleBarColor("rgba(172, 170, 170, 0.5)")}
                         value={eventTitle}
                         onChange={(e) => setEventTitle(e.target.value)}
                     />
@@ -101,6 +103,8 @@ export default function EventModal(props: EventModalProps) {
                             style={{marginLeft: "10px"}}
                             onFocus={() => setLocationBarColor("rgb(125, 189, 220)")}
                             onBlur={() => setLocationBarColor("rgba(172, 170, 170, 0.5)")}
+                            onMouseEnter={() => setLocationBarColor("rgb(125, 189, 220)")}
+                            onMouseLeave={() => setLocationBarColor("rgba(172, 170, 170, 0.5)")}
                             value={eventLocation}
                             onChange={(e) => setEventLocation(e.target.value)}
                         />

@@ -171,13 +171,36 @@
     font-size: 14px
 }
 
-.eventModalStartTime {
+.eventModalTime {
     font-family: 'Montserrat';
     font-weight: bolder;
     color: #7D7D7D;
     font-size: 13px;
-    
 }
+
+.eventTimePickerTimeOption {
+    font-family: 'Montserrat';
+    font-weight: bolder;
+    color: #7D7D7D;
+    font-size: 13px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    margin-left: 6px;
+    margin-right: 6px
+}
+
+.eventModalTimePlainString {
+    font-family: 'Montserrat';
+    font-weight: lighter;
+    color: #7D7D7D;
+    font-size: 13px;
+    margin-left: 15px;
+    margin-right: 20px
+}
+
 
 ::-webkit-input-placeholder { 
     color: rgba(172, 170, 170, 0.7);

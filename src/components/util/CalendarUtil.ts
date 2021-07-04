@@ -168,6 +168,74 @@ export function roundToNearestInterval(time, interval: number, roundUp: boolean)
   return roundedTime
 }
 
+// Creates an array of objects storing the time options seperated by minute intervals
+// Objects in the array store the hour and minute associated with the option
+export function generatePickerTimeOptions(military: boolean, minuteInterval: number) {
+  let timeOptions = []
+
+  if (military) {
+      for (var hour = 0; hour < 24; hour+=1) {
+          for (var minute = 0; minute < 60; minute += minuteInterval) {
+              let hourString = hour.toString()
+
+              let minuteString = minute.toString()
+              if (minute < 10) {
+                  minuteString = "0"+minute.toString()
+              } 
+
+              let optionText = hourString + ":" + minuteString 
+          
+              let option = {text: optionText, hour: hour, minute: minute}
+              timeOptions.push(option)
+          }
+      }
+
+  } else {
+      for (var hour = 0; hour < 24; hour+=1) {
+          for (var minute = 0; minute < 60; minute += minuteInterval) {
+              let optionText = ''
+              if (hour > 12) {
+                  let newHour = hour % 12
+
+                  let hourString = newHour.toString()
+
+                  let minuteString = minute.toString()
+                  if (minute < 10) {
+                      minuteString = "0"+minute.toString()
+                  } 
+
+                  optionText = hourString + ":" + minuteString + " PM"
+  
+              } else if (hour == 0) {
+                  let hourString = '12'
+
+                  let minuteString = minute.toString()
+                  if (minute < 10) {
+                      minuteString = "0"+minute.toString()
+                  } 
+
+                  optionText = hourString + ":" + minuteString + " AM"
+                  
+              } else {
+                  let hourString = hour.toString()
+
+                  let minuteString = minute.toString()
+                  if (minute < 10) {
+                      minuteString = "0"+minute.toString()
+                  } 
+
+                  optionText = hourString + ":" + minuteString + " AM"
+              }
+
+              let option = {text: optionText, hour: hour, minute: minute}
+              timeOptions.push(option)
+          }
+      }
+  }
+
+  return timeOptions
+}
+
 
 
 // ------------------------------------- RESULT ENGINE STUFF ---------------------------- // 

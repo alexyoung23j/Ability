@@ -37,8 +37,8 @@ export default function CalendarBody(props: CalendarBody) {
 
 
     useEffect(() => {
-        //myConsole.log(modalEventStart, modalEventEnd)
-    }, [modalEventStart])
+        myConsole.log(modalEventStart.toString(), modalEventEnd.toString())
+    }, [modalEventStart, modalEventEnd])
 
 
     // Since each slot in our ignoredSlots array has a day index associated with it, we extract only the block and slot indices 

@@ -38,8 +38,9 @@ const materialTheme = createMuiTheme({
         MuiInputBase: {
             input: {
               color: "grey",
-              borderColor: "grey"
+              borderColor: "grey",
               // .. other styling that you want
+              cursor: "pointer"
             }
         },
         MuiFormLabel: {
@@ -50,9 +51,15 @@ const materialTheme = createMuiTheme({
     }   
 });
 
+// Generates a string to show the time correctly
 function  _getTimeString(time, military: boolean) {
     let hour = time.hour;
     let minute = time.minute;
+
+    let minuteString = minute.toString()
+    if (minute < 10) {
+        minuteString = "0" + minute.toString()
+    }
 
     let period = ''
 
@@ -60,12 +67,15 @@ function  _getTimeString(time, military: boolean) {
         if (hour > 12) {
             hour = hour % 12
             period = ' PM'
+        } else if (hour == 0) {
+          hour = 12
+          period = " AM"  
         } else {
             period = ' AM'
         }
     }
 
-    return hour.toString() + ":" + minute.toString() + period
+    return hour.toString() + ":" + minuteString + period
 
 }
 
@@ -83,6 +93,8 @@ export default function DatePickerComponent(props: DatePickerProps) {
     const {eventStart, eventEnd, setEventStart, setEventEnd} = props
     const [datePickerColor, setDatePickerColor] = useState("rgba(172, 170, 170, 0.5)")
     const [startTimeColor, setStartTimeColor] = useState("rgba(172, 170, 170, 0.5)")
+    const [endTimeColor, setEndTimeColor] = useState("rgba(172, 170, 170, 0.5)")
+
     const [showTimePicker, setShowTimePicker] = useState(false)
     const [timePickerModifying, setTimePickerModifying] = useState('start')
 
@@ -111,6 +123,8 @@ export default function DatePickerComponent(props: DatePickerProps) {
             <img src={clockIcon} style={{height: "15px", width: "15px"}}/>
             <div
                 style={{marginLeft: "10px", marginTop: '-3px', cursor: "pointer"}}
+                onMouseEnter={() => setDatePickerColor("rgb(125, 189, 220)")}
+                onMouseLeave={() => setDatePickerColor("rgba(172, 170, 170, 0.5)")}
             >
                 <ThemeProvider theme={materialTheme}>
                     <DatePicker
@@ -134,21 +148,45 @@ export default function DatePickerComponent(props: DatePickerProps) {
                 onClick={() => {setShowTimePicker(true); setTimePickerModifying('start')}}
             >
                 <div
-                    className="eventModalStartTime"
+                    className="eventModalTime"
                 >
                     {_getTimeString(eventStart, false)}
                 </div>
-                <div style={{height: "1px", marginTop: "2px", marginLeft: "1px", width: "60px", backgroundColor: startTimeColor}}></div>
+                <div style={{height: "1px", marginTop: "2px", marginLeft: "0px", width: "60px", backgroundColor: startTimeColor}}></div>
+            </div>
+            <div
+                className="eventModalTimePlainString"
+            >
+                to
             </div>
 
-            <TimePickerPopup 
-                isOpen={showTimePicker}
-                setIsOpen={setShowTimePicker}
-                timePickerModifying={timePickerModifying} 
-                setEventStart={setEventStart} 
-                setEventEnd={setEventEnd}
-                
-            />
+            <div
+                style={{marginTop: "3px", cursor: "pointer"}}
+                onMouseEnter={() => setEndTimeColor("rgb(125, 189, 220)")}
+                onMouseLeave={() => setEndTimeColor("rgba(172, 170, 170, 0.5)")}
+                onClick={() => {setShowTimePicker(true); setTimePickerModifying('end')}}
+            >
+                <div
+                    className="eventModalTime"
+                >
+                    {_getTimeString(eventEnd, false)}
+                </div>
+                <div style={{height: "1px", marginTop: "2px", marginLeft: "0px", width: "60px", backgroundColor: endTimeColor}}></div>
+            </div>
+
+            {showTimePicker && ( 
+                <TimePickerPopup 
+                    isOpen={showTimePicker}
+                    setIsOpen={setShowTimePicker}
+                    timePickerModifying={timePickerModifying} 
+                    eventStart={eventStart}
+                    eventEnd={eventEnd}
+                    setEventStart={setEventStart} 
+                    setEventEnd={setEventEnd}
+                />
+            )}
+
+            
 
 
            
