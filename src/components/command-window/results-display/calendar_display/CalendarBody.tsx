@@ -32,7 +32,7 @@ export default function CalendarBody(props: CalendarBody) {
     const [modalEventEnd, setModalEventEnd] = useState(DateTime.fromISO("2021-06-09T17:10:00-07:00"))
     const [modalEventTitle, setModalEventTitle] = useState('')
     const [modalEventLocation, setModalEventLocation] = useState('')
-    const [modalEventCalendar, setModalEventCalendar] = useState('')
+    const [modalEventCalendar, setModalEventCalendar] = useState({name: "First Calendar", color: "blue"}) // TODO: Fetch from context 
     const [modalEventDescription, setModalEventDescription] = useState('')
 
 

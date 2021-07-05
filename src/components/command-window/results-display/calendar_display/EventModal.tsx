@@ -12,7 +12,7 @@ interface EventModalProps {
     eventEnd: Date
     eventTitle: string
     eventLocation: string
-    eventCalendar: string
+    eventCalendar: {name: string, color: string};
     eventDescription: string
 
     setIsOpen: any
@@ -53,8 +53,6 @@ export default function EventModal(props: EventModalProps) {
     } = props
 
     // State
-    const [titleBarColor, setTitleBarColor] = useState("rgba(172, 170, 170, 0.5)")
-    const [locationBarColor, setLocationBarColor] = useState("rgba(172, 170, 170, 0.5)")
 
     return ( 
         isOpen && ( 
@@ -73,14 +71,10 @@ export default function EventModal(props: EventModalProps) {
                         className="eventModalTitle" 
                         placeholder="Title.."
                         style={{}}
-                        onFocus={() => setTitleBarColor("rgb(125, 189, 220)")}
-                        onBlur={() => setTitleBarColor("rgba(172, 170, 170, 0.5)")}
-                        onMouseEnter={() => setTitleBarColor("rgb(125, 189, 220)")}
-                        onMouseLeave={() => setTitleBarColor("rgba(172, 170, 170, 0.5)")}
                         value={eventTitle}
                         onChange={(e) => setEventTitle(e.target.value)}
                     />
-                    <div style={{height: "1px", marginLeft: "3px", width: "350px", backgroundColor: titleBarColor}}></div>
+                    
                 </div>
                 <div
                     style={{marginTop: "20px"}}
@@ -93,38 +87,37 @@ export default function EventModal(props: EventModalProps) {
                     />
                 </div>
                 <div
-                    style={{marginTop: "10px", marginLeft: "5px", display: "flex", justifyContent: "center", alignItems: "center"}}
+                    style={{marginTop: "10px", marginLeft: "2px"}}
+                >
+                    <CalendarPickerComponent 
+                        eventCalendar={eventCalendar}
+                        setEventCalendar={setEventCalendar}
+                    />
+                </div>
+                <div
+                    style={{marginTop: "15px", marginLeft: "5px", display: "flex", justifyContent: "center", alignItems: "center"}}
                 >
                     <img src={locationIcon} style={{height: "15px", width: "15px"}}/>
                     <div>
                         <input 
                             className="eventModalLocation"
                             placeholder="Location.."
-                            style={{marginLeft: "10px"}}
-                            onFocus={() => setLocationBarColor("rgb(125, 189, 220)")}
-                            onBlur={() => setLocationBarColor("rgba(172, 170, 170, 0.5)")}
-                            onMouseEnter={() => setLocationBarColor("rgb(125, 189, 220)")}
-                            onMouseLeave={() => setLocationBarColor("rgba(172, 170, 170, 0.5)")}
+                            style={{marginLeft: "8px"}}
                             value={eventLocation}
                             onChange={(e) => setEventLocation(e.target.value)}
                         />
-                        <div style={{height: "1px", marginLeft: "10px", width: "150px", backgroundColor: locationBarColor}}></div>
                     </div>
                 </div>
+                
                 <div
-                    style={{marginTop: "0px"}}
-                >
-                   {/*  <CalendarPickerComponent /> */}
-                </div>
-                <div
-                    style={{marginTop: "20px", marginLeft: "5px", display: "flex", justifyContent: "center", alignItems: "flex-start", }}
+                    style={{marginTop: "15px", marginLeft: "7px", display: "flex",  }}
                 >
                     <img src={textIcon} style={{height: "13px", width: "13px"}}/>
                     <div style={{marginTop: "-3px"}}>
                         <textarea 
                             className="eventModalDescription"
                             placeholder="Description.."
-                            style={{marginLeft: "10px"}}
+                            style={{marginLeft: "8px", height: "100px"}}
                             value={eventDescription}
                             onChange={(e) => setEventDescription(e.target.value)}
                         />

@@ -178,6 +178,13 @@
     font-size: 13px;
 }
 
+.eventModalCalendarText {
+    font-family: 'Montserrat';
+    font-weight: bolder;
+    color: #7D7D7D;
+    font-size: 13px;
+}
+
 .eventTimePickerTimeOption {
     font-family: 'Montserrat';
     font-weight: bolder;
@@ -198,7 +205,7 @@
     color: #7D7D7D;
     font-size: 13px;
     margin-left: 15px;
-    margin-right: 20px
+    margin-right: 17px
 }
 
 
@@ -209,7 +216,8 @@
 .datePicker {
     font-family: 'Montserrat';
     font-weight: lighter;
-    height: 26px
+    height: 26px;
+    width: 150px;
 }
 
 .MuiInputBase-input {

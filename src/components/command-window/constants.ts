@@ -35,29 +35,7 @@ const prepositionToModifierCategories = {
   for: ModifierCategory.DURATION,
 };
 
-// DATE: [days, week]
-// TIME: [hour]
-//
 
-// at <TIME>
-// after <TIME> / <DATE>
-// for <DURATION>
-// next <DATE> /
-// on
-// this
-// in (after from now)
-//
-
-// duration --> range
-
-// on Sunday
-//
-
-// at Sunday - NOT ALLOWED
-// at 3 pm
-// at noon
-// at afternoon (ew)
-//
 
 export const calendarDummyResults = {
   days: [
@@ -111,6 +89,10 @@ export const calendarDummyResults = {
           title: 'Company All Hands',
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: 'red',
+          calendar: {
+            name: "Alex's Calendar",
+            color: "red"
+          },
           index_of_overlapped_events: [],
         },
         {
@@ -119,6 +101,10 @@ export const calendarDummyResults = {
           title: 'Hidden Event',
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: 'green',
+          calendar: {
+            name: "Alex's Calendar 2",
+            color: "blue"
+          },
           index_of_overlapped_events: [],
         },
         {
@@ -127,6 +113,10 @@ export const calendarDummyResults = {
           title: 'Meeting w/ James',
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: 'blue',
+          calendar: {
+            name: "Alex's Calendar 3",
+            color: "blue"
+          },
           index_of_overlapped_events: [],
         },
      
