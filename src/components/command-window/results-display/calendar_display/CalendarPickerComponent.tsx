@@ -6,6 +6,7 @@ import { ThemeProvider } from "@material-ui/styles";
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { MuiPickersOverrides } from '@material-ui/pickers/typings/overrides';
 import { Multiselect } from 'multiselect-react-dropdown';
+import CalendarPickerPopup from './CalendarPickerPopup';
 const miniCalendar = require('/src/content/svg/MiniCalendarIcon.svg');
 
 interface CalendarPickerProps {
@@ -24,6 +25,8 @@ export default function CalendarPickerComponent(props: CalendarPickerProps) {
 
     // State
     const [textColor, setTextColor] = useState("#7D7D7D")
+    const [showCalendarPicker, setShowCalendarPicker] = useState(false)
+
 
 
     return ( 
@@ -35,6 +38,7 @@ export default function CalendarPickerComponent(props: CalendarPickerProps) {
                 style={{marginLeft: "10px", color: textColor, cursor: "pointer"}}
                 onMouseEnter={() => setTextColor("rgb(125, 189, 220)")}
                 onMouseLeave={() => setTextColor("#7D7D7D")}
+                onClick={() => setShowCalendarPicker(true)}
                 className="eventModalCalendarText"
             >
                 {eventCalendar.name}
@@ -44,6 +48,18 @@ export default function CalendarPickerComponent(props: CalendarPickerProps) {
             >
 
             </div>
+
+            {showCalendarPicker && (
+                <CalendarPickerPopup 
+                    isOpen={showCalendarPicker}
+                    calendars={calendars}
+                    eventCalendar={eventCalendar}
+                    setEventCalendar={setEventCalendar}
+
+                />
+
+                
+            )}
             
        </div>
     )
