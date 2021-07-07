@@ -16,7 +16,7 @@ interface CalendarPickerProps {
 export default function CalendarPickerComponent(props: CalendarPickerProps) {
 
     // TODO: Add access to context containing the calendar information 
-    const calendars = [{name: "Alex's Calendar", color: "red"}, {name: "Alex's Calendar 2", color: "blue"}, {name: "Alex's Calendar 3", color: "green"},]
+    const calendars = [{name: "Alex's Calendar", color: "red"}, {name: "Alex's Calendar 2", color: "blue"}, {name: "Alex's Calendar 3", color: "green"},{name: "Alex's Calendar 4", color: "green"}]
 
     const {
         eventCalendar,
@@ -52,6 +52,7 @@ export default function CalendarPickerComponent(props: CalendarPickerProps) {
             {showCalendarPicker && (
                 <CalendarPickerPopup 
                     isOpen={showCalendarPicker}
+                    setIsOpen={setShowCalendarPicker}
                     calendars={calendars}
                     eventCalendar={eventCalendar}
                     setEventCalendar={setEventCalendar}

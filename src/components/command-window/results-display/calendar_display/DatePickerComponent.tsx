@@ -145,18 +145,18 @@ export default function DatePickerComponent(props: DatePickerProps) {
             </div>
             <div
                 style={{marginTop: "2px", cursor: "pointer", 
-                        borderColor: "rgb(125, 189, 220)", borderWidth: "10px", borderRadius: "5px",
-                        display: "flex", }}
+                        display: "flex", flexDirection: "column", alignItems: "center"}}
                 onMouseEnter={() => setStartTimeColor("rgb(125, 189, 220)")}
                 onMouseLeave={() => setStartTimeColor("#7D7D7D")}
                 onClick={() => {setShowTimePicker(true); setTimePickerModifying('start')}}
             >
                 <div
                     className="eventModalTime"
-                    style={{color: startTimeColor, marginTop: "3px", marginLeft: "3px", marginBottom: "3px", marginRight: "3px"}}
+                    style={{color: startTimeColor, marginTop: "3px", marginLeft: "3px", marginBottom: "1px", marginRight: "3px"}}
                 >
                     {_getTimeString(eventStart, false)}
                 </div>
+                <div style={{height: "1px", marginTop: "0px", marginLeft: "1px", width: "55px", backgroundColor: startTimeColor}}></div>
             </div>
             <div
                 className="eventModalTimePlainString"
@@ -166,7 +166,8 @@ export default function DatePickerComponent(props: DatePickerProps) {
             </div>
 
             <div
-                style={{marginTop: "2px", cursor: "pointer"}}
+                style={{marginTop: "4px", cursor: "pointer", 
+                    display: "flex", flexDirection: "column", alignItems: "center"}}
                 onMouseEnter={() => setEndTimeColor("rgb(125, 189, 220)")}
                 onMouseLeave={() => setEndTimeColor("#7D7D7D")}
                 onClick={() => {setShowTimePicker(true); setTimePickerModifying('end')}}
@@ -177,6 +178,8 @@ export default function DatePickerComponent(props: DatePickerProps) {
                 >
                     {_getTimeString(eventEnd, false)}
                 </div>
+                <div style={{height: "1px", marginTop: "0px", marginLeft: "1px", width: "55px", backgroundColor: endTimeColor}}></div>
+
             </div>
 
             {showTimePicker && ( 

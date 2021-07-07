@@ -126,7 +126,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     setModalEventTitle('')
     setModalEventLocation('') // TODO: Add location info to the event object
     setModalEventDescription("") // TODO: Set description on the event object
-    setModalEventCalendar('') // TODO: Add this to object
+    setModalEventCalendar({name: "Alex's Calendar", color: "blue"}) // TODO: Add this to object
   }
 
   

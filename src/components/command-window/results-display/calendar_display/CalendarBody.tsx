@@ -32,13 +32,17 @@ export default function CalendarBody(props: CalendarBody) {
     const [modalEventEnd, setModalEventEnd] = useState(DateTime.fromISO("2021-06-09T17:10:00-07:00"))
     const [modalEventTitle, setModalEventTitle] = useState('')
     const [modalEventLocation, setModalEventLocation] = useState('')
-    const [modalEventCalendar, setModalEventCalendar] = useState({name: "First Calendar", color: "blue"}) // TODO: Fetch from context 
+    const [modalEventCalendar, setModalEventCalendar] = useState({name: "Alex's Calendar", color: "blue"}) // TODO: Fetch from context 
     const [modalEventDescription, setModalEventDescription] = useState('')
 
 
     useEffect(() => {
         myConsole.log(modalEventStart.toString(), modalEventEnd.toString())
     }, [modalEventStart, modalEventEnd])
+
+    useEffect(() => {
+        myConsole.log(modalEventCalendar)
+    }, [modalEventCalendar])
 
 
     // Since each slot in our ignoredSlots array has a day index associated with it, we extract only the block and slot indices 
