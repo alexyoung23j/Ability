@@ -4,16 +4,20 @@ import DatePickerComponent from './DatePickerComponent';
 import CalendarPickerComponent from './CalendarPickerComponent';
 const locationIcon = require('/src/content/svg/locationIcon.svg');
 const textIcon = require('/src/content/svg/TextIcon.svg');
+const { DateTime } = require("luxon");
+
 
 interface EventModalProps {
     isOpen: boolean
+    dayIdx: number
     isNewEvent: boolean
-    eventStart: Date
-    eventEnd: Date
+    eventStart: any
+    eventEnd: any
     eventTitle: string
     eventLocation: string
     eventCalendar: {name: string, color: string};
     eventDescription: string
+    modalEventIdxInDay: number
 
     setIsOpen: any
     setShowsNewEvent: any
@@ -25,6 +29,7 @@ interface EventModalProps {
     setEventDescription: any
 
     scheduleNewEvent: any
+    modifyExistingEvent: any
 }
 
 var nodeConsole = require('console');
@@ -33,6 +38,7 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 export default function EventModal(props: EventModalProps) {
 
     const {isOpen,
+        dayIdx,
         isNewEvent,
         eventStart,
         eventEnd, 
@@ -40,6 +46,7 @@ export default function EventModal(props: EventModalProps) {
         eventLocation, 
         eventCalendar, 
         eventDescription, 
+        modalEventIdxInDay,
         setIsOpen, 
         setShowsNewEvent,
         setEventStart, 
@@ -48,11 +55,63 @@ export default function EventModal(props: EventModalProps) {
         setEventTitle, 
         setEventCalendar, 
         setEventDescription,
-        scheduleNewEvent
+        scheduleNewEvent, 
+        modifyExistingEvent
     
     } = props
 
     // State
+
+    function handleSave() {
+        if (isNewEvent) {
+            // create new event
+            if (eventTitle != '') {
+                scheduleNewEvent(
+                    eventStart.toISO(),
+                    eventEnd.toISO(),
+                    eventTitle,
+                    "fake_url", // TODO: generate a UrL? maybe this takes place in the new event scheduler in ResultEngine
+                    eventCalendar.color,
+                    eventCalendar.name,
+                    eventCalendar.color, 
+                    dayIdx
+                )
+            }
+            
+            setIsOpen(false)
+        } else {
+
+            // modify existing event 
+            if (eventTitle != '') {
+                modifyExistingEvent(
+                    eventStart.toISO(),
+                    eventEnd.toISO(),
+                    eventTitle,
+                    "fake_url", // TODO: generate a UrL? maybe this takes place in the new event scheduler in ResultEngine
+                    eventCalendar.color,
+                    eventCalendar.name,
+                    eventCalendar.color, 
+                    dayIdx, 
+                    modalEventIdxInDay
+                )
+            }
+            setIsOpen(false)
+
+        }
+
+    }
+
+    function handleCancel() {
+        setEventTitle('')
+        setShowsNewEvent(true)
+        setEventStart(DateTime.now()) // just use Now as a filler to avoid type issues
+        setEventEnd(DateTime.now())
+        setEventLocation('')
+        setEventCalendar(null)
+        setEventDescription('')
+        setIsOpen(false)
+    }
+
 
     return ( 
         isOpen && ( 
@@ -65,7 +124,7 @@ export default function EventModal(props: EventModalProps) {
                 onClick={(e) => e.stopPropagation()}
             >
                 <div
-                    style={{marginTop: "30px"}}
+                    style={{marginTop: "25px"}}
                 >
                      <input 
                         className="eventModalTitle" 
@@ -76,8 +135,10 @@ export default function EventModal(props: EventModalProps) {
                     />
                     
                 </div>
+                <div style={{height: "0.25px", marginTop: "10px", marginLeft: "1px", width: "375px", backgroundColor: "grey", opacity: "30%"}}></div>
+
                 <div
-                    style={{marginTop: "20px"}}
+                    style={{marginTop: "15px"}}
                 >
                     <DatePickerComponent 
                         eventStart={eventStart}
@@ -95,14 +156,14 @@ export default function EventModal(props: EventModalProps) {
                     />
                 </div>
                 <div
-                    style={{marginTop: "15px", marginLeft: "5px", display: "flex", justifyContent: "center", alignItems: "center"}}
+                    style={{marginTop: "15px", marginLeft: "6px", display: "flex", justifyContent: "center", alignItems: "center"}}
                 >
                     <img src={locationIcon} style={{height: "15px", width: "15px"}}/>
                     <div>
                         <input 
                             className="eventModalLocation"
                             placeholder="Location.."
-                            style={{marginLeft: "8px"}}
+                            style={{marginLeft: "7px"}}
                             value={eventLocation}
                             onChange={(e) => setEventLocation(e.target.value)}
                         />
@@ -128,7 +189,7 @@ export default function EventModal(props: EventModalProps) {
                     style={{marginTop: "0px", marginLeft: "0px", marginBottom: "20px", display: "flex", justifyContent: "center", alignItems: "center", width: "400px"}}
                 >
                     <div
-                        onClick={() => {}}
+                        onClick={() => handleSave()}
                         style={{cursor: "pointer", height: "30px", width: "100px", backgroundColor: "rgb(125, 189, 220)", borderRadius: "10px", display: "flex", justifyContent: "center", alignItems: "center" }}
                     >
                         <div
@@ -136,6 +197,13 @@ export default function EventModal(props: EventModalProps) {
                         >
                             Save
                         </div>
+                    </div>
+                    <div
+                        className="eventModalCancelButtonText"
+                        style={{marginLeft: "170px", position: "absolute", cursor: "pointer"}}
+                        onClick={() => handleCancel()}
+                    >
+                        cancel
                     </div>
                 </div>
               

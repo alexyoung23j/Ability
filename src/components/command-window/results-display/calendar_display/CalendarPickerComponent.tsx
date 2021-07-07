@@ -8,6 +8,8 @@ import { MuiPickersOverrides } from '@material-ui/pickers/typings/overrides';
 import { Multiselect } from 'multiselect-react-dropdown';
 import CalendarPickerPopup from './CalendarPickerPopup';
 const miniCalendar = require('/src/content/svg/MiniCalendarIcon.svg');
+var nodeConsole = require('console');
+var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 interface CalendarPickerProps {
     eventCalendar: {name: string, color: string};

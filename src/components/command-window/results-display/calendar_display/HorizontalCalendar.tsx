@@ -31,6 +31,8 @@ interface HorizontalCalendar {
   scheduleNewEvent: any
 
   setModalShow: any
+  setModalEventDayIdx: any
+  setModalEventIdxInDay: any
   setShowsNewEvent: any
   setModalEventStart: any;
   setModalEventEnd: any
@@ -55,6 +57,8 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     event_overlap_depth,
     scheduleNewEvent, 
     setModalShow,
+    setModalEventDayIdx,
+    setModalEventIdxInDay,
     setShowsNewEvent,
     setModalEventStart,
     setModalEventEnd,
@@ -102,31 +106,34 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
   // -------------------------- CALLBACKS -------------------------- //
 
   useEffect(() => {
-    myConsole.log(free_blocks[0].free_slots[0])
+    //myConsole.log(free_blocks[0].free_slots[0])
   }, [free_blocks])
 
   // --------------------- UTILITY METHODS --------------------- //
-  function LaunchModalFromExistingEvent() {
+  function LaunchModalFromExistingEvent(index_in_day: number) {
     setModalShow(true)
+    setModalEventDayIdx(index)
+    setModalEventIdxInDay(index_in_day)
     setShowsNewEvent(false)
     setModalEventStart(DateTime.fromISO(events[currentlySelectedEventIdx].start_time))
     setModalEventEnd(DateTime.fromISO(events[currentlySelectedEventIdx].end_time))
     setModalEventTitle(events[currentlySelectedEventIdx].title)
+    setModalEventCalendar(events[currentlySelectedEventIdx].calendar)
     setModalEventLocation('') // TODO: Add location info to the event object
     setModalEventDescription("Some description that already exists") // TODO: Set description on the event object
-    setModalEventCalendar('') // TODO: Add this to object
   }
 
   // Accepts start and end times as Luxon DateTime objects
   function LaunchModalFromFreeSlot(start_time, end_time) {
     setModalShow(true)
+    setModalEventDayIdx(index)
     setShowsNewEvent(true)
     setModalEventStart(start_time)
     setModalEventEnd(end_time)
     setModalEventTitle('')
-    setModalEventLocation('') // TODO: Add location info to the event object
-    setModalEventDescription("") // TODO: Set description on the event object
-    setModalEventCalendar({name: "Alex's Calendar", color: "blue"}) // TODO: Add this to object
+    setModalEventLocation('')
+    setModalEventDescription('') 
+    setModalEventCalendar({name: "Alex's Calendar", color: "blue"}) // TODO: Use the default calendar 
   }
 
   
@@ -171,21 +178,6 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
        
         />
       </div>
-
-      <button 
-        onClick={() => scheduleNewEvent(
-          '2021-06-09T10:30:00Z',
-          '2021-06-09T12:30:00Z',
-          'new event',
-          'hpttsss...//',
-          'blue',
-          index
-        )}
-      
-      >
-        Hi
-      </button>
-      
     </div>
   );
 }

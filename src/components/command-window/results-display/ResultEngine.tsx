@@ -54,7 +54,7 @@ export default function ResultEngine() {
   
 
   // Handles new events, makes API call to create them in the calendar, and updates local results to change ui
-  const scheduleNewEvent = (start_time: string, end_time: string, title: string, url: string, color: string, day_idx: number) => {
+  const scheduleNewEvent = (start_time: string, end_time: string, title: string, url: string, color: string, calendar_name: string, calendar_color: string, day_idx: number) => {
     // TODO: Need to actually do the scheduling here with the calendar API
 
     // Find position to insert into events
@@ -83,8 +83,53 @@ export default function ResultEngine() {
       title: title,
       url: url,
       color: color,
+      calendar: {
+        name: calendar_name,
+        color: calendar_color
+      },
       index_of_overlapped_events: []
     })
+
+
+    // Reset the overlaps 
+    events = HydrateOverlapEvents(events)
+
+    // Update the events array
+    setCalendarResultData(draft => {
+      draft.days[day_idx].events = events
+    })
+
+    // Update the free blocks to reflect change
+    setCalendarResultData(draft => {
+      draft.days[day_idx].free_blocks = CalculateFreeBlocks(draft.days[day_idx].hard_start, draft.days[day_idx].hard_end, 60, 60, 30, events)
+    })
+  }
+
+  const modifyExistingEvent = (start_time: string, end_time: string, title: string, url: string, color: string, calendar_name: string, calendar_color: string, day_idx: number, event_idx: number) => {
+
+    // TODO: Need to actually do the scheduling here with the calendar API
+
+    // Find position to insert into events
+    const newEventStartTime = DateTime.fromISO(start_time)
+    const newEventEndTime = DateTime.fromISO(end_time)
+
+    // Copy events into variable for manipulation in this funciton
+    let events = JSON.parse(JSON.stringify(calendarResultData.days[day_idx].events))
+
+
+    // Add the event into our local copy of the events
+    events[event_idx] = {
+      start_time: start_time,
+      end_time: end_time,
+      title: title,
+      url: url,
+      color: color,
+      calendar: {
+        name: calendar_name,
+        color: calendar_color
+      },
+      index_of_overlapped_events: []
+    }
 
 
     // Reset the overlaps 
@@ -131,6 +176,7 @@ export default function ResultEngine() {
               ignoredSlots={ignoreSlots}
               textEngineLaunched={textEngineLaunched}
               scheduleNewEvent={scheduleNewEvent}
+              modifyExistingEvent={modifyExistingEvent}
             />
             <Scheduler textEngineLaunched={textEngineLaunched} setTextEngineLaunched={setTextEngineLaunched}/>
             {textEngineLaunched && (<TextSnippetDropdown snippetPayload={textSnippetArray} />)}

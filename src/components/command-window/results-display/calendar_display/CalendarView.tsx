@@ -12,10 +12,11 @@ interface CalendarView {
   ignoredSlots: Array<Array<number>>;
   textEngineLaunched: boolean;
   scheduleNewEvent: any
+  modifyExistingEvent: any
 }
 
 export default function CalendarView(props: CalendarView) {
-  const { calendar_data, ignoreHandler, ignoredSlots, textEngineLaunched, scheduleNewEvent } = props;
+  const { calendar_data, ignoreHandler, ignoredSlots, textEngineLaunched, scheduleNewEvent, modifyExistingEvent } = props;
 
   return (
     <div style={calendarViewStyle}>
@@ -26,6 +27,7 @@ export default function CalendarView(props: CalendarView) {
         ignoredSlots={ignoredSlots}
         textEngineLaunched={textEngineLaunched}
         scheduleNewEvent={scheduleNewEvent}
+        modifyExistingEvent={modifyExistingEvent}
       />
     </div>
   );

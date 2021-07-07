@@ -14,6 +14,7 @@ interface CalendarBody {
     ignoredSlots: Array<Array<number>>
     textEngineLaunched: boolean;
     scheduleNewEvent: any
+    modifyExistingEvent: any
 
 }
 
@@ -21,12 +22,14 @@ interface CalendarBody {
 // event start time, event end time, event date, event description, event location, event calendar, event title
 export default function CalendarBody(props: CalendarBody) {
     
-    const {calendar_data, ignoreHandler, ignoredSlots, textEngineLaunched, scheduleNewEvent} = props
+    const {calendar_data, ignoreHandler, ignoredSlots, textEngineLaunched, scheduleNewEvent, modifyExistingEvent} = props
 
     const bodyRef = useRef(null)
 
     // State
-    const [modalShow, setModalShow] = useState(true)
+    const [modalShow, setModalShow] = useState(false)
+    const [modalEventDayIdx, setModalEventDayIdx] = useState(0)
+    const [modalEventIdxInDay, setModalEventIdxInDay] = useState(0)
     const [modalShowsNewEvent, setModalShowsNewEvent] = useState(false)
     const [modalEventStart, setModalEventStart] = useState(DateTime.fromISO('2021-06-09T16:10:00-07:00'))
     const [modalEventEnd, setModalEventEnd] = useState(DateTime.fromISO("2021-06-09T17:10:00-07:00"))
@@ -35,14 +38,6 @@ export default function CalendarBody(props: CalendarBody) {
     const [modalEventCalendar, setModalEventCalendar] = useState({name: "Alex's Calendar", color: "blue"}) // TODO: Fetch from context 
     const [modalEventDescription, setModalEventDescription] = useState('')
 
-
-    useEffect(() => {
-        myConsole.log(modalEventStart.toString(), modalEventEnd.toString())
-    }, [modalEventStart, modalEventEnd])
-
-    useEffect(() => {
-        myConsole.log(modalEventCalendar)
-    }, [modalEventCalendar])
 
 
     // Since each slot in our ignoredSlots array has a day index associated with it, we extract only the block and slot indices 
@@ -77,6 +72,8 @@ export default function CalendarBody(props: CalendarBody) {
                         scheduleNewEvent={scheduleNewEvent}
                         event_overlap_depth={data.event_overlap_depth}
                         setModalShow={setModalShow}
+                        setModalEventDayIdx={setModalEventDayIdx}
+                        setModalEventIdxInDay={setModalEventIdxInDay}
                         setShowsNewEvent={setModalShowsNewEvent}
                         setModalEventEnd={setModalEventEnd}
                         setModalEventStart={setModalEventStart}
@@ -92,6 +89,7 @@ export default function CalendarBody(props: CalendarBody) {
             </div>
             <EventModal 
                 isOpen={modalShow}
+                dayIdx={modalEventDayIdx}
                 isNewEvent={modalShowsNewEvent}
                 eventStart={modalEventStart}
                 eventEnd={modalEventEnd}    
@@ -99,6 +97,7 @@ export default function CalendarBody(props: CalendarBody) {
                 eventLocation={modalEventLocation}
                 eventCalendar={modalEventCalendar}
                 eventDescription={modalEventDescription}
+                modalEventIdxInDay={modalEventIdxInDay}
 
                 setIsOpen={setModalShow}
                 setShowsNewEvent={setModalShowsNewEvent}
@@ -110,6 +109,7 @@ export default function CalendarBody(props: CalendarBody) {
                 setEventDescription={setModalEventDescription}
 
                 scheduleNewEvent={scheduleNewEvent}
+                modifyExistingEvent={modifyExistingEvent}
             />    
         </div>
     )

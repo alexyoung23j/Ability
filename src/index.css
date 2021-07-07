@@ -135,12 +135,13 @@
 .eventModalTitle {
     font-family: 'Montserrat';
     font-weight: lighter;
-    color: #7D7D7D;
+    color: #3F3F3F;
     font-size: 20px;
     border: none;
     outline: none;
     width: 350px;
 }
+
 
 .eventModalLocation {
     font-family: 'Montserrat';
@@ -169,6 +170,14 @@
     font-weight: lighter;
     color: #FFFFFF;
     font-size: 14px
+}
+
+.eventModalCancelButtonText {
+    font-family: 'Montserrat';
+    font-weight: lighter;
+    text-decoration: underline;
+    color: #7D7D7D;
+    font-size: 12px
 }
 
 .eventModalTime {

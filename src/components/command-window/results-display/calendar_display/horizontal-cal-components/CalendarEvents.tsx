@@ -98,7 +98,7 @@ export default function CalendarEvents(props: CalendarEventsProps) {
 
     function HandleMouseClick() {
       // Open up the event url 
-      launchModalFromExistingEvent()
+      launchModalFromExistingEvent(event_idx)
 
     }
 
