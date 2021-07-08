@@ -12,6 +12,7 @@ export const NUMERIC_WILDCARD = '_';
 interface ParserProps extends BaseAutocompleteEngineProps {
   precedingQueryPieces: Array<Piece>;
   queryFragment: QueryFragment;
+  dirtyQueryFragment: QueryFragment; //redundant here
   updateRoot: (autocompletions: Array<Piece>) => void;
 }
 
@@ -26,7 +27,6 @@ function _insertNumbers(
 ): Array<Piece> {
   const hydratedCompletions = [];
   for (const completion of autocompletions) {
-    //myConsole.log("completion: ", completion)
     if (
       completion.value.includes(NUMERIC_WILDCARD) &&
       numerics != null &&
@@ -36,6 +36,7 @@ function _insertNumbers(
       let numIdx = 0;
       for (const char of completion.value) {
         if (char === NUMERIC_WILDCARD && numIdx <= numerics.length - 1) {
+          
           hydratedValue.push(numerics[numIdx]);
           numIdx += 1;
         } else {
@@ -66,6 +67,8 @@ function _insertNumbers(
     }
   }
 
+  //myConsole.log(hydratedCompletions)
+
   return hydratedCompletions;
 }
 
@@ -88,6 +91,7 @@ export default function Parser(props: ParserProps) {
         _insertNumbers(autocompletions, numerics)
       }
       queryFragment={cleanQueryFragment}
+      dirtyQueryFragment={queryFragment}
     />
   );
 }

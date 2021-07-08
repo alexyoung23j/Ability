@@ -16,6 +16,7 @@ import React, {
   useState,
 } from 'react';
 import { Piece, QueryPieceType, ModifierCategory } from '../autocomplete/types';
+const { ipcRenderer } = require('electron');
 
 const enterIcon = require('/src/content/svg/enterIcon.svg');
 const settingsIcon = require('/src/content/svg/settingsIcon.svg');
@@ -485,7 +486,7 @@ export default function CommandLine(props: CommandLineProps) {
           style={{
             height: '12px',
             position: 'absolute',
-            marginLeft: '495px',
+            marginLeft: '545px',
             marginTop: '2px',
           }}
           src={enterIcon}
@@ -494,15 +495,22 @@ export default function CommandLine(props: CommandLineProps) {
     } else if (finalQueryLaunched === true) {
       // TODO: Add logic for routing to settings view with information about the query that was entered
       return (
-        <img
-          style={{
-            height: '18px',
-            position: 'absolute',
-            marginLeft: '495px',
-            marginTop: '2px',
-          }}
-          src={settingsIcon}
-        />
+        <div
+          onClick={(e) => {e.stopPropagation(); ipcRenderer.send('open-settings')}}
+          style={{position: 'absolute',
+          marginLeft: '545px',
+          marginTop: '2px',}}
+        >
+          <img
+            style={{
+              height: '18px',
+              
+            }}
+            src={settingsIcon}
+           
+          />
+        </div>
+        
       );
     } else {
       return <div />;

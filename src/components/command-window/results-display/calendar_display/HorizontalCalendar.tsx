@@ -1,44 +1,20 @@
 import React, { useRef, useEffect, useState } from 'react';
 import CSS from 'csstype';
-import ScrollContainer from 'react-indiana-drag-scroll';
 import useDragScroll from 'use-drag-scroll';
 import ReactDOM from 'react-dom';
+import { datetimeToOffset, datetimeToRangeString } from '../../../util/CalendarUtil';
+import { BAR_WIDTH } from '../../../util/CalendarUtil';
+import FreeSlots from './horizontal-cal-components/FreeSlots';
+import FreeBlocks from './horizontal-cal-components/FreeBlocks';
+import CalendarEvents from './horizontal-cal-components/CalendarEvents';
+import ReactTooltip from 'react-tooltip';
+import EventTooltip from './horizontal-cal-components/EventTooltip';
+import { current } from 'immer';
+const { DateTime } = require("luxon");
+
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
-
-// MARKERS
-const timeMarkersAM = [
-  '12 AM',
-  '',
-  '2 AM',
-  '',
-  '4 AM',
-  '',
-  '6 AM',
-  '',
-  '8 AM',
-  '',
-  '10 AM',
-  '',
-];
-const timeMarkersPM = [
-  '12 PM',
-  '',
-  '2 PM',
-  '',
-  '4 PM',
-  '',
-  '6 PM',
-  '',
-  '8 PM',
-  '',
-  '10 PM',
-  '',
-  '12 AM',
-];
-
-const BAR_WIDTH = 48;
 
 interface HorizontalCalendar {
   date: string;
@@ -48,67 +24,242 @@ interface HorizontalCalendar {
   ignoreHandler: any;
   events: any;
   index: number;
+  textSnippetOpen: boolean
+  ignoredSlots: Array<Array<number>>
+  eventTooltipId: string;
+  event_overlap_depth: number,
+  scheduleNewEvent: any
+
+  setModalShow: any
+  setModalEventDayIdx: any
+  setModalEventIdxInDay: any
+  setShowsNewEvent: any
+  setModalEventStart: any;
+  setModalEventEnd: any
+  setModalEventTitle: any
+  setModalEventLocation: any
+  setModalEventDescription: any
+  setModalEventCalendar: any
 }
 
-// -------------------------- Calculating Positioning -------------------------- //
+export default function HorizontalCalendar(props: HorizontalCalendar) {
+  const {
+    date,
+    hard_start,
+    hard_end,
+    free_blocks,
+    ignoreHandler,
+    events,
+    index,
+    textSnippetOpen,
+    ignoredSlots,
+    eventTooltipId,
+    event_overlap_depth,
+    scheduleNewEvent, 
+    setModalShow,
+    setModalEventDayIdx,
+    setModalEventIdxInDay,
+    setShowsNewEvent,
+    setModalEventStart,
+    setModalEventEnd,
+    setModalEventTitle,
+    setModalEventLocation,
+    setModalEventDescription,
+    setModalEventCalendar,
+  } = props;
 
-function calculateMinutes(minutes: number) {
-  var minOffset;
+  // State
+  const [currentlyHoveredEventIdx, setCurrentlyHoveredEventIdx] = useState(0) // refers to the index in "events" being hovered
+  const [currentlySelectedEventIdx, setCurrentlySelectedEventIdx] = useState(0) // refers to the index in "events" being selected (via a click)
+  const [externallyHighlightedCalendarEventIdx, setExternallyHighlightedCalendarEventIdx] = useState(-1)
 
-  if (Math.abs(minutes) < 15) {
-    minOffset = 0;
-  } else if (Math.abs(minutes) < 30) {
-    minOffset = 1;
-  } else if (Math.abs(minutes) < 45) {
-    minOffset = 2;
-  } else {
-    minOffset = 3;
+  
+
+
+  // -------------------------- HORIZONTAL SCROLL STUFF -------------------------- //
+  const scrollRef = useRef(null);
+
+  useDragScroll({
+    sliderRef: scrollRef,
+    momentumVelocity: 0,
+  });
+
+  useEffect(() => {
+    if (scrollRef.current !== null) {
+      const xScrollAmount = calculateScroll();
+      scrollRef.current.scrollTo(xScrollAmount, 0);
+    }
+  }, []);
+
+  // Scrolls to the first occurence of a free slot
+  function calculateScroll() {
+    if (free_blocks.length > 0) {
+      const earliestTime = DateTime.fromISO(free_blocks[0].start_time);
+      const earliestHour = earliestTime.hour
+
+      return earliestHour * BAR_WIDTH - BAR_WIDTH*.25;
+    } else {
+      return 300; // TODO: Fix this
+    }
   }
 
-  return minutes >= 0 ? minOffset : -minOffset;
-}
+  // -------------------------- CALLBACKS -------------------------- //
 
-function datetimeToOffset(start: string, end: string, borderAdjust: number) {
-  const startTime = new Date(start);
-  const endTime = new Date(end);
+  useEffect(() => {
+    //myConsole.log(free_blocks[0].free_slots[0])
+  }, [free_blocks])
 
-  const startHour = startTime.getUTCHours();
-  const endHour = endTime.getUTCHours();
-
-  const startMin = startTime.getUTCMinutes();
-  const endMin = endTime.getUTCMinutes();
-
-  var minOffset = calculateMinutes(startMin);
-  var minDifferenceOffset = calculateMinutes(endMin - startMin);
-
-  // Formula for finding the offset from right needed (assumes the size of each bar is 40px, as defined in index.css)
-
-  const offset =
-    BAR_WIDTH / 2 +
-    (24 - startHour) * BAR_WIDTH -
-    minOffset * (BAR_WIDTH / 4) -
-    borderAdjust;
-
-  const width =
-    (endHour - startHour) * BAR_WIDTH +
-    minDifferenceOffset * (BAR_WIDTH / 4) -
-    borderAdjust;
-
-  if (end === '2021-06-09T24:00:00Z') {
-    const newWidth =
-      (BAR_WIDTH / 2 - (startHour - endHour)) * BAR_WIDTH +
-      minDifferenceOffset * (BAR_WIDTH / 4) -
-      borderAdjust;
-
-    return [String(offset - newWidth + 'px'), String(newWidth + 'px')];
+  // --------------------- UTILITY METHODS --------------------- //
+  function LaunchModalFromExistingEvent(index_in_day: number) {
+    setModalShow(true)
+    setModalEventDayIdx(index)
+    setModalEventIdxInDay(index_in_day)
+    setShowsNewEvent(false)
+    setModalEventStart(DateTime.fromISO(events[currentlySelectedEventIdx].start_time))
+    setModalEventEnd(DateTime.fromISO(events[currentlySelectedEventIdx].end_time))
+    setModalEventTitle(events[currentlySelectedEventIdx].title)
+    setModalEventCalendar(events[currentlySelectedEventIdx].calendar)
+    setModalEventLocation('') // TODO: Add location info to the event object
+    setModalEventDescription("Some description that already exists") // TODO: Set description on the event object
   }
-  return [String(offset - width + 'px'), String(width + 'px')];
+
+  // Accepts start and end times as Luxon DateTime objects
+  function LaunchModalFromFreeSlot(start_time, end_time) {
+    setModalShow(true)
+    setModalEventDayIdx(index)
+    setShowsNewEvent(true)
+    setModalEventStart(start_time)
+    setModalEventEnd(end_time)
+    setModalEventTitle('')
+    setModalEventLocation('')
+    setModalEventDescription('') 
+    setModalEventCalendar({name: "Alex's Calendar", color: "blue"}) // TODO: Use the default calendar 
+  }
+
+  
+ 
+  return (
+    <div style={{display:"flex", flexDirection: "row", justifyContent: "center", alignItems: "center",}}>
+      <DateText dateText={date}/>
+      <GradientEdges /> 
+      <div ref={scrollRef} style={horizontalCalendarStyle}>
+        <HorizontalBars overlap_depth={event_overlap_depth}/>
+        <LimitBars hard_start={hard_start} hard_end={hard_end} />
+        <CalendarEvents 
+          events={events}
+          setCurrentlyHoveredEventIdx={setCurrentlyHoveredEventIdx}
+          setCurrentlySelectedEventIdx={setCurrentlySelectedEventIdx}
+          eventTooltipId={eventTooltipId}
+          externallyHighlightedIdx={externallyHighlightedCalendarEventIdx}
+          launchModalFromExistingEvent={LaunchModalFromExistingEvent}
+        />
+        <FreeSlots
+          free_blocks={free_blocks}
+          day_idx={index}
+          ignoreHandler={ignoreHandler}
+          textSnippetOpen={textSnippetOpen}
+          ignoredSlots={ignoredSlots}
+          launchModalFromFreeSlot={LaunchModalFromFreeSlot}
+        />
+        <FreeBlocks
+          free_blocks={free_blocks}
+          ignoreHandler={ignoreHandler}
+          day_idx={index}
+          textSnippetOpen={textSnippetOpen}
+        />
+        
+        <EventTooltip 
+          events={events}
+          currentlyHoveredEventIdx={currentlyHoveredEventIdx}
+          setCurrentlySelectedEventIdx={setCurrentlySelectedEventIdx}
+          eventTooltipId={eventTooltipId}
+          setExternalHighlightIdx={setExternallyHighlightedCalendarEventIdx}
+          launchModal={LaunchModalFromExistingEvent}
+       
+        />
+      </div>
+    </div>
+  );
 }
 
-// -------------------------- IMMUTABLE STUFF -------------------------- //
+
+// -------------------------- IMMUTABLE COMPONENTS -------------------------- //
+
+
+
+function DateText(props: {dateText: string}) {
+  const {dateText} = props
+  const dateObj = DateTime.fromISO(dateText)
+
+  const weekdays = [
+    "SUN",
+    "MON",
+    "TUE", 
+    "WED",
+    "THU",
+    "FRI",
+    "SAT"
+  ]
+
+  const dayOfMonth = dateObj.day
+  const monthOfYear = dateObj.month  
+  const dayOfWeek = dateObj.weekday
+
+  const dayString = weekdays[dayOfWeek] + " " + (monthOfYear).toString() + "/" + (dayOfMonth).toString() 
+
+  return (
+    <div 
+    className="horizontalCalendarDateText"
+    style={{display: "flex", 
+            justifyContent: "center", 
+            alignItems: "flex-start", 
+            flexDirection: "column",
+            marginTop: "27px",
+            marginRight: "5px",
+            minWidth: "70px",
+            maxWidth: "70px",
+            
+    }}>
+      {dayString}
+    </div>
+  )
+}
 
 // Creates the horizontal bars needed for
-function HorizontalBars() {
+function HorizontalBars(props: {overlap_depth: number}) {
+
+  const {overlap_depth} = props
+  // MARKERS
+  const timeMarkersAM = [
+    '12 AM',
+    '',
+    '2 AM',
+    '',
+    '4 AM',
+    '',
+    '6 AM',
+    '',
+    '8 AM',
+    '',
+    '10 AM',
+    '',
+  ];
+  const timeMarkersPM = [
+    '12 PM',
+    '',
+    '2 PM',
+    '',
+    '4 PM',
+    '',
+    '6 PM',
+    '',
+    '8 PM',
+    '',
+    '10 PM',
+    '',
+    '12 AM',
+  ];
+
   return (
     <div style={{ display: 'flex' }}>
       <div style={{ display: 'flex' }}>
@@ -147,26 +298,24 @@ function HorizontalBars() {
 
 function GradientEdges() {
   return (
-    <div style={{ position: 'absolute', marginTop: '12px' }}>
+    <div style={{ position: 'relative', }}>
       <div
+        className="leftGradientBar"
         style={{
           position: 'absolute',
-          minWidth: '10px',
-          minHeight: '30px',
-          backgroundColor: 'white',
-          opacity: '80%',
-          zIndex: 1,
+          minWidth: '15px',
+          minHeight: '45px',
+          zIndex: 11,
         }}
       ></div>
       <div
+        className="rightGradientBar"
         style={{
           position: 'absolute',
-          minWidth: '10px',
-          minHeight: '30px',
-          backgroundColor: 'white',
-          left: '360px',
-          opacity: '80%',
-          zIndex: 1,
+          minWidth: '15px',
+          minHeight: '45px',
+          left: '415px',
+          zIndex: 11,
         }}
       ></div>
     </div>
@@ -178,7 +327,7 @@ function LimitBars(props: { hard_start: string; hard_end: string }) {
   const { hard_start, hard_end } = props;
   // Create offset and width for the start hard limit
   const [startOffset, startWidth] = datetimeToOffset(
-    '2021-06-09T00:00:00Z',
+    '2021-06-09T00:00:00-07:00',
     hard_start,
     0
   );
@@ -186,9 +335,10 @@ function LimitBars(props: { hard_start: string; hard_end: string }) {
   // Create offset and width for the start hard limit
   const [endOffset, endWidth] = datetimeToOffset(
     hard_end,
-    '2021-06-09T24:00:00Z',
+    '2021-06-09T23:59:59-07:00',
     0
   );
+
 
   return (
     <div
@@ -207,7 +357,7 @@ function LimitBars(props: { hard_start: string; hard_end: string }) {
           minWidth: startWidth,
           width: startWidth,
           backgroundColor: 'gray',
-          opacity: '15%',
+          opacity: '10%',
           minHeight: '20px',
         }}
       ></div>
@@ -219,217 +369,10 @@ function LimitBars(props: { hard_start: string; hard_end: string }) {
           minWidth: endWidth,
           width: endWidth,
           backgroundColor: 'gray',
-          opacity: '15%',
+          opacity: '10%',
           minHeight: '20px',
         }}
       ></div>
-    </div>
-  );
-}
-
-function CalendarEvents(props: { events }) {
-  const { events } = props;
-  return (
-    <div
-      style={{
-        position: 'relative',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: '15px',
-      }}
-    >
-      {events.map((event, idx) => (
-        <div
-          style={{
-            position: 'absolute',
-            right: datetimeToOffset(event.start_time, event.end_time, 1)[0],
-            width: datetimeToOffset(event.start_time, event.end_time, 1)[1],
-            backgroundColor: 'gray',
-            opacity: '70%',
-            minHeight: '14px',
-            borderRadius: 3,
-            cursor: 'pointer',
-          }}
-          key={idx}
-          onClick={() => myConsole.log('wtf')}
-        ></div>
-      ))}
-    </div>
-  );
-}
-
-function FreeBlocks(props: { free_blocks; day_idx; ignoreHandler }) {
-  const { free_blocks, day_idx, ignoreHandler } = props;
-
-  return (
-    <div
-      style={{
-        position: 'relative',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: '15px',
-        pointerEvents: 'none',
-      }}
-    >
-      {free_blocks.map((event, idx) => (
-        <div
-          style={{
-            position: 'absolute',
-            right: datetimeToOffset(event.start_time, event.end_time, 5)[0],
-            width: datetimeToOffset(event.start_time, event.end_time, 5)[1],
-            minHeight: '20px',
-            borderRadius: 3,
-            border: '2px solid rgba(135, 220, 215, 1)',
-            cursor: 'pointer',
-          }}
-          key={idx}
-        ></div>
-      ))}
-    </div>
-  );
-}
-
-function FreeSlots(props: { free_blocks; day_idx; ignoreHandler }) {
-  const { free_blocks, day_idx, ignoreHandler } = props;
-
-  return (
-    <div
-      style={{
-        position: 'relative',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: '15px',
-        flexDirection: 'row',
-      }}
-    >
-      {free_blocks.map((block, block_idx) =>
-        block.free_slots.map((event, slot_idx) => (
-          <div key={slot_idx} style={{ position: 'absolute' }}>
-            <Slot
-              event={event}
-              slot_idx={slot_idx}
-              block_idx={block_idx}
-              day_idx={day_idx}
-              ignoreHandler={ignoreHandler}
-            />
-          </div>
-        ))
-      )}
-    </div>
-  );
-}
-
-function Slot(props: { event; slot_idx; block_idx; day_idx; ignoreHandler }) {
-  const { event, slot_idx, block_idx, day_idx, ignoreHandler } = props;
-
-  const [isActive, setIsActive] = useState(true);
-  const [color, setColor] = useState('#C1ECEA');
-  const [zIndex, setZIndex] = useState(0);
-  const [showPopup, setShowPopup] = useState(false);
-
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        right: datetimeToOffset(event.start_time, event.end_time, 0)[0],
-        width: datetimeToOffset(event.start_time, event.end_time, 1)[1],
-        minHeight: '20px',
-        borderRadius: 5,
-        borderColor: 'black',
-        backgroundColor: color,
-        cursor: 'pointer',
-        zIndex: zIndex,
-      }}
-      onClick={() => {
-        if (isActive) {
-          setColor('rgba(135, 220, 215, 0)');
-          setIsActive(false);
-          ignoreHandler([day_idx, block_idx, slot_idx], 'remove');
-        } else {
-          setColor('rgba(135, 220, 215, 1)');
-          setIsActive(true);
-          ignoreHandler([day_idx, block_idx, slot_idx], 'add-back');
-        }
-      }}
-      onMouseEnter={() => {
-        if (isActive) {
-          setColor('rgba(135, 220, 215, 1)');
-        } else {
-          setColor('rgba(125, 125, 125, .3)');
-        }
-        setShowPopup(true);
-        setZIndex(10);
-      }}
-      onMouseLeave={() => {
-        if (isActive) {
-          setColor('#C1ECEA');
-        } else {
-          setColor('rgba(135, 220, 215, 0)');
-        }
-        setZIndex(0);
-        setShowPopup(false);
-      }}
-    ></div>
-  );
-}
-
-export default function HorizontalCalendar(props: HorizontalCalendar) {
-  const {
-    date,
-    hard_start,
-    hard_end,
-    free_blocks,
-    ignoreHandler,
-    events,
-    index,
-  } = props;
-
-  // -------------------------- HORIZONTAL SCROLL STUFF -------------------------- //
-  const scrollRef = useRef(null);
-
-  useDragScroll({
-    sliderRef: scrollRef,
-    momentumVelocity: 0,
-  });
-
-  useEffect(() => {
-    if (scrollRef.current !== null) {
-      const xScrollAmount = calculateScroll();
-      scrollRef.current.scrollTo(xScrollAmount, 0);
-    }
-  }, []);
-
-  function calculateScroll() {
-    if (free_blocks.length > 0) {
-      const earliestTime = new Date(free_blocks[0].start_time);
-      const earliestHour = earliestTime.getUTCHours();
-
-      return earliestHour * BAR_WIDTH - BAR_WIDTH / 2;
-    } else {
-      return 300; // TODO: Fix this
-    }
-  }
-
-  return (
-    <div ref={scrollRef} style={horizontalCalendarStyle}>
-      <HorizontalBars />
-      <LimitBars hard_start={hard_start} hard_end={hard_end} />
-      <CalendarEvents events={events} />
-      <FreeSlots
-        free_blocks={free_blocks}
-        day_idx={index}
-        ignoreHandler={ignoreHandler}
-      />
-      <FreeBlocks
-        free_blocks={free_blocks}
-        ignoreHandler={ignoreHandler}
-        day_idx={index}
-      />
-
-      <GradientEdges />
     </div>
   );
 }
@@ -439,7 +382,7 @@ const horizontalCalendarStyle: CSS.Properties = {
   overflowX: 'hidden',
   marginTop: '15px',
   flexFlow: 'nowrap',
-  width: '370px',
+  width: '430px',
   cursor: 'grab',
 };
 

@@ -88,8 +88,8 @@ const textWindowStyle: CSS.Properties = {
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-start",
-    width: "450px",
+    width: "550px",
     borderRadius: "12px",
-    boxShadow: "inset 0 0 40px rgba(0, 0, 0, .05)"
+    boxShadow: "inset 0 0 20px rgba(0, 0, 0, .05)"
 }
 

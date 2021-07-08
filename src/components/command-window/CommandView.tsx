@@ -29,6 +29,12 @@ export default function CommandView() {
     useState('default');
   const [currentlyClearing, setCurrentClearing] = useState(false);
 
+  ipcRenderer.on('clear-command-line', () => {
+    clearCommandLine().then(() => {
+      setCurrentClearing(true);
+    });
+  })
+
   // // Performs the work of fetching text snippets (replace with real logic)
   // async function fetchSnippets() {
   //   var myContentState1 = ContentState.createFromText(
@@ -234,8 +240,14 @@ export default function CommandView() {
   }, [alertCommandLineToClear]);
 
   return (
-    <div style={commandAreaStyle} onClick={() => triggerBrowserWindowBlur()}>
-      <div style={commandStyle} onClick={(e) => e.stopPropagation()}>
+    <div 
+      style={commandAreaStyle} 
+      onClick={() => triggerBrowserWindowBlur()}
+    >
+      <div 
+        style={commandStyle} 
+        onClick={(e) => e.stopPropagation()}
+      >
         <CommandLine
           queryPiecePositions={queryPiecePositions}
           autocompleteInProgress={autocompleteInProgress}
@@ -270,23 +282,28 @@ export default function CommandView() {
               value: currentQueryFragment,
               type: QueryPieceType.MODIFIER,
             }}
+            dirtyQueryFragment={{
+              value: currentQueryFragment,
+              type: QueryPieceType.MODIFIER,
+            }}
+            
           />
         )}
-      </div>
+       </div>
     </div>
   );
 }
 
 const commandStyle: CSS.Properties = {
   minHeight: '65px',
-  minWidth: '550px',
-  width: '550px',
+  minWidth: '600px',
+  width: '600px',
   backgroundColor: '#FFFFFF',
   borderRadius: '12px',
   flexDirection: 'column',
   outline: 'none',
-  marginTop: "10%",
-  boxShadow: '0 0 100px rgba(0,0,0, 0.4)',
+  marginTop: "5%",
+  boxShadow: '0 0 100px rgba(0,0,0, 0.8)',
 };
 
 const commandAreaStyle: CSS.Properties = {
@@ -294,7 +311,7 @@ const commandAreaStyle: CSS.Properties = {
   alignItems: 'flex-start',
   justifyContent: 'center',
   height: '100%',
-  backgroundColor: 'rgba(211,211,211, 0.09)',
+  backgroundColor: 'rgba(211,211,211, 0.05)',
   position: "fixed",
   width: "100%"
 };

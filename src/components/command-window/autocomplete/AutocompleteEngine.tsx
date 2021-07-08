@@ -20,6 +20,7 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 export interface BaseAutocompleteEngineProps extends AutocompleteBarProps {
   precedingQueryPieces: Array<Piece>;
   queryFragment: QueryFragment;
+  dirtyQueryFragment: QueryFragment;
   updateRoot: (autocompletions: Array<Piece>) => void;
 }
 
@@ -42,6 +43,7 @@ export default function AutocompleteEngine(props: AutocompleteEngineProps) {
   const {
     precedingQueryPieces,
     queryFragment,
+    dirtyQueryFragment,
     updateRoot,
     onAutocompletion,
     ...autocompleteBarProps
@@ -77,12 +79,13 @@ export default function AutocompleteEngine(props: AutocompleteEngineProps) {
   );
 
   autocompletions = onAutocompletion(autocompletions);
+  
 
   useEffect(() => {
     if (queryFragment.value.length > 0) {
       updateRoot(autocompletions);
     }
-  }, [queryFragment.value]);
+  }, [dirtyQueryFragment.value]);
 
   useEffect(() => {
     let usedModifierCategories = [];

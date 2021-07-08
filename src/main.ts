@@ -171,6 +171,10 @@ ipcMain.on('settings-showing', () => {
   currentWindow = 'SETTINGS';
 });
 
+ipcMain.on('open-settings', () => {
+  openSettingsView()
+})
+
 /// ----------------------------- OTHER METHODS ------------------- ///
 
 // Handles global key shortcuts (incomplete, will add parametrized behavior)
@@ -180,6 +184,7 @@ function keyboardShortcutHandler() {
     windowDisplayHandler('COMMAND', false);
   } else {
     if (sentinelWindow.isVisible()) {
+      //sentinelWindow.webContents.send('clear-command-line', 'keyboard shortcut triggered') TODO: Fix the bug that occurs when this is going
       sentinelWindow.hide();
     } else {
       sentinelWindow.show();

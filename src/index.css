@@ -1,5 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 
+
+::-webkit-scrollbar {
+    width: 5px;
+    
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(125,125,125, .5);
+    left: -50px
+}
+ 
+
 .titlebar {
     -webkit-user-select: none;
     -webkit-app-region: drag;
@@ -43,6 +55,14 @@
     display: flex;
 }
 
+.leftGradientBar {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0))
+}
+
+.rightGradientBar {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .95))
+}
+
 .timeBarText {
     font-family: 'Montserrat', sans-serif;
     font-weight: lighter;
@@ -50,10 +70,172 @@
     font-size: 11px;
     display: flex;
     height: 10px;
-    width: 48px;
+    width: 40px;
     margin-bottom: 5px;
     margin-left: 2px; 
     justify-content: center;
     align-items: center
+}
 
+.horizontalCalendarDateText {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: lighter;
+    color: #7D7D7D;
+    font-size: 13px;
+}
+
+.freeBlock {
+    background: linear-gradient(90deg, rgba(135, 220, 215, .4), rgba(125, 189, 220, .4))
+}
+
+.launchTextEngineText {
+    font-family: 'Montserrat';
+    font-weight: medium;
+    color: #7D7D7D;
+    font-size: 15px;
+}
+
+.event-tooltip {
+    filter: drop-shadow(0 0 4px rgba(172, 170, 170, 0.5));
+    border-radius: 8px;
+    border-width: 0px;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    cursor: pointer;
+    z-index: 20 !important
+
+
+}
+
+.event-tooltip:hover {
+    visibility: visible !important;
+    opacity: 1 !important;
+
+}
+
+
+.eventTooltipText {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bolder;
+    color: #7D7D7D;
+    font-size: 13px;
+    max-width: 150px
+}
+
+.eventTooltipDateText {
+    font-family: 'Montserrat';
+    font-weight: bolder;
+    color: #7D7D7D;
+    font-size: 10px;
+    max-width: 150px;
+    margin-left: 12px;
+    margin-top: 5px;
+}
+
+.eventModalTitle {
+    font-family: 'Montserrat';
+    font-weight: lighter;
+    color: #3F3F3F;
+    font-size: 20px;
+    border: none;
+    outline: none;
+    width: 350px;
+}
+
+
+.eventModalLocation {
+    font-family: 'Montserrat';
+    font-weight: lighter;
+    color: #7D7D7D;
+    font-size: 14px;
+    border: none;
+    outline: none;
+    width: 200px;
+}
+
+.eventModalDescription {
+    font-family: 'Montserrat';
+    font-weight: lighter;
+    color: #7D7D7D;
+    font-size: 14px;
+    border: none;
+    outline: none;
+    width: 350px;
+    resize: none;
+    min-height: 200px;
+}
+
+.eventModalSaveButtonText {
+    font-family: 'Montserrat';
+    font-weight: lighter;
+    color: #FFFFFF;
+    font-size: 14px
+}
+
+.eventModalCancelButtonText {
+    font-family: 'Montserrat';
+    font-weight: lighter;
+    text-decoration: underline;
+    color: #7D7D7D;
+    font-size: 12px
+}
+
+.eventModalTime {
+    font-family: 'Montserrat';
+    font-weight: bolder;
+    color: #7D7D7D;
+    font-size: 13px;
+}
+
+.eventModalCalendarText {
+    font-family: 'Montserrat';
+    font-weight: bolder;
+    color: #7D7D7D;
+    font-size: 13px;
+}
+
+.eventTimePickerTimeOption {
+    font-family: 'Montserrat';
+    font-weight: bolder;
+    color: #7D7D7D;
+    font-size: 13px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    margin-left: 6px;
+    margin-right: 6px
+}
+
+.eventModalTimePlainString {
+    font-family: 'Montserrat';
+    font-weight: lighter;
+    color: #7D7D7D;
+    font-size: 13px;
+    margin-left: 15px;
+    margin-right: 17px
+}
+
+
+::-webkit-input-placeholder { 
+    color: rgba(172, 170, 170, 0.7);
+}
+
+.datePicker {
+    font-family: 'Montserrat';
+    font-weight: lighter;
+    height: 26px;
+    width: 150px;
+}
+
+.MuiInputBase-input {
+    color: "blue"
+}
+
+.calendarPopupText {
+    font-family: 'Montserrat';
+    font-weight: lighter;
+    font-size: 13px;
+    
 }
