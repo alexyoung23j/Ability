@@ -87,30 +87,32 @@ export default function CalendarBody(props: CalendarBody) {
             <div style={{height: "20px"}}>
 
             </div>
-            <EventModal 
-                isOpen={modalShow}
-                dayIdx={modalEventDayIdx}
-                isNewEvent={modalShowsNewEvent}
-                eventStart={modalEventStart}
-                eventEnd={modalEventEnd}    
-                eventTitle={modalEventTitle}
-                eventLocation={modalEventLocation}
-                eventCalendar={modalEventCalendar}
-                eventDescription={modalEventDescription}
-                modalEventIdxInDay={modalEventIdxInDay}
+            {modalShow && (
+                <EventModal 
+                    dayIdx={modalEventDayIdx}
+                    isNewEvent={modalShowsNewEvent}
+                    eventStart={modalEventStart}
+                    eventEnd={modalEventEnd}    
+                    eventTitle={modalEventTitle}
+                    eventLocation={modalEventLocation}
+                    eventCalendar={modalEventCalendar}
+                    eventDescription={modalEventDescription}
+                    modalEventIdxInDay={modalEventIdxInDay}
 
-                setIsOpen={setModalShow}
-                setShowsNewEvent={setModalShowsNewEvent}
-                setEventStart={setModalEventStart}
-                setEventEnd={setModalEventEnd}
-                setEventTitle={setModalEventTitle}
-                setEventLocation={setModalEventLocation}
-                setEventCalendar={setModalEventCalendar}
-                setEventDescription={setModalEventDescription}
+                    setIsOpen={setModalShow}
+                    setShowsNewEvent={setModalShowsNewEvent}
+                    setEventStart={setModalEventStart}
+                    setEventEnd={setModalEventEnd}
+                    setEventTitle={setModalEventTitle}
+                    setEventLocation={setModalEventLocation}
+                    setEventCalendar={setModalEventCalendar}
+                    setEventDescription={setModalEventDescription}
 
-                scheduleNewEvent={scheduleNewEvent}
-                modifyExistingEvent={modifyExistingEvent}
-            />    
+                    scheduleNewEvent={scheduleNewEvent}
+                    modifyExistingEvent={modifyExistingEvent}
+                />    
+            )}
+           
         </div>
     )
 }

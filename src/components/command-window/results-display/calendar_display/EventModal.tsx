@@ -8,7 +8,6 @@ const { DateTime } = require("luxon");
 
 
 interface EventModalProps {
-    isOpen: boolean
     dayIdx: number
     isNewEvent: boolean
     eventStart: any
@@ -37,7 +36,7 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 export default function EventModal(props: EventModalProps) {
 
-    const {isOpen,
+    const {
         dayIdx,
         isNewEvent,
         eventStart,
@@ -60,41 +59,53 @@ export default function EventModal(props: EventModalProps) {
     
     } = props
 
-    // State
+    
+    const [changeMade, setChangeMade] = useState(false) // Tracks whether we actually changed anything
+
+    const saveButtonColor = (changeMade && eventTitle != '') ? "rgb(125, 189, 220)" : "rgba(125, 189, 220, .4)"
+
+    // Little hack to avoid triggering on first mount
+    const dummyRef = useRef(true)
+    useEffect(() => {
+        if (dummyRef.current) {
+            dummyRef.current = false;
+        } else {
+            setChangeMade(true)
+        }
+    })
+
+    
 
     function handleSave() {
         if (isNewEvent) {
             // create new event
-            if (eventTitle != '') {
-                scheduleNewEvent(
-                    eventStart.toISO(),
-                    eventEnd.toISO(),
-                    eventTitle,
-                    "fake_url", // TODO: generate a UrL? maybe this takes place in the new event scheduler in ResultEngine
-                    eventCalendar.color,
-                    eventCalendar.name,
-                    eventCalendar.color, 
-                    dayIdx
-                )
-            }
-            
+            scheduleNewEvent(
+                eventStart.toISO(),
+                eventEnd.toISO(),
+                eventTitle,
+                "fake_url", // TODO: generate a UrL? maybe this takes place in the new event scheduler in ResultEngine
+                eventCalendar.color,
+                eventCalendar.name,
+                eventCalendar.color, 
+                dayIdx
+            )
+
             setIsOpen(false)
         } else {
 
             // modify existing event 
-            if (eventTitle != '') {
-                modifyExistingEvent(
-                    eventStart.toISO(),
-                    eventEnd.toISO(),
-                    eventTitle,
-                    "fake_url", // TODO: generate a UrL? maybe this takes place in the new event scheduler in ResultEngine
-                    eventCalendar.color,
-                    eventCalendar.name,
-                    eventCalendar.color, 
-                    dayIdx, 
-                    modalEventIdxInDay
-                )
-            }
+            modifyExistingEvent(
+                eventStart.toISO(),
+                eventEnd.toISO(),
+                eventTitle,
+                "fake_url", // TODO: generate a UrL? maybe this takes place in the new event scheduler in ResultEngine
+                eventCalendar.color,
+                eventCalendar.name,
+                eventCalendar.color, 
+                dayIdx, 
+                modalEventIdxInDay
+            )
+            
             setIsOpen(false)
 
         }
@@ -114,7 +125,6 @@ export default function EventModal(props: EventModalProps) {
 
 
     return ( 
-        isOpen && ( 
         <div
             style={ModalAreaStyles}
             onClick={() => setIsOpen(false)}
@@ -189,8 +199,8 @@ export default function EventModal(props: EventModalProps) {
                     style={{marginTop: "0px", marginLeft: "0px", marginBottom: "20px", display: "flex", justifyContent: "center", alignItems: "center", width: "400px"}}
                 >
                     <div
-                        onClick={() => handleSave()}
-                        style={{cursor: "pointer", height: "30px", width: "100px", backgroundColor: "rgb(125, 189, 220)", borderRadius: "10px", display: "flex", justifyContent: "center", alignItems: "center" }}
+                        onClick={() => { if (changeMade && eventTitle != '') {handleSave()}}}
+                        style={{cursor: "pointer", height: "30px", width: "100px", backgroundColor: saveButtonColor, borderRadius: "10px", display: "flex", justifyContent: "center", alignItems: "center" }}
                     >
                         <div
                             className="eventModalSaveButtonText"
@@ -209,7 +219,7 @@ export default function EventModal(props: EventModalProps) {
               
             </div>
         </div>
-        )
+        
        
     )
 }

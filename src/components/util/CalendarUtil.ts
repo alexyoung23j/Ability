@@ -333,12 +333,17 @@ export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_d
 // Takes in an events array, ensures its organized correctly and overlaps are accounted for correctly. Returns Events
 export function HydrateOverlapEvents(events: Array<{start_time: string,end_time: string, title: string, url: string, color: string, index_of_overlapped_events: Array<number>}> ) {
   // hold onto the event with the earliest start time. On seeing a new event, if that events ENDS earlier than the held onto event, its index is put into
-  // the overlap array for the held onto event. Do nothing, more forward
+  // the overlap array for the held onto event. Do nothing, move forward
 
   // if the new event ends later, proceed as normal and 
 
   if (events.length == 0) {
     return events
+  }
+
+  // clear everything out
+  for (let i = 0; i < events.length; i++) {
+    events[i].index_of_overlapped_events = []
   }
 
 
@@ -349,7 +354,10 @@ export function HydrateOverlapEvents(events: Array<{start_time: string,end_time:
     const newEventEnd = DateTime.fromISO(events[i].end_time)
 
     if (newEventEnd < lagEventEndTime) {
-      events[lagEventIdx].index_of_overlapped_events.push(i)
+      if (!events[lagEventIdx].index_of_overlapped_events.includes(i)) {
+        events[lagEventIdx].index_of_overlapped_events.push(i)
+      }
+      
     } else {
       lagEventIdx = i
       lagEventEndTime = newEventEnd

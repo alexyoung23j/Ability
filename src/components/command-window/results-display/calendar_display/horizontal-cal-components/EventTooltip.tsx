@@ -106,7 +106,7 @@ function EventDescriptionView(props: EventDescriptionViewProps) {
     }
 
     function onClick() {
-       launchModal()
+       launchModal(eventIdx)
     }
 
     return ( 

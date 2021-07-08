@@ -116,9 +116,24 @@ export default function ResultEngine() {
     // Copy events into variable for manipulation in this funciton
     let events = JSON.parse(JSON.stringify(calendarResultData.days[day_idx].events))
 
+    // Remove the original event from our copy
+    events.splice(event_idx, 1)
+
+    let insertIdx = 0
+    
+    // Insert Event into correct position (by START time, as is convention for events). We do this because modifying the event time might change the order
+    while (insertIdx < events.length) {
+      const eventStartTime = DateTime.fromISO(events[insertIdx].start_time)
+
+      if (newEventStartTime < eventStartTime) {
+        break
+      }
+      insertIdx += 1
+    }
+
 
     // Add the event into our local copy of the events
-    events[event_idx] = {
+    events.splice(insertIdx, 0, {
       start_time: start_time,
       end_time: end_time,
       title: title,
@@ -129,7 +144,7 @@ export default function ResultEngine() {
         color: calendar_color
       },
       index_of_overlapped_events: []
-    }
+    })
 
 
     // Reset the overlaps 

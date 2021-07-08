@@ -185,8 +185,8 @@ return (
     data-for={"slot-tip"}
     >
 
-    {showPlus && (<img src={plusIcon} style={{height: '8px'}}/>)}
-    {showMinus && (<img src={minusIcon} style={{height: '1px'}}/>)}
+    {showPlus && (<img src={plusIcon} style={{height: '10px'}}/>)}
+    {showMinus && (<img src={minusIcon} style={{height: '2px'}}/>)}
     
     </div>
 );
