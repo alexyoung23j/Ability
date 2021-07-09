@@ -22,17 +22,17 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 interface TextEditWindow {
     defaultContent: ContentState
     containsStyles: boolean
+    wasCopied: boolean
 }
 
 
 export default function TextEditWindow(props: TextEditWindow) {
 
-    // Load up with the text snippet we passed
-    const myContentState = props.defaultContent
+    const {defaultContent, containsStyles, wasCopied} = props
 
-    const content = EditorState.createWithContent(myContentState)
-    const [editorState, setEditorState] = useState(EditorState.createWithContent(myContentState))
-    const [editorStateHidden, setEditorStateHidden] = useState(EditorState.createWithContent(myContentState))
+    const content = EditorState.createWithContent(defaultContent)
+    const [editorState, setEditorState] = useState(EditorState.createWithContent(defaultContent))
+    const [editorStateHidden, setEditorStateHidden] = useState(EditorState.createWithContent(defaultContent))
 
     const editorVisibleRef = useRef<Editor>(null)
     const editorHiddenRef = useRef<Editor>(null)
@@ -40,10 +40,10 @@ export default function TextEditWindow(props: TextEditWindow) {
     // Copies the current content to the clipboard 
     // TODO: Handle styled content 
     useEffect(() => {
-        if (editorHiddenRef.current !== null) {
+        if (wasCopied && editorHiddenRef.current !== null) {
             copyToClipboard()
         }
-    })
+    }, [wasCopied])
 
     function copyToClipboard() {
         var toCopy = content.getCurrentContent().getPlainText()

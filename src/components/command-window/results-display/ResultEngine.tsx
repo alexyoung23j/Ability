@@ -282,7 +282,7 @@ function Scheduler(props: {textEngineLaunched, setTextEngineLaunched}) {
 
   const {textEngineLaunched, setTextEngineLaunched} = props;
 
-  const color = textEngineLaunched === true ? "rgb(125, 189, 220)" : "#7D7D7D"
+  const className = textEngineLaunched === true ? "launchTextEngineTextLaunched" : "launchTextEngineTextStandard"
 
   const arrowToDisplay = textEngineLaunched === true ? dropdownArrowHighlight : dropdownArrowNormal
 
@@ -296,8 +296,8 @@ function Scheduler(props: {textEngineLaunched, setTextEngineLaunched}) {
         style={{cursor: "pointer", display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}
       >
         <div 
-          style={{color: color, marginLeft: "35px", marginRight: "10px"}}
-          className="launchTextEngineText"
+          style={{marginLeft: "35px", marginRight: "10px"}}
+          className={className}
         >
           scheduler
         </div>

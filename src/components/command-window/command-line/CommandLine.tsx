@@ -566,14 +566,13 @@ const dateModifierStyles: CSS.Properties = {
 
 const timeModifierStyles: CSS.Properties = {
   fontWeight: 'lighter',
-  color: 'rgba(125, 125, 125, .9)',
+  color: 'rgba(125, 189, 220, 1)',
   fontSize: '25px',
 };
 
 const rangeModifierStyles: CSS.Properties = {
   fontWeight: 'lighter',
-  fontStyle: 'italic',
-  //color: 'rgba(125, 125, 125, .9)',
+  color: 'rgba(125, 125, 125, .9)',
   fontSize: '25px',
 };
 

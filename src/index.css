@@ -39,10 +39,20 @@
     font-size: 10px;
 }
 
-.textSnippetTab {
+.textSnippetTabStandard {
     font-family: 'Montserrat', sans-serif;
     font-size: 12;
     color: #7D7D7D;
+    font-weight: 600;
+}
+
+.textSnippetTabLaunched {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12;
+    background: linear-gradient(90deg, rgba(135, 220, 215, 1), rgba(125, 189, 220, 1));
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
     font-weight: 600;
 }
 
@@ -88,11 +98,37 @@
     background: linear-gradient(90deg, rgba(135, 220, 215, .4), rgba(125, 189, 220, .4))
 }
 
-.launchTextEngineText {
+.launchTextEngineTextStandard {
     font-family: 'Montserrat';
     font-weight: medium;
     color: #7D7D7D;
     font-size: 15px;
+}
+
+.launchTextEngineTextLaunched {
+    font-family: 'Montserrat';
+    font-weight: medium;
+    background: linear-gradient(90deg, rgba(135, 220, 215, 1), rgba(125, 189, 220, 1));
+    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    font-size: 15px;
+}
+
+.textEditButton {
+    font-family: 'Montserrat';
+    font-weight: medium;
+    text-decoration: underline;
+    color: #7D7D7D;
+    font-size: 14px;
+
+}
+
+.copyTextButton {
+    font-family: 'Montserrat';
+    font-weight: medium;
+    color: #FFFFFF;
+    font-size: 12px;
 }
 
 .event-tooltip {
@@ -164,6 +200,11 @@
     resize: none;
     min-height: 200px;
 }
+
+.eventModalSaveButton {
+    background: linear-gradient(90deg, rgba(135, 220, 215, 1), rgba(125, 189, 220, 1));
+}
+
 
 .eventModalSaveButtonText {
     font-family: 'Montserrat';

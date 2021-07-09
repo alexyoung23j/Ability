@@ -16,12 +16,13 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 interface TextField {
     snippetPayload: textSnippet[]
     setWasCopied: any
+    wasCopied: boolean
 }
 
 
 export default function TextField(props: TextField) {
     // props
-    const {snippetPayload, setWasCopied } = props
+    const {snippetPayload, setWasCopied, wasCopied } = props
 
     // State
     const [curDisplayIdx, setCurDisplayIdx] = useState(0)
@@ -32,12 +33,14 @@ export default function TextField(props: TextField) {
                 snippetPayload={snippetPayload}
                 curDisplayIdx={curDisplayIdx}
                 setCurDisplayIdx={setCurDisplayIdx}
+                setWasCopied={setWasCopied}
             />
             <div style={textWindowStyle}>
                 <div style={{marginLeft: "5%", marginRight: "7px", marginTop: "10px", marginBottom: "10px", maxHeight: "200px", overflow: "auto"}}>
                     <TextEditWindow 
                         defaultContent={snippetPayload[curDisplayIdx].content}
                         containsStyles={false}
+                        wasCopied={wasCopied}
                     />
                 </div>
                 
@@ -46,9 +49,9 @@ export default function TextField(props: TextField) {
     )
 }
 
-function TabDisplayer(props: {snippetPayload, curDisplayIdx, setCurDisplayIdx}) {
+function TabDisplayer(props: {snippetPayload, curDisplayIdx, setCurDisplayIdx, setWasCopied}) {
 
-    const {snippetPayload, curDisplayIdx, setCurDisplayIdx} = props
+    const {snippetPayload, curDisplayIdx, setCurDisplayIdx, setWasCopied} = props
 
     return (
         <div style={{display: "flex", flexDirection:"row", alignItems: "flex-end", justifyContent: "center", marginLeft: "14px"}}>
@@ -57,7 +60,10 @@ function TabDisplayer(props: {snippetPayload, curDisplayIdx, setCurDisplayIdx}) 
                     <Tab 
                         highlighted={idx === curDisplayIdx ? true : false}
                         text={snippet.title}
-                        onClickHandler={() => setCurDisplayIdx(idx)}
+                        onClickHandler={() => { if (idx != curDisplayIdx) {
+                            setCurDisplayIdx(idx)
+                            setWasCopied(false)
+                        }}}
                         index={idx}
                     />
                 </div>
@@ -79,6 +85,6 @@ const textWindowStyle: CSS.Properties = {
     justifyContent: "flex-start",
     width: "420px",
     borderRadius: "12px",
-    boxShadow: "inset 0 0 20px rgba(0, 0, 0, .05)"
+    boxShadow: "inset 0 0 20px rgba(0, 0, 0, .05)",
 }
 
