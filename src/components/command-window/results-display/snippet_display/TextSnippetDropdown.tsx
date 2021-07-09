@@ -17,19 +17,15 @@ interface TextSnippetDisplay {
 export default function TextSnippetDropdown(props: TextSnippetDisplay) {
   const snippetPayload = props.snippetPayload;
 
-  const [wasToggled, setWasToggled] = useState(true);
+  const [wasCopied, setWasCopied] = useState(true);
   const clipboardAnimationControls = useAnimation();
 
-  const setToggleHandler = (val: boolean) => {
-    setWasToggled(val);
-  };
-
   useEffect(() => {
-    if (wasToggled) {
+    if (wasCopied) {
       clipboardAnimationControls.start({});
-      setWasToggled(false);
+      setWasCopied(false);
     }
-  }, [wasToggled]);
+  }, [wasCopied]);
 
   function ClipboardCopiedMessage() {
     return (
@@ -54,7 +50,7 @@ export default function TextSnippetDropdown(props: TextSnippetDisplay) {
     <div style={SnippetDisplayStyles}>
       <TextField
         snippetPayload={snippetPayload}
-        setToggleHandler={setToggleHandler}
+        setWasCopied={setWasCopied}
       />
       <div style={bottomBarStyle}>
         <ClipboardCopiedMessage />
@@ -66,8 +62,10 @@ export default function TextSnippetDropdown(props: TextSnippetDisplay) {
 const SnippetDisplayStyles: CSS.Properties = {
   display: 'flex',
   justifyContent: 'center',
-  alignItems: 'center',
+  alignItems: 'flex-start',
   marginBottom: '25px',
+  marginLeft: "25px",
+  marginRight: "25px",
   flexDirection: 'column',
 };
 

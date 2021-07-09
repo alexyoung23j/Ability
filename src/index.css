@@ -2,13 +2,13 @@
 
 
 ::-webkit-scrollbar {
-    width: 5px;
-    
+    width: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
     background: rgba(125,125,125, .5);
-    left: -50px
+    border-radius: 900px;
+    border-top: 4px transparent
 }
  
 
@@ -25,10 +25,10 @@
 }
 
 .visibleTextSnippetStyle {
-    font-family: 'Montserrat';
+    font-family: 'Montserrat', sans-serif;
     font-style: normal;
     font-weight: normal;
-    font-size: 16px;
+    font-size: 15px;
     color: #7D7D7D;
 }
 

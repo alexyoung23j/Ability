@@ -29,6 +29,8 @@ export default function TextEditWindow(props: TextEditWindow) {
 
     // Load up with the text snippet we passed
     const myContentState = props.defaultContent
+
+    const content = EditorState.createWithContent(myContentState)
     const [editorState, setEditorState] = useState(EditorState.createWithContent(myContentState))
     const [editorStateHidden, setEditorStateHidden] = useState(EditorState.createWithContent(myContentState))
 
@@ -41,10 +43,10 @@ export default function TextEditWindow(props: TextEditWindow) {
         if (editorHiddenRef.current !== null) {
             copyToClipboard()
         }
-    }, [])
+    })
 
     function copyToClipboard() {
-        var toCopy = editorStateHidden.getCurrentContent().getPlainText()
+        var toCopy = content.getCurrentContent().getPlainText()
         clipboard.writeText(toCopy)
     }
 
@@ -61,7 +63,7 @@ export default function TextEditWindow(props: TextEditWindow) {
         <div style={textEditWindowStyle}>
             <div>
                 <Editor 
-                    editorState={editorState}
+                    editorState={content}
                     onChange={setEditorState}
                     readOnly={true}
                     ref={editorVisibleRef}
@@ -70,7 +72,7 @@ export default function TextEditWindow(props: TextEditWindow) {
             </div>
             <div style={{visibility: "hidden", position: "absolute"}}>
                 <Editor 
-                    editorState={editorStateHidden}
+                    editorState={content}
                     onChange={setEditorStateHidden}
                     readOnly={true}
                     ref={editorHiddenRef}
@@ -83,8 +85,8 @@ export default function TextEditWindow(props: TextEditWindow) {
 }
 
 const textEditWindowStyle: CSS.Properties = {
-    marginTop: "20px",
-    marginBottom: "20px",
-    marginRight: "5%"
+    marginTop: "10px",
+    marginBottom: "10px",
+    marginRight: "10px"
 }
 

@@ -15,49 +15,26 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 interface TextField {
     snippetPayload: textSnippet[]
-    setToggleHandler: (val: boolean) => void
+    setWasCopied: any
 }
 
 
 export default function TextField(props: TextField) {
     // props
-    const {snippetPayload, setToggleHandler } = props
+    const {snippetPayload, setWasCopied } = props
 
     // State
     const [curDisplayIdx, setCurDisplayIdx] = useState(0)
-
-    const TabClickHandler = (idx: number) => {
-        setCurDisplayIdx(idx)
-        setToggleHandler(true)
-    }
-
-    useEffect(() => {
-        setToggleHandler(true)
-    }, [])
     
-    function TabDisplayer() {
-
-        return (
-            <div style={{display: "flex", flexDirection:"row", alignItems: "flex-end", justifyContent: "center", marginLeft: "14px"}}>
-                {snippetPayload.map((snippet, idx) => (
-                    <div key={idx}>
-                        <Tab 
-                            highlighted={idx === curDisplayIdx ? true : false}
-                            text={snippet.title}
-                            onClickHandler={TabClickHandler}
-                            index={idx}
-                        />
-                    </div>
-                ))}
-            </div>
-        )
-    }
-
-    function WindowDisplayer() {
-        // TODO: Add in the handling for styled content vs unstyle content
-        return (
+    return (
+        <div style={textFieldStyle}>
+            <TabDisplayer 
+                snippetPayload={snippetPayload}
+                curDisplayIdx={curDisplayIdx}
+                setCurDisplayIdx={setCurDisplayIdx}
+            />
             <div style={textWindowStyle}>
-                <div style={{marginLeft: "5%"}}>
+                <div style={{marginLeft: "5%", marginRight: "7px", marginTop: "10px", marginBottom: "10px", maxHeight: "200px", overflow: "auto"}}>
                     <TextEditWindow 
                         defaultContent={snippetPayload[curDisplayIdx].content}
                         containsStyles={false}
@@ -65,14 +42,26 @@ export default function TextField(props: TextField) {
                 </div>
                 
             </div>
-            
-        )
-    }
+        </div>
+    )
+}
+
+function TabDisplayer(props: {snippetPayload, curDisplayIdx, setCurDisplayIdx}) {
+
+    const {snippetPayload, curDisplayIdx, setCurDisplayIdx} = props
 
     return (
-        <div style={textFieldStyle}>
-            <TabDisplayer />
-            <WindowDisplayer />
+        <div style={{display: "flex", flexDirection:"row", alignItems: "flex-end", justifyContent: "center", marginLeft: "14px"}}>
+            {snippetPayload.map((snippet, idx) => (
+                <div key={idx}>
+                    <Tab 
+                        highlighted={idx === curDisplayIdx ? true : false}
+                        text={snippet.title}
+                        onClickHandler={() => setCurDisplayIdx(idx)}
+                        index={idx}
+                    />
+                </div>
+            ))}
         </div>
     )
 }
@@ -88,7 +77,7 @@ const textWindowStyle: CSS.Properties = {
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-start",
-    width: "550px",
+    width: "420px",
     borderRadius: "12px",
     boxShadow: "inset 0 0 20px rgba(0, 0, 0, .05)"
 }

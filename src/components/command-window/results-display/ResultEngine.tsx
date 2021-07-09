@@ -245,10 +245,10 @@ export default function ResultEngine() {
   // ---------------------------- DUMMY ------------------------- //
   // Filler for the text snippet (replace with the real values)
   var myContentState1 = ContentState.createFromText(
-    'Would any of the following times work for you? \n\nTuesday 3/18 - 4:00 PM, 5:00 PM, or 6:30 PM\n\nI think a one hour meeitng would be great and oh that is just so fucking cool im looking forward to it'
+    'Would any of the following times work for you? \n\nTuesday 3/18 - 4:00 PM, 5:00 PM, or 6:30 PM\n\nI think a one hour meeitng would be great and oh that is just so fucking cool im '
   );
   var myContentState2 = ContentState.createFromText(
-    'Would any of the following times work for you?'
+    'Would any of the following times work for you? 👍'
   );
 
   let textSnippetArray: textSnippet[];
