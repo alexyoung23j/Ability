@@ -239,3 +239,10 @@
     font-size: 13px;
     
 }
+
+.calendarHeaderText {
+    font-family: 'Montserrat';
+    font-weight: lighter;
+    color: #7D7D7D;
+    font-size: 15px;
+}

@@ -34,11 +34,14 @@ export default function EventTooltip(props: EventTooltipProps) {
 
     const currentEvent = events[currentlyHoveredEventIdx]
     let eventsArr = [[currentEvent, currentlyHoveredEventIdx]]
+
     for (let i = 0; i < events[currentlyHoveredEventIdx].index_of_overlapped_events.length; i++) {
         const hiddenEventIdx = events[currentlyHoveredEventIdx].index_of_overlapped_events[i]
         const hiddenEvent = events[hiddenEventIdx] // The event corresponding to to the index storred in the array of overlaps
         eventsArr.push([hiddenEvent, hiddenEventIdx])
     }
+    
+   
 
 
 

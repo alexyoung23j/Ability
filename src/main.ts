@@ -61,9 +61,9 @@ const createSentinelWindow = (): void => {
   sentinelWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
-  sentinelWindow.webContents.openDevTools();
+  //sentinelWindow.webContents.openDevTools();
 
-  sentinelWindow.webContents.session.clearCache(() => {});
+  //sentinelWindow.webContents.session.clearCache(() => {});
 
   // Make Transition a bit smoother between window views
   sentinelWindow.on('show', () => {
@@ -112,22 +112,22 @@ const reactDevToolsPath = path.join(
 );
 app
   .whenReady()
-  .then(() => {
+  /* .then(() => {
     session.defaultSession.webRequest.onBeforeSendHeaders(
       (details, callback) => {
         details.requestHeaders['User-Agent'] = 'Chrome';
         callback({ cancel: false, requestHeaders: details.requestHeaders });
       }
     );
-  })
+  }) */
   .then(() => {
     globalShortcut.register('CommandOrControl+E', () => {
       keyboardShortcutHandler();
     });
   })
-  .then(async () => {
+  /* .then(async () => {
     await session.defaultSession.loadExtension(reactDevToolsPath);
-  })
+  }) */
   .then(createSentinelWindow);
 
 // Quit when all windows are closed, except on macOS. There, it's common

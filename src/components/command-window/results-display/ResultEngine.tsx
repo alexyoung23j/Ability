@@ -51,7 +51,13 @@ export default function ResultEngine() {
     //myConsole.log("here: ",
   }, [calendarResultData])
 
-  
+  // Checks if two times are on the same day
+  function isSameDay(time, originalTime) {
+    const newTime = DateTime.fromISO(time)
+    const oldTime = DateTime.fromISO(originalTime)
+
+    return (newTime.ordinal == oldTime.ordinal && newTime.year == oldTime.year)
+  }
 
   // Handles new events, makes API call to create them in the calendar, and updates local results to change ui
   const scheduleNewEvent = (start_time: string, end_time: string, title: string, url: string, color: string, calendar_name: string, calendar_color: string, day_idx: number) => {
@@ -60,6 +66,22 @@ export default function ResultEngine() {
     // Find position to insert into events
     const newEventStartTime = DateTime.fromISO(start_time)
     const newEventEndTime = DateTime.fromISO(end_time)
+
+    // Check which day we should be identifying
+    if (!isSameDay(start_time, calendarResultData.days[day_idx].calendar_date)) {
+      let idx = 0
+
+      while (idx < calendarResultData.days.length && !isSameDay(start_time, calendarResultData.days[idx].calendar_date)) {
+        idx+=1
+      }
+
+      // Either update the day idx or end the function call
+      if (idx > calendarResultData.days.length-1) {
+        return
+      } else {
+        day_idx = idx
+      }
+    }
 
     // Copy events into variable for manipulation in this funciton
     let events = JSON.parse(JSON.stringify(calendarResultData.days[day_idx].events))
@@ -105,6 +127,7 @@ export default function ResultEngine() {
     })
   }
 
+  // Modifies information for some existing event
   const modifyExistingEvent = (start_time: string, end_time: string, title: string, url: string, color: string, calendar_name: string, calendar_color: string, day_idx: number, event_idx: number) => {
 
     // TODO: Need to actually do the scheduling here with the calendar API
@@ -113,11 +136,51 @@ export default function ResultEngine() {
     const newEventStartTime = DateTime.fromISO(start_time)
     const newEventEndTime = DateTime.fromISO(end_time)
 
+    // Save a copy of the original events (from which this event originated)
+    const origDayIdx = day_idx
+    let origEvents = JSON.parse(JSON.stringify(calendarResultData.days[origDayIdx].events))
+
+    // Check which day we should be identifying
+    if (!isSameDay(start_time, calendarResultData.days[day_idx].calendar_date)) {
+
+      // Update the original day by removing the event
+      origEvents.splice(event_idx, 1)
+
+      let idx = 0
+
+      while (idx < calendarResultData.days.length && !isSameDay(start_time, calendarResultData.days[idx].calendar_date)) {
+        idx+=1
+      }
+
+      // Either update the day idx or end the function call
+      if (idx > calendarResultData.days.length-1) {
+        // Our new day is outside the visible range, so update our original day and exit
+        origEvents = HydrateOverlapEvents(origEvents)
+
+        setCalendarResultData(draft => {
+          draft.days[origDayIdx].events = origEvents
+        })
+
+        setCalendarResultData(draft => {
+          draft.days[origDayIdx].free_blocks = CalculateFreeBlocks(draft.days[origDayIdx].hard_start, draft.days[origDayIdx].hard_end, 60, 60, 30, origEvents)
+        })
+
+        return
+
+      } else {
+        day_idx = idx
+      }
+    }
+
     // Copy events into variable for manipulation in this funciton
     let events = JSON.parse(JSON.stringify(calendarResultData.days[day_idx].events))
 
     // Remove the original event from our copy
-    events.splice(event_idx, 1)
+    
+    if (day_idx == origDayIdx) {
+      events.splice(event_idx, 1)
+    }
+    
 
     let insertIdx = 0
     
@@ -148,9 +211,8 @@ export default function ResultEngine() {
 
 
     // Reset the overlaps 
-    events = HydrateOverlapEvents(events)
+    events = HydrateOverlapEvents(events)   
 
-    // Update the events array
     setCalendarResultData(draft => {
       draft.days[day_idx].events = events
     })
@@ -159,6 +221,20 @@ export default function ResultEngine() {
     setCalendarResultData(draft => {
       draft.days[day_idx].free_blocks = CalculateFreeBlocks(draft.days[day_idx].hard_start, draft.days[day_idx].hard_end, 60, 60, 30, events)
     })
+
+    // Fix the original day
+    if (day_idx != origDayIdx) {
+      origEvents = HydrateOverlapEvents(origEvents)
+
+      setCalendarResultData(draft => {
+        draft.days[origDayIdx].events = origEvents
+      })
+
+      setCalendarResultData(draft => {
+        draft.days[origDayIdx].free_blocks = CalculateFreeBlocks(draft.days[origDayIdx].hard_start, draft.days[origDayIdx].hard_end, 60, 60, 30, origEvents)
+      })
+    }
+    
   }
 
   
