@@ -22,7 +22,7 @@ const enterIcon = require('/src/content/svg/enterIcon.svg');
 const settingsIcon = require('/src/content/svg/settingsIcon.svg');
 
 var nodeConsole = require('console');
-new nodeConsole.Console(process.stdout, process.stderr);
+var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 // Interface for CommandLine
 interface CommandLineProps {
@@ -434,17 +434,19 @@ export default function CommandLine(props: CommandLineProps) {
       currentQueryFragment.length
     );
 
-    //myConsole.log(parseOutSpaces(currentAutocomplete.value))
-    //myConsole.log(fragmentWithoutFinalSpace)
-    //myConsole.log("----")
-
-    //myConsole.log(parseOutSpaces(currentAutocomplete.value) === fragmentWithoutFinalSpace)
+    // Catch situations where we have on autocomplete but it is open ended ("august _" for instance)
     if (
       validAutocompletes.length === 1 ||
       (currentAutocomplete != null &&
         parseOutSpaces(currentAutocomplete.value) === fragmentWithoutFinalSpace)
     ) {
-      return true;
+      // Catch situations where we have on autocomplete but it is open ended ("august _" for instance)
+      if (!validAutocompletes[0].value.includes("_")) {
+        return true;
+      } else {
+        return false
+      }
+      
     } else {
       return false;
     }
@@ -536,8 +538,24 @@ export default function CommandLine(props: CommandLineProps) {
         blockStyleFn={myBlockStyleFn}
       />
       <IconComponent />
+      {currentQueryFragment.length < 1 && queryPieces.length < 1 && (
+        <DefaultText />
+      )}
     </div>
   );
+}
+
+// Display the default message
+function DefaultText() {
+
+  return(
+    <div
+      style={{position: "absolute"}}
+      className="commandLineDefaultText"
+    >
+      start searching..
+    </div>
+  )
 }
 
 // Styling

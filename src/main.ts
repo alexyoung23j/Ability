@@ -147,18 +147,25 @@ app.on('activate', () => {
   }
 });
 
+app.on('browser-window-blur', () => {
+  sentinelWindow.hide();
+  app.hide()
+})
+
 /// ------------------------- IPC LISTENERS ------------------------ ///
 
 // Hide the Command Line
 ipcMain.on('command-line-native-blur', () => {
   windowDisplayHandler('COMMMAND', true);
   sentinelWindow.hide();
+  app.hide()
 });
 
 // Close the settings window (with a button)
 ipcMain.on('close-settings', () => {
   sentinelWindow.hide();
   windowDisplayHandler('COMMAND', false);
+  app.hide()
 });
 
 // Update our "state" to indicate the command line is currently in the sentinelWindow
@@ -186,6 +193,7 @@ function keyboardShortcutHandler() {
     if (sentinelWindow.isVisible()) {
       //sentinelWindow.webContents.send('clear-command-line', 'keyboard shortcut triggered') TODO: Fix the bug that occurs when this is going
       sentinelWindow.hide();
+      app.hide()
     } else {
       sentinelWindow.show();
     }

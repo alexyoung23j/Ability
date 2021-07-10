@@ -92,11 +92,10 @@ function ClipboardCopiedMessage(props: {wasCopied}) {
       <motion.div
         animate={{
           scale: [0,1.2,1],
-          opacity: [0, 1],
           transition: {
             duration: 0.2,
             delay: 0.1,
-            type: 'spring',
+            
           },
         }}
         className="clipboardCopiedText"
