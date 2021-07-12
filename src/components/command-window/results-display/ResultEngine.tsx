@@ -4,7 +4,7 @@ import CalendarView from './calendar_display/CalendarView';
 import TextSnippetDropdown from './snippet_display/TextSnippetDropdown';
 import { textSnippet } from '../../../types';
 import { ContentState } from 'draft-js';
-import { calendarDummyResults, demoPart1Results, demo1ArrayOfSnippets } from '../constants';
+import { calendarDummyResults, demoPart1Results, demo1ArrayOfSnippets, part2SnippetArray, demoPart2Results, demoPart3Results } from '../constants';
 import { generateIntervals, roundToNearestInterval, CalculateFreeBlocks, HydrateOverlapEvents } from '../../util/CalendarUtil';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 const { DateTime } = require("luxon");
@@ -28,10 +28,10 @@ export default function ResultEngine() {
   // In general, we prefer to only REMOVE items from the result. 
 
   // State
-  const [calendarResultData, setCalendarResultData] = useImmer(demoPart1Results)
+  const [calendarResultData, setCalendarResultData] = useImmer(demoPart2Results)
   const [ignoreSlots, setIgnoreSlots] = useState([])
   const [textEngineLaunched, setTextEngineLaunched] = useState(false)
-  const [demoSnippetIdx, setDemoSnippetIdx] = useState(0)
+  //const [demoSnippetIdx, setDemoSnippetIdx] = useState(0)
 
   // ----------------------------------- CALLBACKS ----------------------------------- //
 
@@ -48,12 +48,12 @@ export default function ResultEngine() {
   }
 
   // Just for demoing
-  useEffect(() => {
+/*   useEffect(() => {
     if (ignoreSlots.length > 0) {
       setDemoSnippetIdx((demoSnippetIdx + 1) % 3)
     }
     
-  }, [ignoreSlots])
+  }, [ignoreSlots]) */
 
   // This useeffect makes the interval size between free slots larger when the text engine is launched to simplify UI and text generation
   // Note that this means the Ignored Slots apply only to the "post engine launch" free slots
@@ -285,7 +285,9 @@ export default function ResultEngine() {
     { content: myContentState2, id: '2', title: 'slack' },
   ]; */
 
-  let textSnippetArray=demo1ArrayOfSnippets[demoSnippetIdx]
+  //let textSnippetArray=demo1ArrayOfSnippets[demoSnippetIdx]
+
+  let textSnippetArray=part2SnippetArray
   
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>

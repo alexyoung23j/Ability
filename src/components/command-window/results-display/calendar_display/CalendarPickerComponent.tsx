@@ -18,7 +18,20 @@ interface CalendarPickerProps {
 export default function CalendarPickerComponent(props: CalendarPickerProps) {
 
     // TODO: Add access to context containing the calendar information 
-    const calendars = [{name: "Alex's Calendar", color: "red"}, {name: "Alex's Calendar 2", color: "blue"}, {name: "Alex's Calendar 3", color: "green"},{name: "Alex's Calendar 4", color: "green"}]
+    const calendars = [{
+        name: "Work Calendar",
+        color: "#7986cb"
+      },
+      {
+        name: "Alex's Personal Calendar",
+        color: "#33b679"
+      },
+      {
+        name: "Marketing Team Calendar",
+        color: "#f5511d"
+      },
+    
+    ]
 
     const {
         eventCalendar,

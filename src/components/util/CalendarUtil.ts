@@ -309,7 +309,7 @@ export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_d
       break
     }
 
-    let blockSizeInMinutes = eventStart.diff(currentBlockStartTime, "minutes")
+    let blockSizeInMinutes = eventStart.diff(currentBlockStartTime, "minutes").minutes
 
     // check if the Block is large enough 
     if (blockSizeInMinutes < min_duration) {

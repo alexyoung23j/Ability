@@ -343,7 +343,159 @@ export const demoPart1Results = {
 }
 
 
+// ----------- Part 2: "afternoon this weekend for 2 hours" ------ //
 
+// REMEMBER to change the demo to have min duration be 2 hours
+const emailContentPart2 = ContentState.createFromText(
+  'Would any of the following times work for you? \n\nSaturday 7/24: 1:00-4:00PM, 5:00-7:00 PM \Sunday 7/25: 12:00-3:00 PM, 4:00-6:00 PM \n\nLet me know what makes sense.'
+);
+
+const personalContentPart2 = ContentState.createFromText(
+  "I'm free Saturday the 24th from 1-4 or 5-7, and the following Sunday 12-3 or 4-6 😊"
+);
+
+export const part2SnippetArray = [
+  {content: emailContentPart2, id: "1", title: "email"},
+  {content: emailContent1, id: "1", title: "slack"},
+  {content: personalContentPart2, id: "1", title: "personal"},
+]
+
+export const demoPart2Results = {
+  days: [
+    {
+      calendar_date: '2021-07-24',
+      hard_start: '2021-07-24T12:00:00-07:00',
+      hard_end: '2021-07-24T19:00:00-07:00',
+      free_blocks: [
+       
+      ],
+      events: [
+        {
+          start_time: '2021-07-24T11:30:00-07:00',
+          end_time: '2021-07-24T13:00:00-07:00',
+          title: 'Yoga Class',
+          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
+          color: '#33b679',
+          calendar: {
+            name: "Alex's Personal Calendar",
+            color: "#33b679"
+          },
+          index_of_overlapped_events: [],
+        },
+        {
+          start_time: '2021-07-24T16:00:00-07:00',
+          end_time: '2021-07-24T17:00:00-07:00',
+          title: 'Group Meetup',
+          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
+          color: '#33b679',
+          calendar: {
+            name: "Alex's Personal Calendar",
+            color: "#33b679"
+          },
+          index_of_overlapped_events: [],
+        },
+      ],
+    },
+    {
+      calendar_date: '2021-07-25',
+      hard_start: '2021-07-25T12:00:00-07:00',
+      hard_end: '2021-07-25T19:00:00-07:00',
+      free_blocks: [
+       
+      ],
+      events: [
+        {
+          start_time: '2021-07-25T13:00:00-07:00',
+          end_time: '2021-07-25T14:00:00-07:00',
+          title: 'Group Meetup',
+          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
+          color: '#33b679',
+          calendar: {
+            name: "Alex's Personal Calendar",
+            color: "#33b679"
+          },
+          index_of_overlapped_events: [],
+        },
+        {
+          start_time: '2021-07-25T14:30:00-07:00',
+          end_time: '2021-07-25T16:00:00-07:00',
+          title: 'Group Meetup',
+          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
+          color: '#33b679',
+          calendar: {
+            name: "Alex's Personal Calendar",
+            color: "#33b679"
+          },
+          index_of_overlapped_events: [],
+        },
+      ],
+    },
+  ]
+}
+
+//---------- Part 3: "tomorrow" ------ //
+export const demoPart3Results = {
+  days: [
+    {
+      calendar_date: '2021-07-23',
+      hard_start: '2021-07-23T08:00:00-07:00',
+      hard_end: '2021-07-23T20:00:00-07:00',
+      free_blocks: [
+       
+      ],
+      events: [
+        {
+          start_time: '2021-07-23T10:00:00-07:00',
+          end_time: '2021-07-23T11:00:00-07:00',
+          title: 'Team Standup',
+          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
+          color: "#7986cb",
+          calendar: {
+            name: "Work Calendar",
+            color: "#7986cb"
+          },
+          index_of_overlapped_events: [],
+        },
+        {
+          start_time: '2021-07-23T12:00:00-07:00',
+          end_time: '2021-07-23T13:00:00-07:00',
+          title: 'Lunch w/ Kevin',
+          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
+          color: '#33b679',
+          calendar: {
+            name: "Alex's Personal Calendar",
+            color: "#33b679"
+          },
+          index_of_overlapped_events: [],
+        },
+        {
+          start_time: '2021-07-23T14:00:00-07:00',
+          end_time: '2021-07-23T15:30:00-07:00',
+          title: 'Sprint Review',
+          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
+          color: "#7986cb",
+          calendar: {
+            name: "Work Calendar",
+            color: "#7986cb"
+          },
+          index_of_overlapped_events: [],
+        },
+        {
+          start_time: '2021-07-23T14:30:00-07:00',
+          end_time: '2021-07-23T15:00:00-07:00',
+          title: 'Onboarding Call',
+          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
+          color: "#f5511d",
+          calendar: {
+            name: "Marketing Team Calendar",
+            color: "#f5511d"
+          },
+          index_of_overlapped_events: [],
+        },
+      ],
+    },
+  ]
+}
 
 
 export const calendarDummyResults = {

@@ -87,7 +87,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
 
   useEffect(() => {
     if (scrollRef.current !== null) {
-      const xScrollAmount = 550
+      const xScrollAmount = 450
       scrollRef.current.scrollTo(xScrollAmount, 0);
     }
   }, []);
@@ -121,7 +121,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     setModalEventTitle(events[currentlySelectedEventIdx].title)
     setModalEventCalendar(events[currentlySelectedEventIdx].calendar)
     setModalEventLocation('') // TODO: Add location info to the event object
-    setModalEventDescription("Some description that already exists") // TODO: Set description on the event object
+    setModalEventDescription("Agenda TBD") // TODO: Set description on the event object
     setCurrentlyHoveredEventIdx(-1)
   }
 
@@ -135,7 +135,10 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     setModalEventTitle('')
     setModalEventLocation('')
     setModalEventDescription('') 
-    setModalEventCalendar({name: "Alex's Calendar", color: "blue"}) // TODO: Use the default calendar 
+    setModalEventCalendar({
+      name: "Alex's Personal Calendar",
+      color: "#33b679"
+    }) // TODO: Use the default calendar 
     setCurrentlyHoveredEventIdx(-1)
   }
 
@@ -171,7 +174,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
           textSnippetOpen={textSnippetOpen}
         />
 
-        {currentlyHoveredEventIdx != -1 && (
+        {currentlyHoveredEventIdx != -1 && textSnippetOpen == false &&(
           <EventTooltip 
             events={events}
             currentlyHoveredEventIdx={currentlyHoveredEventIdx}
@@ -204,7 +207,8 @@ function DateText(props: {dateText: string}) {
     "WED",
     "THU",
     "FRI",
-    "SAT"
+    "SAT", 
+    "SUN"
   ]
 
   const dayOfMonth = dateObj.day

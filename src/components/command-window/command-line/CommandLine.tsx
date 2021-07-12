@@ -553,7 +553,7 @@ function DefaultText() {
       style={{position: "absolute", marginLeft: "3px"}}
       className="commandLineDefaultText"
     >
-      start your search
+      start your calendar search!
     </div>
   )
 }
