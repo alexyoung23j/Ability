@@ -26,6 +26,8 @@ export default function TextField(props: TextField) {
 
     // State
     const [curDisplayIdx, setCurDisplayIdx] = useState(0)
+
+    const border = (wasCopied == true) ? "1px solid rgba(135,189,220,0.5)" : ""
     
     return (
         <div style={textFieldStyle}>
@@ -35,7 +37,15 @@ export default function TextField(props: TextField) {
                 setCurDisplayIdx={setCurDisplayIdx}
                 setWasCopied={setWasCopied}
             />
-            <div style={textWindowStyle}>
+            <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                width: "420px",
+                borderRadius: "12px",
+                boxShadow: "inset 0 0 20px rgba(0, 0, 0, .05)",
+                border: border
+            }}>
                 <div style={{marginLeft: "5%", marginRight: "7px", marginTop: "10px", marginBottom: "10px", maxHeight: "200px", overflow: "auto"}}>
                     <TextEditWindow 
                         defaultContent={snippetPayload[curDisplayIdx].content}
@@ -79,12 +89,5 @@ const textFieldStyle: CSS.Properties = {
     alignItems: "flex-start"
 }
 
-const textWindowStyle: CSS.Properties = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    width: "420px",
-    borderRadius: "12px",
-    boxShadow: "inset 0 0 20px rgba(0, 0, 0, .05)",
-}
+
 

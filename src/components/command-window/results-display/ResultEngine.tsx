@@ -46,10 +46,27 @@ export default function ResultEngine() {
     }
   }
 
+  // This useeffect makes the interval size between free slots larger when the text engine is launched to simplify UI and text generation
+  // Note that this means the Ignored Slots apply only to the "post engine launch" free slots
   useEffect(() => {
-    //myConsole.log("updated: ", calendarResultData.days[0].events)
-    //myConsole.log("here: ",
-  }, [calendarResultData])
+    // If text engine launched, make intervals 1 hour
+    if (textEngineLaunched) {
+      setCalendarResultData(draft => {
+        for (var i =0; i < calendarResultData.days.length; i++) { 
+          draft.days[i].free_blocks = CalculateFreeBlocks(draft.days[i].hard_start, draft.days[i].hard_end, 60, 60, 60, draft.days[i].events)
+        }
+      })
+    } else {
+      // if text engine not launched, make intervals 30 minutes
+      setIgnoreSlots([])
+      setCalendarResultData(draft => {
+        for (var i =0; i < calendarResultData.days.length; i++) { 
+          draft.days[i].free_blocks = CalculateFreeBlocks(draft.days[i].hard_start, draft.days[i].hard_end, 60, 60, 30, draft.days[i].events)
+        }
+      })
+    }
+  }, [textEngineLaunched])
+
 
   // Checks if two times are on the same day
   function isSameDay(time, originalTime) {

@@ -35,7 +35,8 @@ export default function Tab(props: Tab) {
         WebkitUserSelect: "none",
         borderTop: borderColor,
         borderLeft: borderColor,
-        borderRight: borderColor
+        borderRight: borderColor, 
+        borderBottom: "white", 
     }
 
     return (

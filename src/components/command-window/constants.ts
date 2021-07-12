@@ -11,7 +11,6 @@ export const ALL_MODIFIER_CATEGORIES = [
   ModifierCategory.RANGE
 ];
 
-export const DATE_MODIFIERS = ['tomorrow', 'today'];
 
 const DATE_PIECES: Array<ModifierPiece> = [
   {
@@ -34,6 +33,8 @@ const prepositionToModifierCategories = {
   //   at: ModifierCategory.HOUR,
   for: ModifierCategory.DURATION,
 };
+
+
 
 
 

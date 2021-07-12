@@ -324,7 +324,7 @@ export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_d
   if (blockSizeInMinutes >= min_duration) {
     // Round down the hard end
     let finalEndTime = roundToNearestInterval(DateTime.fromISO(hard_stop), interval_size, false)
-    const newBlock = {start_time: currentBlockStartTime.toISO(), end_time: finalEndTime.toISO(), free_slots: generateIntervals(currentBlockStartTime.toISO(), DateTime.fromISO(hard_stop).toISO(), interval_size, slot_size, true)}
+    const newBlock = {start_time: currentBlockStartTime.toISO(), end_time: finalEndTime.toISO(), free_slots: generateIntervals(currentBlockStartTime.toISO(), finalEndTime.toISO(), interval_size, slot_size, true)}
     blocks.push(newBlock)
   }
 

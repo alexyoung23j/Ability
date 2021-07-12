@@ -550,10 +550,10 @@ function DefaultText() {
 
   return(
     <div
-      style={{position: "absolute"}}
+      style={{position: "absolute", marginLeft: "3px"}}
       className="commandLineDefaultText"
     >
-      start searching..
+      start a search
     </div>
   )
 }

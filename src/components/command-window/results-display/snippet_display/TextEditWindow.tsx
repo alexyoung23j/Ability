@@ -87,6 +87,7 @@ export default function TextEditWindow(props: TextEditWindow) {
 const textEditWindowStyle: CSS.Properties = {
     marginTop: "10px",
     marginBottom: "10px",
-    marginRight: "10px"
+    marginRight: "10px", 
+    
 }
 
