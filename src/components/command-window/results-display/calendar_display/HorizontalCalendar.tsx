@@ -121,6 +121,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     setModalEventCalendar(events[currentlySelectedEventIdx].calendar)
     setModalEventLocation('') // TODO: Add location info to the event object
     setModalEventDescription("Some description that already exists") // TODO: Set description on the event object
+    setCurrentlyHoveredEventIdx(-1)
   }
 
   // Accepts start and end times as Luxon DateTime objects
@@ -134,6 +135,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     setModalEventLocation('')
     setModalEventDescription('') 
     setModalEventCalendar({name: "Alex's Calendar", color: "blue"}) // TODO: Use the default calendar 
+    setCurrentlyHoveredEventIdx(-1)
   }
 
   
@@ -167,16 +169,19 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
           day_idx={index}
           textSnippetOpen={textSnippetOpen}
         />
+
+        {currentlyHoveredEventIdx != -1 && (
+          <EventTooltip 
+            events={events}
+            currentlyHoveredEventIdx={currentlyHoveredEventIdx}
+            setCurrentlySelectedEventIdx={setCurrentlySelectedEventIdx}
+            eventTooltipId={eventTooltipId}
+            setExternalHighlightIdx={setExternallyHighlightedCalendarEventIdx}
+            launchModal={LaunchModalFromExistingEvent}
+          />
+        )}
         
-        <EventTooltip 
-          events={events}
-          currentlyHoveredEventIdx={currentlyHoveredEventIdx}
-          setCurrentlySelectedEventIdx={setCurrentlySelectedEventIdx}
-          eventTooltipId={eventTooltipId}
-          setExternalHighlightIdx={setExternallyHighlightedCalendarEventIdx}
-          launchModal={LaunchModalFromExistingEvent}
-       
-        />
+        
       </div>
     </div>
   );

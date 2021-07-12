@@ -127,6 +127,6 @@ const calendarBodyStyle: CSS.Properties = {
     flexDirection: "column",
     maxHeight: "305px",
     overflow: "overlay",
-    scrollMarginTop: "5px"
+    scrollMarginTop: "5px",
 
 }

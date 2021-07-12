@@ -1,5 +1,5 @@
 import CSS from 'csstype'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 
 interface Tab {
@@ -13,34 +13,40 @@ export default function Tab(props: Tab) {
     // props
     const {text, highlighted, onClickHandler, index} = props
 
-    const [largeFont, setLargeFont] = useState(false)
+    var borderColor = highlighted === true ? "1px solid rgba(135,189,220,0.5)" : "0px"
+    var initialFontColor = highlighted === true ? "#87BDDC" : "#7D7D7D"
+    const initialClass = highlighted === true ? "textSnippetTabLaunched" : "textSnippetTabStandard"
 
-    var highlightColor = highlighted === true ? "#E7E7E7" : "#FBFBFB"
-    var height = highlighted === true ? "24px" : "20px"
-    var fontColor = highlighted === true ? "#87BDDC" : "#7D7D7D"
+    const [className, setClassName] = useState(initialClass)
 
-    var fontSize = (highlighted === true || largeFont === true) ? "12px" : "11px"
-
+    useEffect(() => {
+        setClassName(initialClass)
+    }, [highlighted])
+    
     const tabStyle: CSS.Properties = {
-        backgroundColor: highlightColor,
-        borderTopLeftRadius: "4px",
-        borderTopRightRadius: "4px",
+        backgroundColor: "#FBFBFB",
+        borderTopLeftRadius: "8px",
+        borderTopRightRadius: "8px",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         width: "65px",
-        height: height,
+        height: "20px",
         WebkitUserSelect: "none",
+        borderTop: borderColor,
+        borderLeft: borderColor,
+        borderRight: borderColor, 
+        borderBottom: "white", 
     }
 
     return (
         <div
             style={tabStyle}
             onClick={() => onClickHandler(index)}
-            onMouseEnter={() => setLargeFont(true)}
-            onMouseLeave={() => setLargeFont(false)}
+            onMouseEnter={() => setClassName("textSnippetTabLaunched")}
+            onMouseLeave={() => setClassName(initialClass)}
         >
-            <div className="textSnippetTab" style={{color: fontColor, fontSize: fontSize}}>
+            <div className={className} style={{fontSize: "12px"}}>
                 {text}
             </div>
         </div>

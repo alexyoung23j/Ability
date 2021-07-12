@@ -20,7 +20,11 @@ export default function CalendarView(props: CalendarView) {
 
   return (
     <div style={calendarViewStyle}>
-      <CalendarHeader />
+      <CalendarHeader 
+        calendar_data={calendar_data}
+        showButtons={true} // Whether we allow user to skip forward or not 
+
+      />
       <CalendarBody 
         calendar_data={calendar_data} 
         ignoreHandler={ignoreHandler} 

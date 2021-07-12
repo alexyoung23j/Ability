@@ -61,9 +61,9 @@ const createSentinelWindow = (): void => {
   sentinelWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
-  sentinelWindow.webContents.openDevTools();
+  //sentinelWindow.webContents.openDevTools();
 
-  sentinelWindow.webContents.session.clearCache(() => {});
+  //sentinelWindow.webContents.session.clearCache(() => {});
 
   // Make Transition a bit smoother between window views
   sentinelWindow.on('show', () => {
@@ -112,22 +112,22 @@ const reactDevToolsPath = path.join(
 );
 app
   .whenReady()
-  .then(() => {
+  /* .then(() => {
     session.defaultSession.webRequest.onBeforeSendHeaders(
       (details, callback) => {
         details.requestHeaders['User-Agent'] = 'Chrome';
         callback({ cancel: false, requestHeaders: details.requestHeaders });
       }
     );
-  })
+  }) */
   .then(() => {
     globalShortcut.register('CommandOrControl+E', () => {
       keyboardShortcutHandler();
     });
   })
-  .then(async () => {
+  /* .then(async () => {
     await session.defaultSession.loadExtension(reactDevToolsPath);
-  })
+  }) */
   .then(createSentinelWindow);
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -147,18 +147,25 @@ app.on('activate', () => {
   }
 });
 
+app.on('browser-window-blur', () => {
+  sentinelWindow.hide();
+  app.hide()
+})
+
 /// ------------------------- IPC LISTENERS ------------------------ ///
 
 // Hide the Command Line
 ipcMain.on('command-line-native-blur', () => {
   windowDisplayHandler('COMMMAND', true);
   sentinelWindow.hide();
+  app.hide()
 });
 
 // Close the settings window (with a button)
 ipcMain.on('close-settings', () => {
   sentinelWindow.hide();
   windowDisplayHandler('COMMAND', false);
+  app.hide()
 });
 
 // Update our "state" to indicate the command line is currently in the sentinelWindow
@@ -186,6 +193,7 @@ function keyboardShortcutHandler() {
     if (sentinelWindow.isVisible()) {
       //sentinelWindow.webContents.send('clear-command-line', 'keyboard shortcut triggered') TODO: Fix the bug that occurs when this is going
       sentinelWindow.hide();
+      app.hide()
     } else {
       sentinelWindow.show();
     }

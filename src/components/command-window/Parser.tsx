@@ -43,21 +43,7 @@ function _insertNumbers(
           hydratedValue.push(char);
         }
       }
-
-      //   for (const idx of indicesToReplace) {
-      //     if (numerics[numIdx] != null) {
-      //       newVal =
-      //         newVal.substring(0, idx) +
-      //         numerics[numIdx] +
-      //         newVal.substring(idx + numerics[numIdx].length);
-      //       numIdx += 1;
-      //     } else {
-      //       newVal =
-      //         newVal.substring(0, idx) +
-      //         numerics[numIdx - 1] +
-      //         newVal.substring(idx + 1);
-      //     }
-      //   }
+      
       hydratedCompletions.push({
         ...completion,
         value: hydratedValue.join(''),

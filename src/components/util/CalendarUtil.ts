@@ -247,6 +247,12 @@ export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_d
 
   let blocks = []
 
+  if (events.length < 1) {
+    const newBlock = {start_time: hard_start, end_time: hard_stop, free_slots: generateIntervals(DateTime.fromISO(hard_start), DateTime.fromISO(hard_stop), interval_size, slot_size, true)}
+    blocks.push(newBlock)
+    return blocks
+  }
+
   // Establish a pointer to this moment and the end of this slot
   let currentBlockStartTime = DateTime.fromISO(hard_start)
   currentBlockStartTime = roundToNearestInterval(currentBlockStartTime, interval_size, true)
@@ -294,10 +300,7 @@ export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_d
       break
     }
 
-    //let blockSizeInMilli = eventStart.getTime() - currentBlockStartTime.getTime(); // This will give difference in milliseconds
     let blockSizeInMinutes = eventStart.diff(currentBlockStartTime, "minutes")
-    //Math.round(blockSizeInMilli / 60000);
-
 
     // check if the Block is large enough 
     if (blockSizeInMinutes < min_duration) {
@@ -321,7 +324,7 @@ export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_d
   if (blockSizeInMinutes >= min_duration) {
     // Round down the hard end
     let finalEndTime = roundToNearestInterval(DateTime.fromISO(hard_stop), interval_size, false)
-    const newBlock = {start_time: currentBlockStartTime.toISO(), end_time: finalEndTime.toISO(), free_slots: generateIntervals(currentBlockStartTime.toISO(), DateTime.fromISO(hard_stop).toISO(), interval_size, slot_size, true)}
+    const newBlock = {start_time: currentBlockStartTime.toISO(), end_time: finalEndTime.toISO(), free_slots: generateIntervals(currentBlockStartTime.toISO(), finalEndTime.toISO(), interval_size, slot_size, true)}
     blocks.push(newBlock)
   }
 

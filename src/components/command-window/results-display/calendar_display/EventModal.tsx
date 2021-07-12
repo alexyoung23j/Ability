@@ -62,7 +62,7 @@ export default function EventModal(props: EventModalProps) {
     
     const [changeMade, setChangeMade] = useState(false) // Tracks whether we actually changed anything
 
-    const saveButtonColor = (changeMade && eventTitle != '') ? "rgb(125, 189, 220)" : "rgba(125, 189, 220, .4)"
+    const saveButtonOpacity = (changeMade && eventTitle != '' && eventStart < eventEnd) ? "100%" : "40%"
 
     // Little hack to avoid triggering on first mount
     const dummyRef = useRef(true)
@@ -199,8 +199,9 @@ export default function EventModal(props: EventModalProps) {
                     style={{marginTop: "0px", marginLeft: "0px", marginBottom: "20px", display: "flex", justifyContent: "center", alignItems: "center", width: "400px"}}
                 >
                     <div
-                        onClick={() => { if (changeMade && eventTitle != '') {handleSave()}}}
-                        style={{cursor: "pointer", height: "30px", width: "100px", backgroundColor: saveButtonColor, borderRadius: "10px", display: "flex", justifyContent: "center", alignItems: "center" }}
+                        className="eventModalSaveButton"
+                        onClick={() => { if (changeMade && eventTitle != '' && eventStart < eventEnd) {handleSave()}}}
+                        style={{cursor: "pointer", height: "30px", width: "100px", opacity: saveButtonOpacity, borderRadius: "10px", display: "flex", justifyContent: "center", alignItems: "center" }}
                     >
                         <div
                             className="eventModalSaveButtonText"

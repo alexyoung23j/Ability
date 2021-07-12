@@ -22,15 +22,17 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 interface TextEditWindow {
     defaultContent: ContentState
     containsStyles: boolean
+    wasCopied: boolean
 }
 
 
 export default function TextEditWindow(props: TextEditWindow) {
 
-    // Load up with the text snippet we passed
-    const myContentState = props.defaultContent
-    const [editorState, setEditorState] = useState(EditorState.createWithContent(myContentState))
-    const [editorStateHidden, setEditorStateHidden] = useState(EditorState.createWithContent(myContentState))
+    const {defaultContent, containsStyles, wasCopied} = props
+
+    const content = EditorState.createWithContent(defaultContent)
+    const [editorState, setEditorState] = useState(EditorState.createWithContent(defaultContent))
+    const [editorStateHidden, setEditorStateHidden] = useState(EditorState.createWithContent(defaultContent))
 
     const editorVisibleRef = useRef<Editor>(null)
     const editorHiddenRef = useRef<Editor>(null)
@@ -38,13 +40,13 @@ export default function TextEditWindow(props: TextEditWindow) {
     // Copies the current content to the clipboard 
     // TODO: Handle styled content 
     useEffect(() => {
-        if (editorHiddenRef.current !== null) {
+        if (wasCopied && editorHiddenRef.current !== null) {
             copyToClipboard()
         }
-    }, [])
+    }, [wasCopied])
 
     function copyToClipboard() {
-        var toCopy = editorStateHidden.getCurrentContent().getPlainText()
+        var toCopy = content.getCurrentContent().getPlainText()
         clipboard.writeText(toCopy)
     }
 
@@ -61,7 +63,7 @@ export default function TextEditWindow(props: TextEditWindow) {
         <div style={textEditWindowStyle}>
             <div>
                 <Editor 
-                    editorState={editorState}
+                    editorState={content}
                     onChange={setEditorState}
                     readOnly={true}
                     ref={editorVisibleRef}
@@ -70,7 +72,7 @@ export default function TextEditWindow(props: TextEditWindow) {
             </div>
             <div style={{visibility: "hidden", position: "absolute"}}>
                 <Editor 
-                    editorState={editorStateHidden}
+                    editorState={content}
                     onChange={setEditorStateHidden}
                     readOnly={true}
                     ref={editorHiddenRef}
@@ -83,8 +85,9 @@ export default function TextEditWindow(props: TextEditWindow) {
 }
 
 const textEditWindowStyle: CSS.Properties = {
-    marginTop: "20px",
-    marginBottom: "20px",
-    marginRight: "5%"
+    marginTop: "10px",
+    marginBottom: "10px",
+    marginRight: "10px", 
+    
 }
 

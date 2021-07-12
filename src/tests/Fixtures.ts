@@ -20,7 +20,6 @@ import {
     Ex: week, month, year, weekend, _ days (3 days), _ weeks, _ months
 
 
-
 ----------------- Official Prepositions Guide -----------------
 
 1. for -> Duration Modifier

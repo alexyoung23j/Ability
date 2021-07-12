@@ -11,7 +11,6 @@ export const ALL_MODIFIER_CATEGORIES = [
   ModifierCategory.RANGE
 ];
 
-export const DATE_MODIFIERS = ['tomorrow', 'today'];
 
 const DATE_PIECES: Array<ModifierPiece> = [
   {
@@ -37,10 +36,12 @@ const prepositionToModifierCategories = {
 
 
 
+
+
 export const calendarDummyResults = {
   days: [
     {
-      calendar_date: '2021-12-30',
+      calendar_date: '2021-06-09',
       hard_start: '2021-06-09T08:00:00-07:00',
       hard_end: '2021-06-09T21:10:00-07:00',
       free_blocks: [
@@ -110,6 +111,65 @@ export const calendarDummyResults = {
         {
           start_time: '2021-06-09T16:10:00-07:00',
           end_time: '2021-06-09T18:00:00-07:00',
+          title: 'Meeting w/ James',
+          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
+          color: 'blue',
+          calendar: {
+            name: "Alex's Calendar 3",
+            color: "blue"
+          },
+          index_of_overlapped_events: [],
+        },
+     
+      ],
+    },
+    {
+      calendar_date: '2021-06-10',
+      hard_start: '2021-06-10T08:00:00-07:00',
+      hard_end: '2021-06-10T21:10:00-07:00',
+      free_blocks: [
+        {
+          start_time: '2021-06-10T13:00:00-07:00',
+          end_time: '2021-06-10T16:00:00-07:00',
+          free_slots: [
+            {
+              start_time: '2021-06-109T13:00:00-07:00',
+              end_time: '2021-06-10T14:00:00-07:00',
+            },
+            {
+              start_time: '2021-06-10T14:00:00-07:00',
+              end_time: '2021-06-10T15:00:00-07:00',
+            },
+            {
+              start_time: '2021-06-10T15:00:00-07:00',
+              end_time: '2021-06-10T16:00:00-07:00',
+            },
+           
+          ]
+        },
+        {
+          start_time: '2021-06-10T18:00:00-07:00',
+          end_time: '2021-06-10T21:00:00-07:00',
+          free_slots: [
+            {
+              start_time: '2021-06-10T18:00:00-07:00',
+              end_time: '2021-06-10T19:00:00-07:00',
+            },
+            {
+              start_time: '2021-06-10T19:00:00-07:00',
+              end_time: '2021-06-10T20:00:00-07:00',
+            },
+            {
+              start_time: '2021-06-10T20:00:00-07:00',
+              end_time: '2021-06-10T21:00:00-07:00',
+            },
+          ]
+        },
+      ],
+      events: [
+        {
+          start_time: '2021-06-10T16:10:00-07:00',
+          end_time: '2021-06-10T18:00:00-07:00',
           title: 'Meeting w/ James',
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: 'blue',
