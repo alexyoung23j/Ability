@@ -46,7 +46,7 @@ export default function TextField(props: TextField) {
                 boxShadow: "inset 0 0 20px rgba(0, 0, 0, .05)",
                 border: border
             }}>
-                <div style={{marginLeft: "5%", marginRight: "7px", marginTop: "10px", marginBottom: "10px", maxHeight: "200px", overflow: "auto"}}>
+                <div style={{marginLeft: "5%", marginRight: "7px", marginTop: "10px", marginBottom: "10px", maxHeight: "250px", overflow: "auto"}}>
                     <TextEditWindow 
                         defaultContent={snippetPayload[curDisplayIdx].content}
                         containsStyles={false}
