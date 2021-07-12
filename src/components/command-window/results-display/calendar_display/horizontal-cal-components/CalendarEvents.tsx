@@ -95,6 +95,7 @@ export default function CalendarEvents(props: CalendarEventsProps) {
     }, [externallyHighlightedIdx])
 
     
+    
 
     function HandleMouseClick() {
       // Open up the event url 

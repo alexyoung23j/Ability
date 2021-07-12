@@ -79,6 +79,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
   // -------------------------- HORIZONTAL SCROLL STUFF -------------------------- //
   const scrollRef = useRef(null);
 
+  
   useDragScroll({
     sliderRef: scrollRef,
     momentumVelocity: 0,
@@ -86,7 +87,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
 
   useEffect(() => {
     if (scrollRef.current !== null) {
-      const xScrollAmount = calculateScroll();
+      const xScrollAmount = 550
       scrollRef.current.scrollTo(xScrollAmount, 0);
     }
   }, []);

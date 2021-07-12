@@ -4,7 +4,7 @@ import CalendarView from './calendar_display/CalendarView';
 import TextSnippetDropdown from './snippet_display/TextSnippetDropdown';
 import { textSnippet } from '../../../types';
 import { ContentState } from 'draft-js';
-import { calendarDummyResults } from '../constants';
+import { calendarDummyResults, demoPart1Results } from '../constants';
 import { generateIntervals, roundToNearestInterval, CalculateFreeBlocks, HydrateOverlapEvents } from '../../util/CalendarUtil';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 const { DateTime } = require("luxon");
@@ -28,7 +28,7 @@ export default function ResultEngine() {
   // In general, we prefer to only REMOVE items from the result. 
 
   // State
-  const [calendarResultData, setCalendarResultData] = useImmer(calendarDummyResults)
+  const [calendarResultData, setCalendarResultData] = useImmer(demoPart1Results)
   const [ignoreSlots, setIgnoreSlots] = useState([])
   const [textEngineLaunched, setTextEngineLaunched] = useState(false)
 
@@ -46,13 +46,20 @@ export default function ResultEngine() {
     }
   }
 
+  useEffect(() => {
+    //myConsole.log(calendarResultData.days[0].free_blocks)
+    for (var i = 0; i < calendarResultData.days[0].free_blocks.length; i++) {
+      //myConsole.log(calendarResultData.days[0].free_blocks[i].free_slots)
+    }
+  }, [calendarResultData])
+
   // This useeffect makes the interval size between free slots larger when the text engine is launched to simplify UI and text generation
   // Note that this means the Ignored Slots apply only to the "post engine launch" free slots
   useEffect(() => {
     // If text engine launched, make intervals 1 hour
     if (textEngineLaunched) {
       setCalendarResultData(draft => {
-        for (var i =0; i < calendarResultData.days.length; i++) { 
+        for (var i = 0; i < calendarResultData.days.length; i++) { 
           draft.days[i].free_blocks = CalculateFreeBlocks(draft.days[i].hard_start, draft.days[i].hard_end, 60, 60, 60, draft.days[i].events)
         }
       })
@@ -60,7 +67,8 @@ export default function ResultEngine() {
       // if text engine not launched, make intervals 30 minutes
       setIgnoreSlots([])
       setCalendarResultData(draft => {
-        for (var i =0; i < calendarResultData.days.length; i++) { 
+        for (var i = 0; i < calendarResultData.days.length; i++) { 
+          console.log(draft.days[i])
           draft.days[i].free_blocks = CalculateFreeBlocks(draft.days[i].hard_start, draft.days[i].hard_end, 60, 60, 30, draft.days[i].events)
         }
       })
