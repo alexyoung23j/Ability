@@ -28,10 +28,10 @@ export default function ResultEngine() {
   // In general, we prefer to only REMOVE items from the result. 
 
   // State
-  const [calendarResultData, setCalendarResultData] = useImmer(demoPart2Results)
+  const [calendarResultData, setCalendarResultData] = useImmer(demoPart1Results)
   const [ignoreSlots, setIgnoreSlots] = useState([])
   const [textEngineLaunched, setTextEngineLaunched] = useState(false)
-  //const [demoSnippetIdx, setDemoSnippetIdx] = useState(0)
+  const [demoSnippetIdx, setDemoSnippetIdx] = useState(0)
 
   // ----------------------------------- CALLBACKS ----------------------------------- //
 
@@ -48,7 +48,7 @@ export default function ResultEngine() {
   }
 
   // Just for demoing
-/*   useEffect(() => {
+  /* useEffect(() => {
     if (ignoreSlots.length > 0) {
       setDemoSnippetIdx((demoSnippetIdx + 1) % 3)
     }
@@ -285,9 +285,9 @@ export default function ResultEngine() {
     { content: myContentState2, id: '2', title: 'slack' },
   ]; */
 
-  //let textSnippetArray=demo1ArrayOfSnippets[demoSnippetIdx]
+  let textSnippetArray=demo1ArrayOfSnippets[0]
 
-  let textSnippetArray=part2SnippetArray
+  //let textSnippetArray=part2SnippetArray
   
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
