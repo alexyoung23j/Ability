@@ -303,7 +303,7 @@ const commandStyle: CSS.Properties = {
   flexDirection: 'column',
   outline: 'none',
   marginTop: "5%",
-  boxShadow: '0 0 100px rgba(0,0,0, 0.8)',
+  boxShadow: '0 0 50px rgba(0,0,0, 0.3)',
 };
 
 const commandAreaStyle: CSS.Properties = {

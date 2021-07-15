@@ -41,12 +41,11 @@ export function datetimeToOffset(start: string, end: string, borderAdjust: numbe
 
   const width =
     (endHour - startHour) * BAR_WIDTH +
-    minDifferenceOffset * (BAR_WIDTH / 4) -
-    borderAdjust;
+    minDifferenceOffset * (BAR_WIDTH / 4)
 
   
 
-  return [String(offset - width + 'px'), String(width + 'px')];
+  return [String(offset - width + 'px'), String(width-borderAdjust + 'px')];
 }
 
 
@@ -245,6 +244,7 @@ export function generatePickerTimeOptions(military: boolean, minuteInterval: num
 export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_duration: number, slot_size: number, 
   interval_size: number, events: Array<{start_time: string,end_time: string, title: string, url: string, color: string, index_of_overlapped_events: Array<number>}>) {
 
+  
   let blocks = []
 
   if (events.length < 1) {
@@ -264,17 +264,25 @@ export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_d
   let eventIdx = 0
 
   // Ignore events that start before our hard start
-  while (DateTime.fromISO(events[eventIdx].start_time) < DateTime.fromISO(hard_start)) {
+  while (eventIdx < events.length && DateTime.fromISO(events[eventIdx].start_time) <= DateTime.fromISO(hard_start)) {
     // if we need to move the first block forward, do so
-    if (DateTime.fromISO(events[eventIdx].end_time) > DateTime.fromISO(hard_start)) {
+    if (DateTime.fromISO(events[eventIdx].end_time) >= DateTime.fromISO(hard_start)) {
+      
       currentBlockStartTime = roundToNearestInterval(DateTime.fromISO(events[eventIdx].end_time), interval_size, true)
     }
     eventIdx+=1
 
   }
 
-
-  let eventEnd = DateTime.fromISO(events[eventIdx].end_time)
+  
+  let eventEnd 
+  if (eventIdx < events.length) {
+     eventEnd = DateTime.fromISO(events[eventIdx].end_time)
+  } else {
+    // Handle when we already saw every event, and need to just continue creating blocks and slots until the hard stop
+    eventEnd = DateTime.fromISO(hard_stop)
+  }
+  
   eventEnd = roundToNearestInterval(eventEnd, interval_size, true)
 
   let latestEndSoFar = eventEnd
@@ -287,6 +295,7 @@ export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_d
     // Find end of event, round up to nearest interval
     let eventEnd = DateTime.fromISO(events[eventIdx].end_time)
     eventEnd = roundToNearestInterval(eventEnd, interval_size, true)
+    
 
     // Make sure we aren't moving our block start to the end of an event thats sooner than a previously visited event's end
     if (eventEnd < latestEndSoFar) {
@@ -300,7 +309,7 @@ export function CalculateFreeBlocks(hard_start: string, hard_stop: string, min_d
       break
     }
 
-    let blockSizeInMinutes = eventStart.diff(currentBlockStartTime, "minutes")
+    let blockSizeInMinutes = eventStart.diff(currentBlockStartTime, "minutes").minutes
 
     // check if the Block is large enough 
     if (blockSizeInMinutes < min_duration) {

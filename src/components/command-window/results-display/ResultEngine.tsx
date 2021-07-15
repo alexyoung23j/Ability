@@ -4,7 +4,7 @@ import CalendarView from './calendar_display/CalendarView';
 import TextSnippetDropdown from './snippet_display/TextSnippetDropdown';
 import { textSnippet } from '../../../types';
 import { ContentState } from 'draft-js';
-import { calendarDummyResults } from '../constants';
+import { calendarDummyResults, demoPart1Results, demo1ArrayOfSnippets, part2SnippetArray, demoPart2Results, demoPart3Results } from '../constants';
 import { generateIntervals, roundToNearestInterval, CalculateFreeBlocks, HydrateOverlapEvents } from '../../util/CalendarUtil';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 const { DateTime } = require("luxon");
@@ -28,9 +28,10 @@ export default function ResultEngine() {
   // In general, we prefer to only REMOVE items from the result. 
 
   // State
-  const [calendarResultData, setCalendarResultData] = useImmer(calendarDummyResults)
+  const [calendarResultData, setCalendarResultData] = useImmer(demoPart1Results)
   const [ignoreSlots, setIgnoreSlots] = useState([])
   const [textEngineLaunched, setTextEngineLaunched] = useState(false)
+  const [demoSnippetIdx, setDemoSnippetIdx] = useState(0)
 
   // ----------------------------------- CALLBACKS ----------------------------------- //
 
@@ -46,13 +47,21 @@ export default function ResultEngine() {
     }
   }
 
+  // Just for demoing
+  /* useEffect(() => {
+    if (ignoreSlots.length > 0) {
+      setDemoSnippetIdx((demoSnippetIdx + 1) % 3)
+    }
+    
+  }, [ignoreSlots]) */
+
   // This useeffect makes the interval size between free slots larger when the text engine is launched to simplify UI and text generation
   // Note that this means the Ignored Slots apply only to the "post engine launch" free slots
   useEffect(() => {
     // If text engine launched, make intervals 1 hour
     if (textEngineLaunched) {
       setCalendarResultData(draft => {
-        for (var i =0; i < calendarResultData.days.length; i++) { 
+        for (var i = 0; i < calendarResultData.days.length; i++) { 
           draft.days[i].free_blocks = CalculateFreeBlocks(draft.days[i].hard_start, draft.days[i].hard_end, 60, 60, 60, draft.days[i].events)
         }
       })
@@ -60,7 +69,8 @@ export default function ResultEngine() {
       // if text engine not launched, make intervals 30 minutes
       setIgnoreSlots([])
       setCalendarResultData(draft => {
-        for (var i =0; i < calendarResultData.days.length; i++) { 
+        for (var i = 0; i < calendarResultData.days.length; i++) { 
+          console.log(draft.days[i])
           draft.days[i].free_blocks = CalculateFreeBlocks(draft.days[i].hard_start, draft.days[i].hard_end, 60, 60, 30, draft.days[i].events)
         }
       })
@@ -259,9 +269,10 @@ export default function ResultEngine() {
 
 
 
+
   // ---------------------------- DUMMY ------------------------- //
   // Filler for the text snippet (replace with the real values)
-  var myContentState1 = ContentState.createFromText(
+ /*  var myContentState1 = ContentState.createFromText(
     'Would any of the following times work for you? \n\nTuesday 3/18 - 4:00 PM, 5:00 PM, or 6:30 PM\n\nI think a one hour meeitng would be great and oh that is just so fucking cool im '
   );
   var myContentState2 = ContentState.createFromText(
@@ -272,8 +283,11 @@ export default function ResultEngine() {
   textSnippetArray = [
     { content: myContentState1, id: '1', title: 'email' },
     { content: myContentState2, id: '2', title: 'slack' },
-  ];
+  ]; */
 
+  let textSnippetArray=demo1ArrayOfSnippets[0]
+
+  //let textSnippetArray=part2SnippetArray
   
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>

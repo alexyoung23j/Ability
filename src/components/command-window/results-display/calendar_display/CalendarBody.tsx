@@ -39,6 +39,18 @@ export default function CalendarBody(props: CalendarBody) {
     const [modalEventDescription, setModalEventDescription] = useState('')
 
 
+    const calendarBodyStyle: CSS.Properties = {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        minWidth: "550px",
+        borderRadius: "12px",
+        boxShadow: "inset 0 0 20px rgba(0, 0, 0, .05)",
+        flexDirection: "column",
+        maxHeight: (textEngineLaunched) ? "140px": "310px",
+        overflow: "overlay",
+        scrollMarginTop: "5px",
+    }
 
     // Since each slot in our ignoredSlots array has a day index associated with it, we extract only the block and slot indices 
     // for processing with the horizontal calendar itself
@@ -117,16 +129,3 @@ export default function CalendarBody(props: CalendarBody) {
     )
 }
 
-const calendarBodyStyle: CSS.Properties = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    minWidth: "550px",
-    borderRadius: "12px",
-    boxShadow: "inset 0 0 20px rgba(0, 0, 0, .05)",
-    flexDirection: "column",
-    maxHeight: "305px",
-    overflow: "overlay",
-    scrollMarginTop: "5px",
-
-}
