@@ -31,6 +31,10 @@ import {
 7. next -> Date Modifier, Range Modifier 
 8. in -> Range Modifier
 9. week of -> Date Modifier 
+10. first -> Date Modifier
+11. second -> Date Modifier
+12. third -> Date Modifier
+13. fourth -> Date Modifier
  */
 
 export const DURATION_MODIFIER_FIXTURES: Array<ModifierPiece> = [
@@ -78,6 +82,13 @@ export const DATE_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   'friday',
   'saturday',
   'sunday',
+  'mondays',
+  'tuesdays',
+  'wednesdays',
+  'thursdays',
+  'fridays',
+  'saturdays',
+  'sundays',
   '_/_',
   '_/_/2021',
   '_/_/2022',
@@ -208,6 +219,26 @@ export const PREPOSITION_FIXTURES: Array<PrepositionPiece> = [
   },
   {
     value: 'week of',
+    type: QueryPieceType.PREPOSITION,
+    allowedModifierCategories: [ModifierCategory.DATE],
+  },
+  {
+    value: 'first',
+    type: QueryPieceType.PREPOSITION,
+    allowedModifierCategories: [ModifierCategory.DATE],
+  },
+  {
+    value: 'second',
+    type: QueryPieceType.PREPOSITION,
+    allowedModifierCategories: [ModifierCategory.DATE],
+  },
+  {
+    value: 'third',
+    type: QueryPieceType.PREPOSITION,
+    allowedModifierCategories: [ModifierCategory.DATE],
+  },
+  {
+    value: 'fourth',
     type: QueryPieceType.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DATE],
   },
