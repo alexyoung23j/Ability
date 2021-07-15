@@ -20,7 +20,7 @@ interface Event {
 }
 
 // Organized by start time
-type Day = { events: Array<Event>; date: DateTime };
+export type Day = { events: Array<Event>; date: DateTime };
 
 /**
  * Given a date and a starting date, return what index in an array the date would be assuming the
