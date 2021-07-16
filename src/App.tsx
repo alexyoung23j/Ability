@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Auth } from './auth';
+import { Auth } from './components/auth/auth';
 import CommandView from './components/command-window/CommandView';
 import { EVENTS } from './tests/EventsFixtures';
 import SettingsView from './components/settings-window/SettingsView';

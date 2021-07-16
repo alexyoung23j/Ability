@@ -1,3 +1,7 @@
+import { ContentState } from 'draft-js';
+
+
+
 export type PieceCategory = ModifierCategory;
 
 export enum QueryPieceType {
@@ -40,6 +44,13 @@ export const enum ModifierCategory {
   RANGE = 'RANGE'
 }
 
+export const ALL_MODIFIER_CATEGORIES = [
+  ModifierCategory.TIME,
+  ModifierCategory.DURATION,
+  ModifierCategory.DATE,
+  ModifierCategory.RANGE
+];
+
 export type CategoryFilters = Array<ModifierCategory>;
 
 export interface PrepositionPiece extends Piece {
@@ -55,4 +66,10 @@ export function isModifierPiece(
   piece: Piece | ModifierPiece
 ): piece is ModifierPiece {
   return 'category' in piece && piece.type === QueryPieceType.MODIFIER;
+}
+
+export interface textSnippet {
+  content: ContentState;
+  id: string;
+  title: string;
 }

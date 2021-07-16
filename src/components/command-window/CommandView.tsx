@@ -1,10 +1,11 @@
 import CSS from 'csstype';
 import 'draft-js/dist/Draft.css';
 import React, { useEffect, useState } from 'react';
-import { Piece, QueryPieceType } from './autocomplete/types';
+import { Piece, QueryPieceType } from './types';
 import CommandLine from './command-line/CommandLine';
 import Parser from './Parser';
 import ResultEngine from './results-display/ResultEngine';
+import { QueryTransformEngine } from './results-display/QueryTransformEngine';
 
 const { ipcRenderer } = require('electron');
 
@@ -269,7 +270,7 @@ export default function CommandView() {
           autocompleteItemClickedHandler={setAutocompleteItemClicked}
           alertCommandLineClearHandler={setAlertCommandLineToClear}
         />
-        {(finalQueryLaunched && <ResultEngine />) || (
+        {(finalQueryLaunched && <QueryTransformEngine queryPieces={queryPieces} />) || (
           <Parser
             updateRoot={setValidAutocompletes}
             validAutocompletes={validAutocompletes}

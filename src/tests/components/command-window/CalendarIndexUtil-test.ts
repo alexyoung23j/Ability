@@ -3,7 +3,7 @@ import dirtyChai from 'dirty-chai';
 import { DateTime } from 'luxon';
 
 import { EVENT_1A, EVENT_1B, EVENT_2A, EVENT_3A } from '../../EventsFixtures';
-import * as CalendarIndexUtil from '../../../components/command-window/CalendarIndexUtil';
+import * as CalendarIndexUtil from '../../../components/util/CalendarIndexUtil';
 
 chai.use(dirtyChai);
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AutocompleteEngine, {
   BaseAutocompleteEngineProps,
 } from './autocomplete/AutocompleteEngine';
-import { Piece, QueryFragment } from './autocomplete/types';
+import { Piece, QueryFragment } from './types';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);

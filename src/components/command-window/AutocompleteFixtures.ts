@@ -3,7 +3,7 @@ import {
   ModifierCategory,
   QueryPieceType,
   PrepositionPiece,
-} from '../components/command-window/autocomplete/types';
+} from './types';
 
 /* ----------------- Official Modifiers Guide -----------------
 
@@ -50,6 +50,10 @@ export const DURATION_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   '_minutes',
   '_min',
   '_minute',
+  '_._ hour',
+  '_._ hours',
+  '_._hour',
+  '_._hours',
 ].map((value) => ({
   value,
   category: ModifierCategory.DURATION,
