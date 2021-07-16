@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useImmer } from 'use-immer';
 import CalendarView from './calendar_display/CalendarView';
 import TextSnippetDropdown from './snippet_display/TextSnippetDropdown';
-import { textSnippet } from '../../../types';
+import { textSnippet } from '../types';
 import { ContentState } from 'draft-js';
 import {
   calendarDummyResults,
@@ -23,7 +23,7 @@ const { DateTime } = require('luxon');
 
 // pick a date util library
 import DateFnsUtils from '@date-io/date-fns';
-import { Piece } from '../autocomplete/types';
+import { Piece } from '../types';
 const dropdownArrowNormal = require('/src/content/svg/DropdownArrowNormal.svg');
 const dropdownArrowHighlight = require('/src/content/svg/DropdownArrowHighlight.svg');
 const redirect = require('/src/content/svg/Redirect.svg');

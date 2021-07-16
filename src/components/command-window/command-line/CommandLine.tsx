@@ -15,7 +15,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Piece, QueryPieceType, ModifierCategory } from '../autocomplete/types';
+import { Piece, QueryPieceType, ModifierCategory } from '../types';
 const { ipcRenderer } = require('electron');
 
 const enterIcon = require('/src/content/svg/enterIcon.svg');
@@ -334,7 +334,12 @@ export default function CommandLine(props: CommandLineProps) {
     if (currentQueryFragment === '' && queryPiecePositions.length > 1) {
       // We haven't started creating a new piece anymore,
       // QUERY ENDS HERE
-      finalQueryLaunchedHandler(true);
+
+      // Ensure our final query piece was indeed a modifier, not a preposition
+      if (queryPieces[queryPieces.length-1].type === 'MODIFIER') {
+        finalQueryLaunchedHandler(true);
+      }
+      
       return 'handled';
     }
 

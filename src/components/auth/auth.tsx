@@ -3,11 +3,11 @@ import { google } from 'googleapis';
 import { OAuth2Client } from 'googleapis-common';
 import { GoogleLogin, GoogleLoginResponse } from 'react-google-login';
 
-import { assert } from './assert';
-import * as CalendarDAO from './DAO/CalendarDAO';
+import { assert } from '../../assert';
+import * as CalendarDAO from '../../DAO/CalendarDAO';
 import { writeJSONToFile } from './util';
-import { CalendarContext } from './App';
-import * as CalendarIndexUtil from './components/command-window/CalendarIndexUtil';
+import { CalendarContext } from '../../App';
+import * as CalendarIndexUtil from '../util/CalendarIndexUtil';
 
 const CALENDAR_ID = 'abilityapptester01@gmail.com';
 

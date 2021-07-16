@@ -1,41 +1,4 @@
-import {
-  ModifierCategory,
-  ModifierPiece,
-  QueryPieceType,
-} from './autocomplete/types';
-
-export const ALL_MODIFIER_CATEGORIES = [
-  ModifierCategory.TIME,
-  ModifierCategory.DURATION,
-  ModifierCategory.DATE,
-  ModifierCategory.RANGE
-];
-
 import { ContentState } from 'draft-js';
-
-
-
-const DATE_PIECES: Array<ModifierPiece> = [
-  {
-    value: 'tomorrow',
-    category: ModifierCategory.DATE,
-    type: QueryPieceType.MODIFIER,
-  },
-  {
-    value: 'tomorrow',
-    category: ModifierCategory.DATE,
-    type: QueryPieceType.MODIFIER,
-  },
-];
-
-const PREPOSITIONS = ['on', 'next'];
-
-const prepositionToModifierCategories = {
-  on: ModifierCategory.DATE,
-  next: ModifierCategory.DATE,
-  //   at: ModifierCategory.HOUR,
-  for: ModifierCategory.DURATION,
-};
 
 
 // ---------------------- Demo Video ------------------- //
