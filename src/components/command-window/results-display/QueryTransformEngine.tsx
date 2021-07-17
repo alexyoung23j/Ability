@@ -96,15 +96,15 @@ function durationFilter(modifierPiece: ModifierPiece): CalendarIndexFilter {
 
 }
 
+// Creates filter for duration modifiers
 function timeFilter(modifierPiece: ModifierPiece): CalendarIndexFilter {
 
   const numbers = modifierPiece.value.match(/\d+/g)
   const timeModifierString = modifierPiece.value.replace(/\d+/g, '').replace(':', '').trim()
 
-  myConsole.log(timeModifierString)
 
-  let hour = null
-  let minute = null
+  let hour = 0
+  let minute = 0
 
   if (numbers != null && numbers.length > 1) {
     hour = parseFloat(numbers[0])
@@ -113,26 +113,56 @@ function timeFilter(modifierPiece: ModifierPiece): CalendarIndexFilter {
     hour = parseFloat(numbers[0])
   }
 
-  let {extracted_start_time, extracted_end_time} = TimeModifierStartAndEndMap[timeModifierString]
+  let mapRes = TimeModifierStartAndEndMap[timeModifierString]
+  let extracted_start_time = mapRes.start_time
+  let extracted_end_time = mapRes.end_time
+  
+  let start_time
+  let end_time = null
 
-  let start_time = DateTime.fromISO(extracted_start_time)
-  let end_time = DateTime.fromISO(extracted_end_time)
+  const default_time = DateTime.fromISO('2021-01-01T12:00:00-00:00')
 
   switch (extracted_start_time) {
     case 'HARD_START':
       start_time = DateTime.fromISO(user_settings.day_hard_start)
+      break
+
     case 'PM':
+      start_time = default_time.set({hour: hour + 12, minute: minute})
+      break
 
     case 'AM':
-      
+      start_time = default_time.set({hour: hour, minute: minute})
+      break
+
+    default:
+      start_time = DateTime.fromISO(extracted_start_time)
+      break
+  }
+
+  switch(extracted_end_time) {
+    case 'HARD_STOP':
+      end_time = DateTime.fromISO(user_settings.day_hard_stop)
+      break
+
+    case 'IMPLIED':
+      // This is arbitrary, maybe we should do it in a more sophisticated way
+      if (start_time.minute > 30) {
+        end_time = start_time.set({hour: start_time.hour + 2, minute: 0})
+      } else {
+        end_time = start_time.set({hour: start_time.hour + 1, minute: 0})
+      }
+      break
+
+    default:
+      end_time = DateTime.fromISO(extracted_end_time)
+      break
+
   }
   
 
-
-
-
   return {
-    range: [],
+    range: null,
     startTime: start_time,
     endTime: end_time,
     duration: null,
@@ -224,7 +254,8 @@ export function QueryTransformEngine(
     let currentFilter: CalendarIndexFilter =
       generateDefaultFilterForModifier(modifierPiece);
 
-    //myConsole.log(currentFilter)
+    myConsole.log(currentFilter.startTime.toISO(), currentFilter.endTime.toISO())
+    myConsole.log(" ____ ")
 
     currentFilter = applyPrepositionActionToFilter(
       prepositionPiece,

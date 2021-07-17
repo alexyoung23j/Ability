@@ -16,7 +16,7 @@ interface ParserProps extends BaseAutocompleteEngineProps {
   updateRoot: (autocompletions: Array<Piece>) => void;
 }
 
-// Replace whitespace with non break whitespace and replace numbers with x
+// Replace whitespace with non break whitespace and replace numbers with numeric wildcard
 function _normalizeQuery({ value }: QueryFragment): string {
   return value.replace(/\u00A0/, ' ').replace(/\d+/g, NUMERIC_WILDCARD);
 }
