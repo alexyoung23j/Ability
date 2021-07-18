@@ -120,6 +120,7 @@ export const DATE_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   'october _',
   'november _',
   'december _',
+  // TODO: add with year? "january 1, 2021" or something
 ].map((value) => ({
   value,
   category: ModifierCategory.DATE,
