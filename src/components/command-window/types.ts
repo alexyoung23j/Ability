@@ -1,6 +1,5 @@
 import { ContentState } from 'draft-js';
-
-
+import { DateTime } from 'luxon';
 
 export type PieceCategory = ModifierCategory;
 
@@ -41,14 +40,14 @@ export const enum ModifierCategory {
   TIME = 'TIME',
   DURATION = 'DURATION',
   DATE = 'DATE',
-  RANGE = 'RANGE'
+  RANGE = 'RANGE',
 }
 
 export const ALL_MODIFIER_CATEGORIES = [
   ModifierCategory.TIME,
   ModifierCategory.DURATION,
   ModifierCategory.DATE,
-  ModifierCategory.RANGE
+  ModifierCategory.RANGE,
 ];
 
 export type CategoryFilters = Array<ModifierCategory>;
@@ -72,4 +71,20 @@ export interface textSnippet {
   content: ContentState;
   id: string;
   title: string;
+}
+
+export interface QueryTransformEngineProps {
+  queryPieces: Array<Piece>;
+}
+
+export interface ModifierGroup {
+  prepositionPiece: PrepositionPiece; // TODO: I think im handling the types wrong but this caused a problem in the extractModifierGroups function if we forced it to be a PrepositionPiece type
+  modifierPiece: ModifierPiece;
+}
+
+export interface CalendarIndexFilter {
+  range: Array<Array<DateTime>> | null; // Each subarray is a contiguous chunk of datetimes
+  startTime: DateTime | null;
+  endTime: DateTime | null;
+  duration: number | null;
 }
