@@ -23,7 +23,8 @@ const TODAY = DateTime.now().startOf('day');
 
 export const ONE_OR_MORE_NUMBERS = /\d+/g;
 
-//TODO: This should be in context, and also should be probably be imported from a functional component or passed as parameters to the function
+// USER SETTINGS, SHOULD EVENTUALLY BE A CONTEXT OBJECT I GUESS
+// TODO: This should be in context, and also should be probably be imported from a functional component or passed as parameters to the function
 const user_settings = {
   day_hard_start: '2021-01-01T08:00:00', // the date is arbitrary, this gets overwritten at some point
   day_hard_stop: '2021-01-01T21:00:00', // the date is arbitrary, this gets overwritten at some point
