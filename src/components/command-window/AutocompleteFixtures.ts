@@ -75,6 +75,7 @@ export const TIME_MODIFIER_FIXTURES: Array<ModifierPiece> = [
 export const DATE_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   'tomorrow',
   'today',
+  'yesterday',
   'monday',
   'tuesday',
   'wednesday',

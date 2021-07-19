@@ -14,6 +14,7 @@ import {
   DurationModifiersDurationMap,
   MonthToMonthIndexMap,
   TimeModifierStartAndEndMap,
+  modifierStringToRangeGeneratorMap,
 } from '../TransformFixtures';
 import ResultEngine from './ResultEngine';
 
@@ -74,7 +75,7 @@ function extractModifierGroups(
 }
 
 interface CalendarIndexFilter {
-  range: Array<DateTime> | null;
+  range: Array<Array<DateTime>> | null; // Each subarray is a contiguous chunk of datetimes
   startTime: DateTime | null;
   endTime: DateTime | null;
   duration: number | null;
@@ -185,6 +186,7 @@ export function _chooseYearForDateFilter(day: number, month: number): number {
   return year;
 }
 
+// Creates filter for date modifiers
 function dateFilter(modifierPiece: ModifierPiece): CalendarIndexFilter {
   // Extract out string arg from date modifier (e.g. 15 February --> "February")
   const dateModifierStringArg = modifierPiece.value
@@ -204,44 +206,12 @@ function dateFilter(modifierPiece: ModifierPiece): CalendarIndexFilter {
   // If there's zero numbers, the modifier must be a day (e.g. "Thursday")
   //    This would be a collection of non-consecutive days as well
   if (numbers.length === 0) {
-    const dayModifierArgToDateTime = {
-      today: DateTime.now().startOf('day'),
-      tomorrow: DateTime.now().plus({ days: 1 }).startOf('day'),
+    return {
+      range: _generateRangeArrays(dateModifierStringArg),
+      startTime: null,
+      endTime: null,
+      duration: null,
     };
-    if (dayModifierArgToDateTime.hasOwnProperty(dateModifierStringArg)) {
-      return {
-        range: [dayModifierArgToDateTime[dateModifierStringArg]],
-        startTime: null,
-        endTime: null,
-        duration: null,
-      };
-    }
-    // Days of the week
-    else {
-      const now = DateTime.now();
-      let baseDate: DateTime;
-      for (let i = 0; i < 7; i++) {
-        const day = now.plus({ days: i });
-        if (day.weekdayLong.toLowerCase() === dateModifierStringArg) {
-          baseDate = day.startOf('day');
-          break;
-        }
-      }
-      assert(
-        baseDate != null,
-        `Received a modifier piece with no numbers that isn\'t a day of the week: ${dateModifierStringArg}`
-      );
-
-      const days = [];
-
-      let i = 0;
-      while (i < 365) {
-        days.push(baseDate.plus({ days: i }));
-        i += 7;
-      }
-
-      return { range: days, startTime: null, endTime: null, duration: null };
-    }
   }
 
   let day: number;
@@ -269,7 +239,159 @@ function dateFilter(modifierPiece: ModifierPiece): CalendarIndexFilter {
   }
 
   return {
-    range: [DateTime.fromObject({ day, month, year })],
+    range: [[DateTime.fromObject({ day, month, year })]],
+    startTime: null,
+    endTime: null,
+    duration: null,
+  };
+}
+
+function _generateRangeArrays(rangeString: string): Array<Array<DateTime>> {
+  // Strip out the s from the end of some plurals
+  if (rangeString[rangeString.length - 1] == 's') {
+    rangeString = rangeString.slice(0, rangeString.length - 1);
+  }
+
+  const actionType = modifierStringToRangeGeneratorMap[rangeString];
+
+  const rangeArrays = [];
+  const now = DateTime.now();
+  let baseDate: DateTime;
+
+  if (actionType == 'WEEKDAY') {
+    // "monday", "tuesday" .. find the next 52 occurences of these
+    for (let i = 0; i < 7; i++) {
+      const day = now.plus({ days: i });
+      if (day.weekdayLong.toLowerCase() === rangeString) {
+        baseDate = day.startOf('day');
+        break;
+      }
+    }
+    assert(
+      baseDate != null,
+      `Received a modifier piece with no numbers that isn't a day of the week: ${rangeString}`
+    );
+
+    // Build up one years worth of days
+
+    let i = 0;
+    while (i < 365) {
+      rangeArrays.push([baseDate.plus({ days: i })]);
+      i += 7;
+    }
+  } else if (actionType == 'WEEK') {
+    // Starting from the current week, find the next 52 weeks
+    baseDate = now.startOf('week');
+
+    let i = 0;
+    while (i < 365) {
+      let j = 0;
+      let rangeArray: Array<DateTime> = [];
+      while (j < 7) {
+        rangeArray.push(baseDate.plus({ days: i }));
+        i += 1;
+        j += 1;
+      }
+      // Note weeks start on mondays
+      rangeArrays.push(rangeArray);
+    }
+  } else if (actionType == 'MONTH') {
+    // Starting from the current month, find the next 11 months
+    baseDate = now.startOf('month');
+    let originalMonth = baseDate.month;
+
+    let i = 0;
+    while (
+      i < baseDate.daysInMonth ||
+      baseDate.plus({ days: i }).month != originalMonth
+    ) {
+      let j = 0;
+      let rangeArray: Array<DateTime> = [];
+
+      // Calculate how many days we need to add to this object
+      let daysInThisMonth = baseDate.plus({ days: i }).daysInMonth;
+
+      while (j < daysInThisMonth) {
+        rangeArray.push(baseDate.plus({ days: i }));
+        i += 1;
+        j += 1;
+      }
+      // Note weeks start on mondays
+      rangeArrays.push(rangeArray);
+    }
+  } else if (actionType == 'YEAR') {
+    // Add the next two years
+    baseDate = now.startOf('year');
+
+    // This year
+    let i = 0;
+    let rangeArray = [];
+    while (i < 365) {
+      rangeArray.push(baseDate.plus({ days: i }));
+      i += 1;
+    }
+    rangeArrays.push(rangeArray);
+
+    // Next year
+    rangeArray = [];
+    while (i < 730) {
+      rangeArray.push(baseDate.plus({ days: i }));
+      i += 1;
+    }
+    rangeArrays.push(rangeArray);
+  } else if (actionType == 'DAY') {
+    // Grab the next 100 days (since 3 digit numbers are not allowed)
+    let i = 0;
+    baseDate = now.startOf('day');
+
+    while (i < 100) {
+      rangeArrays.push([baseDate.plus({ days: i })]);
+      i += 1;
+    }
+  } else if (actionType == 'MONTH_NAME') {
+    // Get the month this year and the next year
+    const monthIdx = MonthToMonthIndexMap[rangeString.toLowerCase()];
+    baseDate = now.set({ month: monthIdx }).startOf('month');
+
+    // The month in this year
+    let i = 0;
+    let rangeArray = [];
+    while (i < baseDate.daysInMonth) {
+      rangeArray.push(baseDate.plus({ days: i }));
+      i += 1;
+    }
+    rangeArrays.push(rangeArray);
+
+    i = 0;
+    rangeArray = [];
+    baseDate = baseDate.set({ year: now.year + 1 });
+
+    while (i < baseDate.daysInMonth) {
+      rangeArray.push(baseDate.plus({ days: i }));
+      i += 1;
+    }
+    rangeArrays.push(rangeArray);
+  } else if (actionType == 'TODAY') {
+    baseDate = now.startOf('day');
+    rangeArrays.push([baseDate]);
+  } else if (actionType == 'TOMORROW') {
+    baseDate = now.plus({ days: 1 }).startOf('day');
+    rangeArrays.push([baseDate]);
+  } else if (actionType == 'YESTERDAY') {
+    baseDate = now.minus({ days: 1 }).startOf('day');
+    rangeArrays.push([baseDate]);
+  }
+
+  return rangeArrays;
+}
+
+function rangeFilter(modifierPiece: ModifierPiece): CalendarIndexFilter {
+  const rangeModifierString = modifierPiece.value
+    .replace(ONE_OR_MORE_NUMBERS, '')
+    .trim();
+
+  return {
+    range: _generateRangeArrays(rangeModifierString),
     startTime: null,
     endTime: null,
     duration: null,
@@ -289,20 +411,9 @@ function generateDefaultFilterForModifier(
 
     case ModifierCategory.DATE:
       return dateFilter(modifierPiece);
-      return {
-        range: [],
-        startTime: DateTime.now(),
-        endTime: DateTime.now(),
-        duration: 0,
-      };
 
     case ModifierCategory.RANGE:
-      return {
-        range: [],
-        startTime: DateTime.now(),
-        endTime: DateTime.now(),
-        duration: 0,
-      };
+      return rangeFilter(modifierPiece);
 
     default:
       assert(false, 'wtff');
@@ -316,17 +427,69 @@ function applyPrepositionActionToFilter(
   filter: CalendarIndexFilter
 ): CalendarIndexFilter {
   switch (modifier.category) {
-    case ModifierCategory.TIME:
-      switch (preposition.value) {
-        case 'at':
-          break;
-        case 'after':
-      }
-    case ModifierCategory.DATE:
-
     case ModifierCategory.DURATION:
       // Do nothing interesting
       return filter;
+
+    case ModifierCategory.TIME:
+      switch (preposition.value) {
+        case 'at':
+          return filter;
+        case 'after':
+          // check if it contains numbers
+          if (modifier.value.match(ONE_OR_MORE_NUMBERS)) {
+            return {
+              ...filter,
+              endTime: DateTime.fromISO(user_settings.day_hard_stop),
+            };
+          } else {
+            return {
+              ...filter,
+              startTime: filter.endTime,
+              endTime: DateTime.fromISO(user_settings.day_hard_stop),
+            };
+          }
+        case 'before':
+          return {
+            ...filter,
+            startTime: DateTime.fromISO(user_settings.day_hard_start),
+            endTime: filter.startTime,
+          };
+        case 'this':
+          // We have to modify the range in this case
+          return {
+            ...filter,
+            range: _generateRangeArrays('today'),
+          };
+        default:
+          assert(
+            false,
+            'we have some other preposition that is not allowed for a time modifier'
+          );
+      }
+
+    case ModifierCategory.DATE:
+      switch (preposition.value) {
+        case 'this':
+          // take first occurence
+          return {
+            ...filter,
+            range: [filter.range[0]],
+          };
+        case 'first': // TODO: Handle this, it isnt going to work. We want 'first monday in july' but currently "july" will return us july and "first month" will give us just the next monday from today
+          // take first occurence
+          return {
+            ...filter,
+            range: [filter.range[0]],
+          };
+        case 'on':
+          // take first occurence
+          return {
+            ...filter,
+            range: [filter.range[0]],
+          };
+        case 'next':
+      }
 
     case ModifierCategory.RANGE:
       break;
