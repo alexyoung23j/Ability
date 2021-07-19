@@ -36,8 +36,6 @@ import ResultEngine from './ResultEngine';
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
-// USER SETTINGS, SHOULD EVENTUALLY BE A CONTEXT OBJECT I GUESS
-
 function intersectFilters(
   filter1: CalendarIndexFilter,
   filter2: CalendarIndexFilter
