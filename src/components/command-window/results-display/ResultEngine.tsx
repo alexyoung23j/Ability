@@ -96,7 +96,6 @@ export default function ResultEngine(props: ResultEngineProps) {
       setIgnoreSlots([]);
       setCalendarResultData((draft) => {
         for (var i = 0; i < calendarResultData.days.length; i++) {
-          console.log(draft.days[i]);
           draft.days[i].free_blocks = CalculateFreeBlocks(
             draft.days[i].hard_start,
             draft.days[i].hard_end,
