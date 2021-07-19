@@ -13,7 +13,7 @@ export const DEFAULT_PREPOSITION_LIBRARY = {
   DURATION: PREPOSITION_FIXTURES[0], // "for"
   TIME: PREPOSITION_FIXTURES[1], // "at"
   DATE: PREPOSITION_FIXTURES[4], // "this"
-  RANGE: PREPOSITION_FIXTURES[4], // "this"
+  RANGE: PREPOSITION_FIXTURES[7], // "in"
 };
 
 export const DurationModifiersDurationMap = {
