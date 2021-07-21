@@ -17,7 +17,7 @@ import {
   roundToNearestInterval,
   CalculateFreeBlocks,
   HydrateOverlapEvents,
-} from '../../util/CalendarUtil';
+} from '../../util/CalendarViewUtil';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 const { DateTime } = require('luxon');
 

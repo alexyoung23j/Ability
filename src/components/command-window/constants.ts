@@ -1,6 +1,5 @@
 import { ContentState } from 'draft-js';
 
-
 // ---------------------- Demo Video ------------------- //
 
 // ------------- Part 1: "week of july 26 after 2 pm" -------- //
@@ -18,37 +17,36 @@ const emailContent3 = ContentState.createFromText(
 );
 
 const snippetArrayOne = [
-  {content: emailContent1, id: "1", title: "email"},
-  {content: emailContent1, id: "1", title: "slack"},
-  {content: emailContent1, id: "1", title: "personal"},
-]
+  { content: emailContent1, id: '1', title: 'email' },
+  { content: emailContent1, id: '1', title: 'slack' },
+  { content: emailContent1, id: '1', title: 'personal' },
+];
 
 const snippetArrayTwo = [
-  {content: emailContent2, id: "1", title: "email"},
-  {content: emailContent2, id: "1", title: "slack"},
-  {content: emailContent2, id: "1", title: "personal"},
-]
+  { content: emailContent2, id: '1', title: 'email' },
+  { content: emailContent2, id: '1', title: 'slack' },
+  { content: emailContent2, id: '1', title: 'personal' },
+];
 
 const snippetArrayThree = [
-  {content: emailContent3, id: "1", title: "email"},
-  {content: emailContent3, id: "1", title: "slack"},
-  {content: emailContent3, id: "1", title: "personal"},
-]
+  { content: emailContent3, id: '1', title: 'email' },
+  { content: emailContent3, id: '1', title: 'slack' },
+  { content: emailContent3, id: '1', title: 'personal' },
+];
 
 export const demo1ArrayOfSnippets = [
-  snippetArrayOne, snippetArrayTwo, snippetArrayThree
-]
-
+  snippetArrayOne,
+  snippetArrayTwo,
+  snippetArrayThree,
+];
 
 export const demoPart1Results = {
   days: [
     {
-      calendar_date: '2021-07-26',
+      calendar_date: '2021-07-20',
       hard_start: '2021-07-26T14:00:00-07:00',
       hard_end: '2021-07-26T20:00:00-07:00',
-      free_blocks: [
-      
-      ],
+      free_blocks: [],
       events: [
         {
           start_time: '2021-07-26T11:00:00-07:00',
@@ -57,8 +55,8 @@ export const demoPart1Results = {
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: '#7986cb',
           calendar: {
-            name: "Work Calendar",
-            color: "#7986cb"
+            name: 'Work Calendar',
+            color: '#7986cb',
           },
           index_of_overlapped_events: [],
         },
@@ -69,8 +67,8 @@ export const demoPart1Results = {
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: '#7986cb',
           calendar: {
-            name: "Work Calendar",
-            color: "#7986cb"
+            name: 'Work Calendar',
+            color: '#7986cb',
           },
           index_of_overlapped_events: [],
         },
@@ -81,8 +79,8 @@ export const demoPart1Results = {
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: '#7986cb',
           calendar: {
-            name: "Work Calendar",
-            color: "#7986cb"
+            name: 'Work Calendar',
+            color: '#7986cb',
           },
           index_of_overlapped_events: [],
         },
@@ -94,22 +92,18 @@ export const demoPart1Results = {
           color: '#33b679',
           calendar: {
             name: "Alex's Personal Calendar",
-            color: "#33b679"
+            color: '#33b679',
           },
           index_of_overlapped_events: [],
         },
-       
-    
       ],
     },
-    
+
     {
       calendar_date: '2021-07-27',
       hard_start: '2021-07-27T14:00:00-07:00',
       hard_end: '2021-07-27T20:00:00-07:00',
-      free_blocks: [
-      
-      ],
+      free_blocks: [],
       events: [
         {
           start_time: '2021-07-27T13:00:00-07:00',
@@ -118,8 +112,8 @@ export const demoPart1Results = {
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: '#7986cb',
           calendar: {
-            name: "Work Calendar",
-            color: "#7986cb"
+            name: 'Work Calendar',
+            color: '#7986cb',
           },
           index_of_overlapped_events: [],
         },
@@ -130,8 +124,8 @@ export const demoPart1Results = {
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: '#7986cb',
           calendar: {
-            name: "Work Calendar",
-            color: "#33b679"
+            name: 'Work Calendar',
+            color: '#33b679',
           },
           index_of_overlapped_events: [],
         },
@@ -143,7 +137,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: "Alex's Personal Calendar",
-            color: "#33b679"
+            color: '#33b679',
           },
           index_of_overlapped_events: [],
         },
@@ -153,9 +147,7 @@ export const demoPart1Results = {
       calendar_date: '2021-07-28',
       hard_start: '2021-07-28T14:00:00-07:00',
       hard_end: '2021-07-28T20:00:00-07:00',
-      free_blocks: [
-      
-      ],
+      free_blocks: [],
       events: [
         {
           start_time: '2021-07-28T14:15:00-07:00',
@@ -164,8 +156,8 @@ export const demoPart1Results = {
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: '#7986cb',
           calendar: {
-            name: "Work Calendar",
-            color: "#7986cb"
+            name: 'Work Calendar',
+            color: '#7986cb',
           },
           index_of_overlapped_events: [],
         },
@@ -176,8 +168,8 @@ export const demoPart1Results = {
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: '#7986cb',
           calendar: {
-            name: "Work Calendar",
-            color: "#33b679"
+            name: 'Work Calendar',
+            color: '#33b679',
           },
           index_of_overlapped_events: [],
         },
@@ -189,7 +181,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: "Alex's Personal Calendar",
-            color: "#33b679"
+            color: '#33b679',
           },
           index_of_overlapped_events: [],
         },
@@ -199,9 +191,7 @@ export const demoPart1Results = {
       calendar_date: '2021-07-29',
       hard_start: '2021-07-29T14:00:00-07:00',
       hard_end: '2021-07-29T20:00:00-07:00',
-      free_blocks: [
-      
-      ],
+      free_blocks: [],
       events: [
         {
           start_time: '2021-07-29T11:00:00-07:00',
@@ -210,8 +200,8 @@ export const demoPart1Results = {
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: '#7986cb',
           calendar: {
-            name: "Work Calendar",
-            color: "#7986cb"
+            name: 'Work Calendar',
+            color: '#7986cb',
           },
           index_of_overlapped_events: [],
         },
@@ -222,8 +212,8 @@ export const demoPart1Results = {
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: '#7986cb',
           calendar: {
-            name: "Work Calendar",
-            color: "#7986cb"
+            name: 'Work Calendar',
+            color: '#7986cb',
           },
           index_of_overlapped_events: [],
         },
@@ -235,7 +225,7 @@ export const demoPart1Results = {
           color: '#33b679',
           calendar: {
             name: "Alex's Personal Calendar",
-            color: "#33b679"
+            color: '#33b679',
           },
           index_of_overlapped_events: [],
         },
@@ -245,9 +235,7 @@ export const demoPart1Results = {
       calendar_date: '2021-07-30',
       hard_start: '2021-07-30T14:00:00-07:00',
       hard_end: '2021-07-30T20:00:00-07:00',
-      free_blocks: [
-      
-      ],
+      free_blocks: [],
       events: [
         {
           start_time: '2021-07-30T11:00:00-07:00',
@@ -256,8 +244,8 @@ export const demoPart1Results = {
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: '#7986cb',
           calendar: {
-            name: "Work Calendar",
-            color: "#7986cb"
+            name: 'Work Calendar',
+            color: '#7986cb',
           },
           index_of_overlapped_events: [],
         },
@@ -268,8 +256,8 @@ export const demoPart1Results = {
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: '#7986cb',
           calendar: {
-            name: "Work Calendar",
-            color: "#7986cb"
+            name: 'Work Calendar',
+            color: '#7986cb',
           },
           index_of_overlapped_events: [],
         },
@@ -280,8 +268,8 @@ export const demoPart1Results = {
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
           color: '#7986cb',
           calendar: {
-            name: "Work Calendar",
-            color: "#7986cb"
+            name: 'Work Calendar',
+            color: '#7986cb',
           },
           index_of_overlapped_events: [],
         },
@@ -293,24 +281,20 @@ export const demoPart1Results = {
           color: '#33b679',
           calendar: {
             name: "Alex's Personal Calendar",
-            color: "#33b679"
+            color: '#33b679',
           },
           index_of_overlapped_events: [],
         },
-       
-    
       ],
     },
-   
-  ]
-}
-
+  ],
+};
 
 // ----------- Part 2: "afternoon this weekend for 2 hours" ------ //
 
 // REMEMBER to change the demo to have min duration be 2 hours
 const emailContentPart2 = ContentState.createFromText(
-  'Would any of the following times work for you? \n\nSaturday 7/24: 1:00-4:00PM, 5:00-7:00 PM \Sunday 7/25: 12:00-3:00 PM, 4:00-6:00 PM \n\nLet me know what makes sense.'
+  'Would any of the following times work for you? \n\nSaturday 7/24: 1:00-4:00PM, 5:00-7:00 PM Sunday 7/25: 12:00-3:00 PM, 4:00-6:00 PM \n\nLet me know what makes sense.'
 );
 
 const personalContentPart2 = ContentState.createFromText(
@@ -318,10 +302,10 @@ const personalContentPart2 = ContentState.createFromText(
 );
 
 export const part2SnippetArray = [
-  {content: emailContentPart2, id: "1", title: "email"},
-  {content: emailContent1, id: "1", title: "slack"},
-  {content: personalContentPart2, id: "1", title: "personal"},
-]
+  { content: emailContentPart2, id: '1', title: 'email' },
+  { content: emailContent1, id: '1', title: 'slack' },
+  { content: personalContentPart2, id: '1', title: 'personal' },
+];
 
 export const demoPart2Results = {
   days: [
@@ -329,9 +313,7 @@ export const demoPart2Results = {
       calendar_date: '2021-07-24',
       hard_start: '2021-07-24T12:00:00-07:00',
       hard_end: '2021-07-24T19:00:00-07:00',
-      free_blocks: [
-       
-      ],
+      free_blocks: [],
       events: [
         {
           start_time: '2021-07-24T11:30:00-07:00',
@@ -341,7 +323,7 @@ export const demoPart2Results = {
           color: '#33b679',
           calendar: {
             name: "Alex's Personal Calendar",
-            color: "#33b679"
+            color: '#33b679',
           },
           index_of_overlapped_events: [],
         },
@@ -353,7 +335,7 @@ export const demoPart2Results = {
           color: '#33b679',
           calendar: {
             name: "Alex's Personal Calendar",
-            color: "#33b679"
+            color: '#33b679',
           },
           index_of_overlapped_events: [],
         },
@@ -363,9 +345,7 @@ export const demoPart2Results = {
       calendar_date: '2021-07-25',
       hard_start: '2021-07-25T12:00:00-07:00',
       hard_end: '2021-07-25T19:00:00-07:00',
-      free_blocks: [
-       
-      ],
+      free_blocks: [],
       events: [
         {
           start_time: '2021-07-25T13:00:00-07:00',
@@ -375,7 +355,7 @@ export const demoPart2Results = {
           color: '#33b679',
           calendar: {
             name: "Alex's Personal Calendar",
-            color: "#33b679"
+            color: '#33b679',
           },
           index_of_overlapped_events: [],
         },
@@ -387,14 +367,14 @@ export const demoPart2Results = {
           color: '#33b679',
           calendar: {
             name: "Alex's Personal Calendar",
-            color: "#33b679"
+            color: '#33b679',
           },
           index_of_overlapped_events: [],
         },
       ],
     },
-  ]
-}
+  ],
+};
 
 //---------- Part 3: "tomorrow" ------ //
 export const demoPart3Results = {
@@ -403,19 +383,17 @@ export const demoPart3Results = {
       calendar_date: '2021-07-23',
       hard_start: '2021-07-23T08:00:00-07:00',
       hard_end: '2021-07-23T20:00:00-07:00',
-      free_blocks: [
-       
-      ],
+      free_blocks: [],
       events: [
         {
           start_time: '2021-07-23T10:00:00-07:00',
           end_time: '2021-07-23T11:00:00-07:00',
           title: 'Team Standup',
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: "#7986cb",
+          color: '#7986cb',
           calendar: {
-            name: "Work Calendar",
-            color: "#7986cb"
+            name: 'Work Calendar',
+            color: '#7986cb',
           },
           index_of_overlapped_events: [],
         },
@@ -427,7 +405,7 @@ export const demoPart3Results = {
           color: '#33b679',
           calendar: {
             name: "Alex's Personal Calendar",
-            color: "#33b679"
+            color: '#33b679',
           },
           index_of_overlapped_events: [],
         },
@@ -436,10 +414,10 @@ export const demoPart3Results = {
           end_time: '2021-07-23T15:30:00-07:00',
           title: 'Sprint Review',
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: "#7986cb",
+          color: '#7986cb',
           calendar: {
-            name: "Work Calendar",
-            color: "#7986cb"
+            name: 'Work Calendar',
+            color: '#7986cb',
           },
           index_of_overlapped_events: [],
         },
@@ -448,18 +426,17 @@ export const demoPart3Results = {
           end_time: '2021-07-23T15:00:00-07:00',
           title: 'Onboarding Call',
           url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: "#f5511d",
+          color: '#f5511d',
           calendar: {
-            name: "Marketing Team Calendar",
-            color: "#f5511d"
+            name: 'Marketing Team Calendar',
+            color: '#f5511d',
           },
           index_of_overlapped_events: [],
         },
       ],
     },
-  ]
-}
-
+  ],
+};
 
 export const calendarDummyResults = {
   days: [
@@ -467,9 +444,7 @@ export const calendarDummyResults = {
       calendar_date: '2021-06-09',
       hard_start: '2021-06-09T08:00:00-07:00',
       hard_end: '2021-06-09T21:10:00-07:00',
-      free_blocks: [
-       
-      ],
+      free_blocks: [],
       events: [
         {
           start_time: '2021-06-09T11:00:00-07:00',
@@ -479,7 +454,7 @@ export const calendarDummyResults = {
           color: 'red',
           calendar: {
             name: "Alex's Calendar",
-            color: "red"
+            color: 'red',
           },
           index_of_overlapped_events: [],
         },
@@ -491,7 +466,7 @@ export const calendarDummyResults = {
           color: 'green',
           calendar: {
             name: "Alex's Calendar 2",
-            color: "blue"
+            color: 'blue',
           },
           index_of_overlapped_events: [],
         },
@@ -503,11 +478,10 @@ export const calendarDummyResults = {
           color: 'blue',
           calendar: {
             name: "Alex's Calendar 3",
-            color: "blue"
+            color: 'blue',
           },
           index_of_overlapped_events: [],
         },
-     
       ],
     },
     {
@@ -531,8 +505,7 @@ export const calendarDummyResults = {
               start_time: '2021-06-10T15:00:00-07:00',
               end_time: '2021-06-10T16:00:00-07:00',
             },
-           
-          ]
+          ],
         },
         {
           start_time: '2021-06-10T18:00:00-07:00',
@@ -550,7 +523,7 @@ export const calendarDummyResults = {
               start_time: '2021-06-10T20:00:00-07:00',
               end_time: '2021-06-10T21:00:00-07:00',
             },
-          ]
+          ],
         },
       ],
       events: [
@@ -562,13 +535,11 @@ export const calendarDummyResults = {
           color: 'blue',
           calendar: {
             name: "Alex's Calendar 3",
-            color: "blue"
+            color: 'blue',
           },
           index_of_overlapped_events: [],
         },
-     
       ],
     },
-  
   ],
 };
