@@ -3,6 +3,7 @@ import CSS from 'csstype';
 import { AnimationType } from 'framer-motion/types/render/utils/types';
 const { DateTime } = require('luxon');
 import { generatePickerTimeOptions } from '../../../util/CalendarViewUtil';
+import { Calendar } from '../../types';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -10,7 +11,7 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 interface CalendarPickerPopupProps {
   isOpen: boolean;
   setIsOpen: any;
-  calendars: Array<{ name: string; color: string }>;
+  calendars: Array<Calendar>;
   eventCalendar: { name: string; color: string };
   setEventCalendar: any;
 }
@@ -42,7 +43,7 @@ interface CalendarOptionProps {
   color: string;
   name: string;
   setEventCalendar: any;
-  eventCalendar: { name: string; color: string };
+  eventCalendar: Calendar;
   setIsOpen: any;
 }
 

@@ -88,3 +88,10 @@ export interface CalendarIndexFilter {
   endTime: DateTime | null;
   duration: number | null;
 }
+
+export interface Calendar {
+  name: string;
+  color: string;
+  googleAccount?: string;
+  selectedForDisplay?: boolean;
+}

@@ -34,7 +34,7 @@ export default function CommandView() {
     clearCommandLine().then(() => {
       setCurrentClearing(true);
     });
-  })
+  });
 
   // // Performs the work of fetching text snippets (replace with real logic)
   // async function fetchSnippets() {
@@ -241,14 +241,8 @@ export default function CommandView() {
   }, [alertCommandLineToClear]);
 
   return (
-    <div 
-      style={commandAreaStyle} 
-      onClick={() => triggerBrowserWindowBlur()}
-    >
-      <div 
-        style={commandStyle} 
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div style={commandAreaStyle} onClick={() => triggerBrowserWindowBlur()}>
+      <div style={commandStyle} onClick={(e) => e.stopPropagation()}>
         <CommandLine
           queryPiecePositions={queryPiecePositions}
           autocompleteInProgress={autocompleteInProgress}
@@ -270,7 +264,9 @@ export default function CommandView() {
           autocompleteItemClickedHandler={setAutocompleteItemClicked}
           alertCommandLineClearHandler={setAlertCommandLineToClear}
         />
-        {(finalQueryLaunched && <QueryTransformEngine queryPieces={queryPieces} />) || (
+        {(finalQueryLaunched && (
+          <QueryTransformEngine queryPieces={queryPieces} />
+        )) || (
           <Parser
             updateRoot={setValidAutocompletes}
             validAutocompletes={validAutocompletes}
@@ -287,10 +283,9 @@ export default function CommandView() {
               value: currentQueryFragment,
               type: QueryPieceType.MODIFIER,
             }}
-            
           />
         )}
-       </div>
+      </div>
     </div>
   );
 }
@@ -303,7 +298,7 @@ const commandStyle: CSS.Properties = {
   borderRadius: '12px',
   flexDirection: 'column',
   outline: 'none',
-  marginTop: "5%",
+  marginTop: '5%',
   boxShadow: '0 0 50px rgba(0,0,0, 0.3)',
 };
 
@@ -313,6 +308,6 @@ const commandAreaStyle: CSS.Properties = {
   justifyContent: 'center',
   height: '100%',
   backgroundColor: 'rgba(211,211,211, 0.05)',
-  position: "fixed",
-  width: "100%"
+  position: 'fixed',
+  width: '100%',
 };

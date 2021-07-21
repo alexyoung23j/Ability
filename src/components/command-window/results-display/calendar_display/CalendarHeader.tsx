@@ -118,11 +118,12 @@ function ShowCalendarsButton(props: {
           justifyContent: 'center',
           alignItems: 'center',
           position: 'absolute',
-          right: '100px',
+          right: '90px',
         }}
       >
+        <img src={arrowToDisplay} style={{ height: '8px', width: '8px' }} />
         <div
-          style={{ marginLeft: '35px', marginRight: '10px' }}
+          style={{ marginLeft: '10px', marginRight: '10px' }}
           className={className}
         >
           calendars
