@@ -2,8 +2,9 @@ import CSS from 'csstype';
 import React, { useState } from 'react';
 import CalendarHeader from './CalendarHeader';
 import CalendarBody from './CalendarBody';
-import { Calendar } from '../../types';
+import { Calendar, RegisteredAccount } from '../../types';
 import { useImmer } from 'use-immer';
+import { CalendarPickerModal } from './CalendarPickerModal';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -27,11 +28,58 @@ export default function CalendarView(props: CalendarView) {
     modifyExistingEvent,
   } = props;
 
-  const fetched_calendars: Array<Calendar> = [];
+  const fetched_calendars: Array<RegisteredAccount> = [
+    {
+      accountEmail: 'testAccount1@gmail.com',
+      calendars: [
+        {
+          name: 'Calendar 1',
+          color: 'blue',
+          googleAccount: 'testAccount1@gmail.com',
+          selectedForDisplay: true,
+        },
+        {
+          name: 'Calendar 2',
+          color: 'green',
+          googleAccount: 'testAccount1@gmail.com',
+          selectedForDisplay: true,
+        },
+        {
+          name: 'Calendar 3',
+          color: 'green',
+          googleAccount: 'testAccount1@gmail.com',
+          selectedForDisplay: true,
+        },
+      ],
+    },
+    {
+      accountEmail: 'testAccount2@gmail.com',
+      calendars: [
+        {
+          name: 'Calendar 1',
+          color: 'blue',
+          googleAccount: 'testAccount2@gmail.com',
+          selectedForDisplay: true,
+        },
+        {
+          name: 'Calendar 2',
+          color: 'green',
+          googleAccount: 'testAccount2@gmail.com',
+          selectedForDisplay: true,
+        },
+        {
+          name: 'Calendar 3',
+          color: 'green',
+          googleAccount: 'testAccount2@gmail.com',
+          selectedForDisplay: true,
+        },
+      ],
+    },
+  ];
 
-  const [calendarPickerLaunched, setCalendarPickerLaunched] = useState(false);
-  const [calendars, setCalendars] =
-    useImmer<Array<Calendar>>(fetched_calendars); // TODO: This should be fetched from context or something
+  const [calendarPickerLaunched, setCalendarPickerLaunched] = useState(true);
+  const [calendarAccounts, setCalendarAccounts] =
+    useImmer<Array<RegisteredAccount>>(fetched_calendars); // TODO: This should be fetched from context or something
 
   return (
     <div style={calendarViewStyle}>
@@ -52,7 +100,8 @@ export default function CalendarView(props: CalendarView) {
 
       {calendarPickerLaunched && (
         <CalendarPickerModal
-          calendars={calendars}
+          calendarAccounts={calendarAccounts}
+          setCalendarAccounts={setCalendarAccounts}
           setCalendarPickerLaunched={setCalendarPickerLaunched}
         />
       )}
@@ -60,47 +109,9 @@ export default function CalendarView(props: CalendarView) {
   );
 }
 
-function CalendarPickerModal(props: {
-  calendars: Array<Calendar>;
-  setCalendarPickerLaunched: any;
-}) {
-  const { calendars, setCalendarPickerLaunched } = props;
-  return <div style={CalendarPickerModalStyle}></div>;
-}
-
 const calendarViewStyle: CSS.Properties = {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   flexDirection: 'column',
-};
-
-const CalendarPickerModalAreaStyle: CSS.Properties = {
-  position: 'absolute',
-  width: '900px',
-  minHeight: '500px',
-  marginRight: '300px',
-  backgroundColor: 'rgba(211,211,211,0.0)',
-  zIndex: 60,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-};
-
-const CalendarPickerModalStyle: CSS.Properties = {
-  minWidth: '220px',
-  minHeight: '300px',
-  maxHeight: '300px',
-  backgroundColor: '#FFFFFF',
-  boxShadow: '0 0 100px rgba(0,0,0, 0.3)',
-  borderRadius: '12px',
-  display: 'flex',
-  justifyContent: 'flex-start',
-  alignItems: 'flex-start',
-  flexDirection: 'column',
-  paddingLeft: '20px',
-  marginBottom: '0px',
-  marginRight: '770px',
-  position: 'absolute',
-  zIndex: 70,
 };

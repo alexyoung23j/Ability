@@ -95,3 +95,8 @@ export interface Calendar {
   googleAccount?: string;
   selectedForDisplay?: boolean;
 }
+
+export interface RegisteredAccount {
+  calendars: Array<Calendar>;
+  accountEmail: string;
+}
