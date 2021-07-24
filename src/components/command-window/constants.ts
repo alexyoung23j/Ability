@@ -56,6 +56,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: 'Work Calendar',
+            accountEmail: 'testAccount1@gmail.com',
             color: '#7986cb',
           },
           index_of_overlapped_events: [],
@@ -68,6 +69,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: 'Work Calendar',
+            accountEmail: 'testAccount1@gmail.com',
             color: '#7986cb',
           },
           index_of_overlapped_events: [],
@@ -80,6 +82,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: 'Work Calendar',
+            accountEmail: 'testAccount1@gmail.com',
             color: '#7986cb',
           },
           index_of_overlapped_events: [],
@@ -92,6 +95,7 @@ export const demoPart1Results = {
           color: '#33b679',
           calendar: {
             name: "Alex's Personal Calendar",
+            accountEmail: 'testAccount1@gmail.com',
             color: '#33b679',
           },
           index_of_overlapped_events: [],
@@ -113,6 +117,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: 'Work Calendar',
+            accountEmail: 'testAccount1@gmail.com',
             color: '#7986cb',
           },
           index_of_overlapped_events: [],
@@ -125,6 +130,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: 'Work Calendar',
+            accountEmail: 'testAccount1@gmail.com',
             color: '#33b679',
           },
           index_of_overlapped_events: [],
@@ -137,6 +143,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: "Alex's Personal Calendar",
+            accountEmail: 'testAccount1@gmail.com',
             color: '#33b679',
           },
           index_of_overlapped_events: [],
@@ -157,6 +164,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: 'Work Calendar',
+            accountEmail: 'testAccount1@gmail.com',
             color: '#7986cb',
           },
           index_of_overlapped_events: [],
@@ -169,6 +177,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: 'Work Calendar',
+            accountEmail: 'testAccount1@gmail.com',
             color: '#33b679',
           },
           index_of_overlapped_events: [],
@@ -181,106 +190,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: "Alex's Personal Calendar",
-            color: '#33b679',
-          },
-          index_of_overlapped_events: [],
-        },
-      ],
-    },
-    {
-      calendar_date: '2021-07-29',
-      hard_start: '2021-07-29T14:00:00-07:00',
-      hard_end: '2021-07-29T20:00:00-07:00',
-      free_blocks: [],
-      events: [
-        {
-          start_time: '2021-07-29T11:00:00-07:00',
-          end_time: '2021-07-29T12:00:00-07:00',
-          title: 'Team Standup',
-          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: '#7986cb',
-          calendar: {
-            name: 'Work Calendar',
-            color: '#7986cb',
-          },
-          index_of_overlapped_events: [],
-        },
-        {
-          start_time: '2021-07-29T15:00:00-07:00',
-          end_time: '2021-07-29T17:00:00-07:00',
-          title: 'Investor Calls',
-          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: '#7986cb',
-          calendar: {
-            name: 'Work Calendar',
-            color: '#7986cb',
-          },
-          index_of_overlapped_events: [],
-        },
-        {
-          start_time: '2021-07-29T19:00:00-07:00',
-          end_time: '2021-07-29T19:45:00-07:00',
-          title: 'Facetime w/ Fam',
-          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: '#33b679',
-          calendar: {
-            name: "Alex's Personal Calendar",
-            color: '#33b679',
-          },
-          index_of_overlapped_events: [],
-        },
-      ],
-    },
-    {
-      calendar_date: '2021-07-30',
-      hard_start: '2021-07-30T14:00:00-07:00',
-      hard_end: '2021-07-30T20:00:00-07:00',
-      free_blocks: [],
-      events: [
-        {
-          start_time: '2021-07-30T11:00:00-07:00',
-          end_time: '2021-07-30T12:00:00-07:00',
-          title: 'Team Standup',
-          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: '#7986cb',
-          calendar: {
-            name: 'Work Calendar',
-            color: '#7986cb',
-          },
-          index_of_overlapped_events: [],
-        },
-        {
-          start_time: '2021-07-30T13:00:00-07:00',
-          end_time: '2021-07-30T15:00:00-07:00',
-          title: 'Sprint Planning',
-          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: '#7986cb',
-          calendar: {
-            name: 'Work Calendar',
-            color: '#7986cb',
-          },
-          index_of_overlapped_events: [],
-        },
-        {
-          start_time: '2021-07-30T16:00:00-07:00',
-          end_time: '2021-07-30T17:00:00-07:00',
-          title: 'Investor Call',
-          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: '#7986cb',
-          calendar: {
-            name: 'Work Calendar',
-            color: '#7986cb',
-          },
-          index_of_overlapped_events: [],
-        },
-        {
-          start_time: '2021-07-30T18:30:00-07:00',
-          end_time: '2021-07-30T19:30:00-07:00',
-          title: 'Facetime w/ Fam',
-          url: 'https://calendar.google.com/calendar/u/4/r/week/2021/6/10',
-          color: '#33b679',
-          calendar: {
-            name: "Alex's Personal Calendar",
+            accountEmail: 'testAccount1@gmail.com',
             color: '#33b679',
           },
           index_of_overlapped_events: [],

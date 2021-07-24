@@ -314,5 +314,11 @@
   font-weight: lighter;
   color: #7d7d7d;
   font-size: 17px;
-  margin-top: 10px;
+  margin-top: 16px;
+}
+
+.basicTextClass {
+  font-family: 'Montserrat';
+  font-weight: lighter;
+  color: #7d7d7d;
 }
