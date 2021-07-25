@@ -54,7 +54,7 @@ export default function CalendarView(props: CalendarView) {
     },
   ];
 
-  const [calendarPickerLaunched, setCalendarPickerLaunched] = useState(true);
+  const [calendarPickerLaunched, setCalendarPickerLaunched] = useState(false);
   const [filteredCalendarData, setFilteredCalendarData] =
     useImmer(calendar_data);
   const [calendarAccounts, setCalendarAccounts] =
