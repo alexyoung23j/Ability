@@ -83,6 +83,8 @@ export interface ModifierGroup {
 }
 
 export interface CalendarIndexFilter {
+  // Mondays --> [[Monday], [Monday], ...]
+  // Next week --> [[Monday, Tuesday, Wednesday, ...]]
   range: Array<Array<DateTime>> | null; // Each subarray is a contiguous chunk of datetimes
   startTime: DateTime | null;
   endTime: DateTime | null;

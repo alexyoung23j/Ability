@@ -458,7 +458,13 @@ export function applyPrepositionActionToFilter(
             break;
           case 'next':
             {
-              if (filter.range.length > 1 && filter.range[0].includes(TODAY)) {
+              if (
+                filter.range.length > 1 &&
+                filter.range[0].filter((dateTime: DateTime) =>
+                  dateTime.equals(TODAY)
+                ).length === 1
+              ) {
+                // if (filter.range.length > 1 && filter.range[0].includes(TODAY)) {
                 finalFilter = {
                   ...filter,
                   range: [filter.range[1]],

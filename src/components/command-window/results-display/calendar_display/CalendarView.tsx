@@ -94,7 +94,7 @@ export default function CalendarView(props: CalendarView) {
         }
 
         draft.days[i].events = validEvents;
-        console.log(draft);
+        // console.log(draft);
       }
     });
   }, [calendarAccounts]);

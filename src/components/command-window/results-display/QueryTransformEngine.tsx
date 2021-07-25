@@ -2,35 +2,11 @@ import { DateTime } from 'luxon';
 import React from 'react';
 import { assert } from '../../../assert';
 import {
-  isModifierPiece,
-  isPrepositionPiece,
-  ModifierCategory,
-  ModifierPiece,
-  Piece,
-  PrepositionPiece,
-  ModifierGroup,
-  CalendarIndexFilter,
-  QueryTransformEngineProps,
-} from '../types';
-import {
-  DEFAULT_PREPOSITION_LIBRARY,
-  DurationModifiersDurationMap,
-  MonthToMonthIndexMap,
-  TimeModifierStartAndEndMap,
-  modifierStringToRangeGeneratorMap,
-} from '../TransformFixtures';
-import {
-  durationFilter,
-  timeFilter,
-  dateFilter,
-  rangeFilter,
-  ONE_OR_MORE_NUMBERS,
-  _generateNextNDays,
-  _generateRangeArrays,
-  extractModifierGroups,
   applyPrepositionActionToFilter,
+  extractModifierGroups,
   generateDefaultFilterForModifier,
 } from '../../util/QueryTransformUtil';
+import { CalendarIndexFilter, QueryTransformEngineProps } from '../types';
 import ResultEngine from './ResultEngine';
 
 var nodeConsole = require('console');
@@ -40,8 +16,31 @@ function intersectFilters(
   filter1: CalendarIndexFilter,
   filter2: CalendarIndexFilter
 ): CalendarIndexFilter {
-  // If cannot intersect, throw InvalidQueryException
-  return filter1;
+  const set1 = new Set();
+  const set2 = new Set();
+
+  for (const arr of filter1.range) {
+    for (const date of arr) {
+      set1.add(date.toISODate());
+    }
+  }
+  for (const arr of filter2.range) {
+    for (const date of arr) {
+      set2.add(date.toISODate());
+    }
+  }
+
+  const intersection = [
+    [...set1]
+      .filter((x) => set2.has(x))
+      .map((isoString: string) => DateTime.fromISO(isoString).startOf('day')),
+  ];
+  return {
+    range: intersection,
+    duration: filter1.duration ?? filter2.duration,
+    startTime: filter1.startTime ?? filter2.startTime,
+    endTime: filter1.endTime ?? filter2.endTime,
+  };
 }
 
 // Renders ResultEngine
@@ -70,13 +69,18 @@ export function QueryTransformEngine(
       currentFilter
     );
 
+    console.log(currentFilter);
     // Intersect filters and note errors
-    try {
-      filter = intersectFilters(filter, currentFilter);
-    } catch (exception) {
-      // if (isInvalidQueryException(exception)) {
-      //  alert to user that they fukekd up
-      // }
+    if (filter == null) {
+      filter = currentFilter;
+    } else {
+      try {
+        filter = intersectFilters(filter, currentFilter);
+      } catch (exception) {
+        // if (isInvalidQueryException(exception)) {
+        //  alert to user that they fukekd up
+        // }
+      }
     }
   }
 
