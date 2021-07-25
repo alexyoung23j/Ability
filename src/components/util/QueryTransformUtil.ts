@@ -32,6 +32,14 @@ const user_settings = {
   time_zone_offset: -7, // Offset from UTC
 };
 
+export function chooseYearForDateFilter(day: number, month: number): number {
+  const toCompareTo = DateTime.fromObject({ day, month });
+  const now = DateTime.now().startOf('day');
+
+  const year = toCompareTo < now ? now.year + 1 : now.year;
+  return year;
+}
+
 // --------------- MODIFIER GROUP STUFF -------------- //
 // Handles base case for all modifiers
 export function generateDefaultFilterForModifier(
