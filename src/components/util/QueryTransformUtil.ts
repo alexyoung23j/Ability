@@ -85,11 +85,10 @@ export function extractModifierGroups(
       }
       i += 2;
     } else if (isModifierPiece(currentPiece)) {
-      let defaultPrepositionGroup: ModifierGroup = {
-        prepositionPiece: DEFAULT_PREPOSITION_LIBRARY[currentPiece.category],
+      modifierGroups.push({
+        prepositionPiece: null,
         modifierPiece: currentPiece,
-      };
-      modifierGroups.push(defaultPrepositionGroup);
+      });
       i += 1;
     }
   }

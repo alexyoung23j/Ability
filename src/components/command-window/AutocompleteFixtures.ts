@@ -77,9 +77,7 @@ export const TIME_MODIFIER_FIXTURES: Array<ModifierPiece> = [
 }));
 
 export const DATE_MODIFIER_FIXTURES: Array<ModifierPiece> = [
-  'tomorrow',
-  'today',
-  'yesterday',
+  // Generic dates:
   'monday',
   'tuesday',
   'wednesday',
@@ -87,13 +85,10 @@ export const DATE_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   'friday',
   'saturday',
   'sunday',
-  'mondays',
-  'tuesdays',
-  'wednesdays',
-  'thursdays',
-  'fridays',
-  'saturdays',
-  'sundays',
+  // Specific dates:
+  'tomorrow',
+  'today',
+  'yesterday',
   '_/_',
   '_/_/2021',
   '_/_/2022',

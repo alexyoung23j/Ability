@@ -1,7 +1,11 @@
 import { calendar_v3 } from 'googleapis';
 import { DateTime } from 'luxon';
+import { CalendarIndex } from '../../App';
 
 import { assert } from '../../assert';
+
+var nodeConsole = require('console');
+var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 const NUM_DAYS = 365;
 
@@ -20,7 +24,17 @@ interface Event {
 }
 
 // Organized by start time
-export type Day = { events: Array<Event>; date: DateTime };
+export interface CalendarIndexDay {
+  events: Array<Event>;
+  date: DateTime;
+}
+
+export function getDateAtIndex(
+  calendarIndex: CalendarIndex,
+  index: number = 0
+): DateTime {
+  return calendarIndex[index].date;
+}
 
 /**
  * Given a date and a starting date, return what index in an array the date would be assuming the
@@ -29,16 +43,18 @@ export type Day = { events: Array<Event>; date: DateTime };
  * @param dateAtIndexZero
  * @returns number: index
  */
-export function _mapDateToIndex(
+export function mapDateToIndex(
   date: DateTime,
-  dateAtIndexZero: DateTime = DateTime.now()
+  dateAtIndexZero: DateTime
 ): number {
   const normalizedDate = date.startOf('day');
   const normalizedStart = dateAtIndexZero.startOf('day');
   const { days: diff } = normalizedDate.diff(normalizedStart, 'day').toObject();
   assert(
     diff < NUM_DAYS,
-    `Date is too far out from index 0 date: ${date.toISO()}`
+    `Date is too far out from index 0 date:\n
+    Date at index 0: ${dateAtIndexZero.toLocaleString()}\n
+    Date to map: ${date.toLocaleString()}`
   );
   return diff;
 }
@@ -66,7 +82,7 @@ function _getEventIndexInDay(
 
 // TODO kedar: return the events / days in a region of time specified by query
 type IndexRange = undefined;
-function getEventsInRangeFromIndex(range: IndexRange): Array<Day> {
+function getEventsInRangeFromIndex(range: IndexRange): Array<CalendarIndexDay> {
   return [];
 }
 
@@ -139,7 +155,6 @@ export function splitMultiDayEvent(
  * Organizes them into an array, indexed by day, starting with Day 0 = today.
  * These events within a day will be sorted by Start time. (Some events may overlap)
  *
- * NOTE: First day in index will ALWAYS be today (DateTime.now()).
  *
  * e.g. [
  *        {
@@ -163,10 +178,23 @@ export function parseCalendarApiResponse(
     calendarId: string;
     allEvents: Array<calendar_v3.Schema$Event>;
   }>
-): Array<Day> {
+): Array<CalendarIndexDay> {
+  // This is currently some fuckery to pull the first date of the first event in calendarAndEvents[0].allEvents
+  let firstDate = DateTime.fromISO(
+    calendarAndEvents[0].allEvents[0].start.dateTime
+  );
+  for (const event of calendarAndEvents[0].allEvents) {
+    const datetime = DateTime.fromISO(event.start.dateTime);
+    if (datetime < firstDate) {
+      firstDate = datetime;
+    }
+  }
   // Initialize Days
-  const days: Array<Day> = [
-    { events: [], date: DateTime.now().startOf('day') },
+  const days: Array<CalendarIndexDay> = [
+    {
+      events: [],
+      date: firstDate,
+    },
   ];
   let previousDate = days[0].date;
   for (let i = 1; i < NUM_DAYS; i++) {
@@ -183,7 +211,7 @@ export function parseCalendarApiResponse(
         const eventTime = DateTime.fromISO(
           singleDayEventFromServer.start.dateTime
         );
-        const dayIndex = _mapDateToIndex(eventTime);
+        const dayIndex = mapDateToIndex(eventTime, days[0].date);
 
         const event: Event = {
           startTime: singleDayEventFromServer.start,
@@ -193,6 +221,7 @@ export function parseCalendarApiResponse(
           calendarId,
           summary: singleDayEventFromServer.summary,
         };
+
 
         // Insert at index: _getIndexInDay()
         days[dayIndex].events.splice(
@@ -207,7 +236,7 @@ export function parseCalendarApiResponse(
   return days;
 }
 
-export function _printCalendarIndex(days: Array<Day>): void {
+export function _printCalendarIndex(days: Array<CalendarIndexDay>): void {
   console.log(' --- Calendar Index ---');
   console.log('Number of days: ' + days.length + '\n');
 

@@ -1,13 +1,24 @@
 import { DateTime } from 'luxon';
-import React from 'react';
+import React, { useContext } from 'react';
+import { CalendarContext } from '../../../App';
 import { assert } from '../../../assert';
 import {
   applyPrepositionActionToFilter,
   extractModifierGroups,
   generateDefaultFilterForModifier,
 } from '../../util/QueryTransformUtil';
-import { CalendarIndexFilter, QueryTransformEngineProps } from '../types';
+import { DEFAULT_PREPOSITION_LIBRARY } from '../TransformFixtures';
+import {
+  CalendarIndexFilter,
+  ModifierCategory,
+  ModifierGroup,
+  ModifierPiece,
+  PrepositionPiece,
+  QueryTransformEngineProps,
+} from '../types';
 import ResultEngine from './ResultEngine';
+import * as CalendarIndexUtil from '../../util/CalendarIndexUtil';
+import _ from 'underscore';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -16,6 +27,15 @@ function intersectFilters(
   filter1: CalendarIndexFilter,
   filter2: CalendarIndexFilter
 ): CalendarIndexFilter {
+  if (filter1.range == null || filter2.range == null) {
+    return {
+      range: filter1.range ?? filter2.range,
+      duration: filter1.duration ?? filter2.duration,
+      startTime: filter1.startTime ?? filter2.startTime,
+      endTime: filter1.endTime ?? filter2.endTime,
+    };
+  }
+
   const set1 = new Set();
   const set2 = new Set();
 
@@ -43,6 +63,20 @@ function intersectFilters(
   };
 }
 
+// Edge case: In the case that a Date Modifier does not have a preposition AND a range is provided. (e.g. Monday in April)
+// We should skip applying the default preposition for the date. ("this" should not be applied to "Monday")
+function shouldApplyPreposition(
+  rangeModifierExists: boolean,
+  modifierPiece: ModifierPiece,
+  prepositionPiece: PrepositionPiece | null
+): boolean {
+  return !(
+    modifierPiece.category === ModifierCategory.DATE &&
+    rangeModifierExists &&
+    prepositionPiece === null
+  );
+}
+
 // Renders ResultEngine
 export function QueryTransformEngine(
   props: QueryTransformEngineProps
@@ -51,7 +85,13 @@ export function QueryTransformEngine(
 
   let filter = null;
 
-  for (const { modifierPiece, prepositionPiece } of modifierGroups) {
+  const rangeModifierExists =
+    modifierGroups.findIndex(
+      ({ modifierPiece }: ModifierGroup) =>
+        modifierPiece.category === ModifierCategory.RANGE
+    ) !== -1;
+
+  for (let { modifierPiece, prepositionPiece } of modifierGroups) {
     // Convert range to be array of calendar index indices later
     let currentFilter: CalendarIndexFilter =
       generateDefaultFilterForModifier(modifierPiece);
@@ -63,13 +103,21 @@ export function QueryTransformEngine(
     );
 
     // Apply preposition to filter
-    currentFilter = applyPrepositionActionToFilter(
-      prepositionPiece,
-      modifierPiece,
-      currentFilter
-    );
+    if (
+      shouldApplyPreposition(
+        rangeModifierExists,
+        modifierPiece,
+        prepositionPiece
+      )
+    ) {
+      currentFilter = applyPrepositionActionToFilter(
+        // Use default preposition if preposition is null
+        prepositionPiece ?? DEFAULT_PREPOSITION_LIBRARY[modifierPiece.category],
+        modifierPiece,
+        currentFilter
+      );
+    }
 
-    console.log(currentFilter);
     // Intersect filters and note errors
     if (filter == null) {
       filter = currentFilter;
@@ -83,6 +131,7 @@ export function QueryTransformEngine(
       }
     }
   }
+  // if  that bool is false, we intersect one more time with default range
 
   // Note: These functions need to APPLY each of the filters to specific days when building
   //const calendarData: Array<Day> = filterCalendarIndex(filter);
@@ -90,6 +139,37 @@ export function QueryTransformEngine(
   // Note: This functions needs to APPLY the start time, end time, and duration to EACH day when building result data.
   //        These values will have incorrect dates (but correct times) and so they must be converted to match the hard_start and hard_end for each day in resultData
   //const calendarResultData = convert(calendarData);
+
+  console.log(
+    '-----------------------------------------------------------------'
+  );
+  for (const arr of filter.range) {
+    for (const date of arr) {
+      console.log(date.toLocaleString());
+    }
+  }
+  console.log(filter);
+  console.log(
+    '-----------------------------------------------------------------'
+  );
+
+  const calendarIndex = useContext(CalendarContext);
+  // so we're going to convert the filter --> calendar result data here right?
+  // Step 1: Convert range to indices
+  const dateAtIndexZero: DateTime = CalendarIndexUtil.getDateAtIndex(
+    calendarIndex,
+    0
+  );
+  const indices = _.flatten(filter.range).map((date: DateTime) =>
+    CalendarIndexUtil.mapDateToIndex(date, dateAtIndexZero)
+  );
+
+  // Step 2: Use other parts of filter and build result data for each index in the calendar index (lol)
+  indices.map((index) => {
+    console.log(
+      CalendarIndexUtil.getDateAtIndex(calendarIndex, index).toLocaleString()
+    );
+  });
 
   return <ResultEngine calendarResultData={[]} />;
 }

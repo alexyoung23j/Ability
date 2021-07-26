@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Auth } from './components/auth/auth';
 import CommandView from './components/command-window/CommandView';
-import { EVENTS } from './tests/EventsFixtures';
+import { CALENDAR_INDEX_1, EVENTS } from './tests/EventsFixtures';
 import SettingsView from './components/settings-window/SettingsView';
 const { ipcRenderer } = require('electron');
 const css = require('./index.css');
 
 import { config } from 'dotenv';
+import { CalendarIndexDay } from './components/util/CalendarIndexUtil';
 config();
 
 ipcRenderer.setMaxListeners(Infinity);
@@ -39,19 +40,20 @@ function parseCSS(css: any): String {
   return cssString;
 }
 
-type CalendarIndex = any;
-export const CalendarContext = React.createContext<CalendarIndex | null>(null);
+export type CalendarIndex = Array<CalendarIndexDay>;
+export const CalendarContext =
+  React.createContext<CalendarIndex | null>(CALENDAR_INDEX_1);
 
 function App() {
   // State
   const [showCommand, setShowCommand] = useState(true);
   const [calendarIndex, setCalendarIndex] =
-    useState<CalendarIndex | null>(EVENTS);
+    useState<CalendarIndex | null>(CALENDAR_INDEX_1);
 
   /// ---------------- IPC HANDLERS -------------- ///
 
   // Handle toggling between windows
-  const toggleBetweenWindows = (toDisable: string, toEnable: string) => { };
+  const toggleBetweenWindows = (toDisable: string, toEnable: string) => {};
 
   // Force Command Line to be Shown
   ipcRenderer.on('show-command', (event, message) => {

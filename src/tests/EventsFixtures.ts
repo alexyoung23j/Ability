@@ -1,4 +1,8 @@
 import { calendar_v3 } from '@googleapis/calendar';
+import { DateTime } from 'luxon';
+
+import * as CalendarIndexUtil from '../components/util/CalendarIndexUtil';
+import { CalendarIndex } from '../App';
 
 export function buildEventFixture(start): calendar_v3.Schema$Event {
   return {
@@ -7991,3 +7995,11 @@ export const EVENTS = [
     eventType: 'default',
   },
 ];
+
+export const CALENDAR_INDEX_1: CalendarIndex =
+  CalendarIndexUtil.parseCalendarApiResponse([
+    {
+      calendarId: 'something',
+      allEvents: EVENTS,
+    },
+  ]);

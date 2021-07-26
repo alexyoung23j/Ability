@@ -1,5 +1,6 @@
 import { ContentState } from 'draft-js';
 import { DateTime } from 'luxon';
+import { StringLiteralLike } from 'typescript';
 
 export type PieceCategory = ModifierCategory;
 
@@ -78,7 +79,7 @@ export interface QueryTransformEngineProps {
 }
 
 export interface ModifierGroup {
-  prepositionPiece: PrepositionPiece; // TODO: I think im handling the types wrong but this caused a problem in the extractModifierGroups function if we forced it to be a PrepositionPiece type
+  prepositionPiece: PrepositionPiece | null; // TODO: I think im handling the types wrong but this caused a problem in the extractModifierGroups function if we forced it to be a PrepositionPiece type
   modifierPiece: ModifierPiece;
 }
 
