@@ -43,7 +43,7 @@ export const demo1ArrayOfSnippets = [
 export const demoPart1Results = {
   days: [
     {
-      calendar_date: '2021-07-20',
+      calendar_date: '2021-07-26',
       hard_start: '2021-07-26T14:00:00-07:00',
       hard_end: '2021-07-26T20:00:00-07:00',
       free_blocks: [],

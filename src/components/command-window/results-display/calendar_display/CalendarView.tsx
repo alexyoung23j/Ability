@@ -16,6 +16,9 @@ interface CalendarView {
   textEngineLaunched: boolean;
   scheduleNewEvent: any;
   modifyExistingEvent: any;
+  filteredCalendarData: any;
+  calendarAccounts: Array<RegisteredAccount>;
+  setCalendarAccounts: any;
 }
 
 export default function CalendarView(props: CalendarView) {
@@ -26,78 +29,14 @@ export default function CalendarView(props: CalendarView) {
     textEngineLaunched,
     scheduleNewEvent,
     modifyExistingEvent,
+    filteredCalendarData,
+    calendarAccounts,
+    setCalendarAccounts,
   } = props;
 
-  const fetched_calendars: Array<RegisteredAccount> = [
-    {
-      accountEmail: 'testAccount1@gmail.com',
-      calendars: [
-        {
-          name: "Alex's Personal Calendar",
-          color: '#33b679',
-          googleAccount: 'testAccount1@gmail.com',
-          selectedForDisplay: true,
-        },
-        {
-          name: 'Work Calendar',
-          color: '#33b679',
-          googleAccount: 'testAccount1@gmail.com',
-          selectedForDisplay: false,
-        },
-        {
-          name: 'Calendar 3',
-          color: 'green',
-          googleAccount: 'testAccount1@gmail.com',
-          selectedForDisplay: true,
-        },
-      ],
-    },
-  ];
-
   const [calendarPickerLaunched, setCalendarPickerLaunched] = useState(false);
-  const [filteredCalendarData, setFilteredCalendarData] =
-    useImmer(calendar_data);
-  const [calendarAccounts, setCalendarAccounts] =
-    useImmer<Array<RegisteredAccount>>(fetched_calendars); // TODO: This should be fetched from context or something
-
-  // Is an event thats part of a calendar (just by name and email for now) one that should be displayed?
-  function _IsSelected(name: string, accountEmail: string) {
-    for (const group of calendarAccounts) {
-      for (const calendar of group.calendars) {
-        if (
-          group.accountEmail == accountEmail &&
-          calendar.name == name &&
-          calendar.selectedForDisplay == true
-        ) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  useEffect(() => {
-    console.log(filteredCalendarData);
-    setFilteredCalendarData((draft) => {
-      // TODO: this is probably inefficient
-      for (let i = 0; i < calendar_data.days.length; i++) {
-        let currentDay = calendar_data.days[i];
-
-        let validEvents = [];
-
-        for (const event of currentDay.events) {
-          let eventCalendar = event.calendar;
-
-          if (_IsSelected(eventCalendar.name, eventCalendar.accountEmail)) {
-            validEvents.push(event);
-          }
-        }
-
-        draft.days[i].events = validEvents;
-        // console.log(draft);
-      }
-    });
-  }, [calendarAccounts]);
+  console.log('filtered: ', filteredCalendarData);
+  console.log('raw: ', calendar_data);
 
   return (
     <div style={calendarViewStyle}>

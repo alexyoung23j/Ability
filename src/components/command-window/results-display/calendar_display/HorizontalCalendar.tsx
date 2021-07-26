@@ -73,8 +73,9 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
   } = props;
 
   // State
-  const [currentlyHoveredEventIdx, setCurrentlyHoveredEventIdx] = useState(0); // refers to the index in "events" being hovered
-  const [currentlySelectedEventIdx, setCurrentlySelectedEventIdx] = useState(0); // refers to the index in "events" being selected (via a click)
+  const [currentlyHoveredEventIdx, setCurrentlyHoveredEventIdx] = useState(-1); // refers to the index in "events" being hovered
+  const [currentlySelectedEventIdx, setCurrentlySelectedEventIdx] =
+    useState(-1); // refers to the index in "events" being selected (via a click)
   const [
     externallyHighlightedCalendarEventIdx,
     setExternallyHighlightedCalendarEventIdx,
@@ -111,6 +112,12 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
   }
 
   // -------------------------- CALLBACKS -------------------------- //
+
+  // When events change we should reset the hovered and selected index
+  useEffect(() => {
+    setCurrentlySelectedEventIdx(-1);
+    setCurrentlyHoveredEventIdx(-1);
+  }, [events]);
 
   // --------------------- UTILITY METHODS --------------------- //
   function LaunchModalFromExistingEvent(index_in_day: number) {
@@ -186,16 +193,18 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
         />
         {isToday && <TodayTimeMarker />}
 
-        {currentlyHoveredEventIdx != -1 && textSnippetOpen == false && (
-          <EventTooltip
-            events={events}
-            currentlyHoveredEventIdx={currentlyHoveredEventIdx}
-            setCurrentlySelectedEventIdx={setCurrentlySelectedEventIdx}
-            eventTooltipId={eventTooltipId}
-            setExternalHighlightIdx={setExternallyHighlightedCalendarEventIdx}
-            launchModal={LaunchModalFromExistingEvent}
-          />
-        )}
+        {currentlyHoveredEventIdx != -1 &&
+          textSnippetOpen == false &&
+          events.length > 0 && (
+            <EventTooltip
+              events={events}
+              currentlyHoveredEventIdx={currentlyHoveredEventIdx}
+              setCurrentlySelectedEventIdx={setCurrentlySelectedEventIdx}
+              eventTooltipId={eventTooltipId}
+              setExternalHighlightIdx={setExternallyHighlightedCalendarEventIdx}
+              launchModal={LaunchModalFromExistingEvent}
+            />
+          )}
       </div>
     </div>
   );

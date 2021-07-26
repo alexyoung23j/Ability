@@ -120,6 +120,7 @@ function CalendarEntry(props: {
           }
         }
       });
+      setChecked(true);
     }
   };
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useImmer } from 'use-immer';
 import CalendarView from './calendar_display/CalendarView';
 import TextSnippetDropdown from './snippet_display/TextSnippetDropdown';
-import { textSnippet } from '../types';
+import { textSnippet, RegisteredAccount } from '../types';
 import { ContentState } from 'draft-js';
 import {
   calendarDummyResults,
@@ -42,13 +42,84 @@ export default function ResultEngine(props: ResultEngineProps) {
   // effectively modifying our copy of the initial query.
   // In general, we prefer to only REMOVE items from the result.
 
+  // TODO: Replace with real value
+  const fetched_calendars: Array<RegisteredAccount> = [
+    {
+      accountEmail: 'testAccount1@gmail.com',
+      calendars: [
+        {
+          name: "Alex's Personal Calendar",
+          color: '#33b679',
+          googleAccount: 'testAccount1@gmail.com',
+          selectedForDisplay: true,
+        },
+        {
+          name: 'Work Calendar',
+          color: '#33b679',
+          googleAccount: 'testAccount1@gmail.com',
+          selectedForDisplay: true,
+        },
+        {
+          name: 'Calendar 3',
+          color: 'green',
+          googleAccount: 'testAccount1@gmail.com',
+          selectedForDisplay: true,
+        },
+      ],
+    },
+  ];
+
   // State
   // TODO: use the prop instead of state
   const [calendarResultData, setCalendarResultData] =
     useImmer(demoPart1Results);
+  const [filteredCalendarData, setFilteredCalendarData] =
+    useImmer(demoPart1Results);
   const [ignoreSlots, setIgnoreSlots] = useState([]);
   const [textEngineLaunched, setTextEngineLaunched] = useState(false);
-  const [demoSnippetIdx, setDemoSnippetIdx] = useState(0);
+  const [calendarAccounts, setCalendarAccounts] =
+    useImmer<Array<RegisteredAccount>>(fetched_calendars); // TODO: This should be fetched from context or something
+
+  let textSnippetArray = demo1ArrayOfSnippets[0];
+
+  // Is an event thats part of a calendar (just by name and email for now) one that should be displayed?
+  function _IsSelected(name: string, accountEmail: string) {
+    for (const group of calendarAccounts) {
+      for (const calendar of group.calendars) {
+        if (
+          group.accountEmail == accountEmail &&
+          calendar.name == name &&
+          calendar.selectedForDisplay == true
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  useEffect(() => {
+    myConsole.log('data: ', calendarResultData.days[0].events.length);
+    setFilteredCalendarData((draft) => {
+      // TODO: this is probably inefficient
+      for (let i = 0; i < calendarResultData.days.length; i++) {
+        let currentDay = calendarResultData.days[i];
+
+        let validEvents = [];
+
+        for (const event of currentDay.events) {
+          let eventCalendar = event.calendar;
+
+          if (_IsSelected(eventCalendar.name, eventCalendar.accountEmail)) {
+            validEvents.push(event);
+          }
+        }
+
+        draft.days[i].events = validEvents;
+        // console.log(draft);
+      }
+    });
+  }, [calendarAccounts, calendarResultData]);
 
   // ----------------------------------- CALLBACKS ----------------------------------- //
 
@@ -66,20 +137,12 @@ export default function ResultEngine(props: ResultEngineProps) {
     }
   };
 
-  // Just for demoing
-  /* useEffect(() => {
-    if (ignoreSlots.length > 0) {
-      setDemoSnippetIdx((demoSnippetIdx + 1) % 3)
-    }
-    
-  }, [ignoreSlots]) */
-
   // This useeffect makes the interval size between free slots larger when the text engine is launched to simplify UI and text generation
   // Note that this means the Ignored Slots apply only to the "post engine launch" free slots
   useEffect(() => {
     // If text engine launched, make intervals 1 hour
     if (textEngineLaunched) {
-      setCalendarResultData((draft) => {
+      setFilteredCalendarData((draft) => {
         for (var i = 0; i < calendarResultData.days.length; i++) {
           draft.days[i].free_blocks = CalculateFreeBlocks(
             draft.days[i].hard_start,
@@ -94,7 +157,7 @@ export default function ResultEngine(props: ResultEngineProps) {
     } else {
       // if text engine not launched, make intervals 30 minutes
       setIgnoreSlots([]);
-      setCalendarResultData((draft) => {
+      setFilteredCalendarData((draft) => {
         for (var i = 0; i < calendarResultData.days.length; i++) {
           draft.days[i].free_blocks = CalculateFreeBlocks(
             draft.days[i].hard_start,
@@ -107,7 +170,11 @@ export default function ResultEngine(props: ResultEngineProps) {
         }
       });
     }
-  }, [textEngineLaunched]);
+  }, [textEngineLaunched, calendarResultData]);
+
+  // we have the filtered data and the raw data. In order to accurate update the events, we need access to the raw data.
+  //Modifying existing events currently works because we find the index of the event, and then modify it in the raw data.
+  // what we want is the raw data to update and that to update the filtered data
 
   // Checks if two times are on the same day
   function isSameDay(time, originalTime) {
@@ -207,6 +274,27 @@ export default function ResultEngine(props: ResultEngineProps) {
     });
   };
 
+  function _findIdxInUnfilteredData(day_idx, event_idx) {
+    // Grab data to identify the event we are looking for
+    const { start_time, end_time, title, url } =
+      filteredCalendarData.days[day_idx].events[event_idx];
+
+    for (let i = 0; i < calendarResultData.days[day_idx].events.length; i++) {
+      let potentialMatch = calendarResultData.days[day_idx].events[i];
+
+      if (
+        potentialMatch.start_time == start_time &&
+        potentialMatch.end_time == end_time &&
+        potentialMatch.title == title &&
+        potentialMatch.url == url
+      ) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+
   // Modifies information for some existing event
   const modifyExistingEvent = (
     start_time: string,
@@ -217,9 +305,16 @@ export default function ResultEngine(props: ResultEngineProps) {
     calendar_name: string,
     calendar_color: string,
     day_idx: number,
-    event_idx: number
+    orig_event_idx: number
   ) => {
     // TODO: Need to actually do the scheduling here with the calendar API
+
+    let event_idx = _findIdxInUnfilteredData(day_idx, orig_event_idx);
+    myConsole.log(
+      'okay: ',
+      event_idx,
+      calendarResultData.days[day_idx].events[event_idx]
+    );
 
     // Find position to insert into events
     const newEventStartTime = DateTime.fromISO(start_time);
@@ -350,25 +445,6 @@ export default function ResultEngine(props: ResultEngineProps) {
     }
   };
 
-  // ---------------------------- DUMMY ------------------------- //
-  // Filler for the text snippet (replace with the real values)
-  /*  var myContentState1 = ContentState.createFromText(
-    'Would any of the following times work for you? \n\nTuesday 3/18 - 4:00 PM, 5:00 PM, or 6:30 PM\n\nI think a one hour meeitng would be great and oh that is just so fucking cool im '
-  );
-  var myContentState2 = ContentState.createFromText(
-    'Would any of the following times work for you? 👍'
-  );
-
-  let textSnippetArray: textSnippet[];
-  textSnippetArray = [
-    { content: myContentState1, id: '1', title: 'email' },
-    { content: myContentState2, id: '2', title: 'slack' },
-  ]; */
-
-  let textSnippetArray = demo1ArrayOfSnippets[0];
-
-  //let textSnippetArray=part2SnippetArray
-
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -379,6 +455,9 @@ export default function ResultEngine(props: ResultEngineProps) {
           textEngineLaunched={textEngineLaunched}
           scheduleNewEvent={scheduleNewEvent}
           modifyExistingEvent={modifyExistingEvent}
+          filteredCalendarData={filteredCalendarData}
+          calendarAccounts={calendarAccounts}
+          setCalendarAccounts={setCalendarAccounts}
         />
         <Scheduler
           textEngineLaunched={textEngineLaunched}

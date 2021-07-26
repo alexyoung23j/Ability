@@ -140,7 +140,7 @@ export function QueryTransformEngine(
   //        These values will have incorrect dates (but correct times) and so they must be converted to match the hard_start and hard_end for each day in resultData
   //const calendarResultData = convert(calendarData);
 
-  console.log(
+  /* console.log(
     '-----------------------------------------------------------------'
   );
   for (const arr of filter.range) {
@@ -151,7 +151,7 @@ export function QueryTransformEngine(
   console.log(filter);
   console.log(
     '-----------------------------------------------------------------'
-  );
+  ); */
 
   const calendarIndex = useContext(CalendarContext);
   // so we're going to convert the filter --> calendar result data here right?
