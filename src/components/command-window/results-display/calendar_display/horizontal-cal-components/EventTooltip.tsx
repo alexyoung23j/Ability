@@ -97,6 +97,7 @@ function EventDescriptionView(props: EventDescriptionViewProps) {
   function onMouseLeave() {
     setBackgroundColor('rgba(135, 220, 215, 0)');
     setExternalHighlightIdx(-1);
+    setCurrentlySelectedEventIdx(-1);
   }
 
   function onClick() {

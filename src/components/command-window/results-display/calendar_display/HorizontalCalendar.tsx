@@ -115,8 +115,8 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
 
   // When events change we should reset the hovered and selected index
   useEffect(() => {
-    setCurrentlySelectedEventIdx(-1);
     setCurrentlyHoveredEventIdx(-1);
+    setCurrentlySelectedEventIdx(-1);
   }, [events]);
 
   // --------------------- UTILITY METHODS --------------------- //

@@ -35,8 +35,6 @@ export default function CalendarView(props: CalendarView) {
   } = props;
 
   const [calendarPickerLaunched, setCalendarPickerLaunched] = useState(false);
-  console.log('filtered: ', filteredCalendarData);
-  console.log('raw: ', calendar_data);
 
   return (
     <div style={calendarViewStyle}>

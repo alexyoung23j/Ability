@@ -42,7 +42,8 @@ export default function ResultEngine(props: ResultEngineProps) {
   // effectively modifying our copy of the initial query.
   // In general, we prefer to only REMOVE items from the result.
 
-  // TODO: Replace with real value
+  // TODO: Replace with calendars from DB/context
+  // These are the calendars the user has access to. The selectedForDisplay values are based on the most recent changes to the settings?
   const fetched_calendars: Array<RegisteredAccount> = [
     {
       accountEmail: 'testAccount1@gmail.com',
@@ -69,20 +70,19 @@ export default function ResultEngine(props: ResultEngineProps) {
     },
   ];
 
-  // State
   // TODO: use the prop instead of state
   const [calendarResultData, setCalendarResultData] =
-    useImmer(demoPart1Results);
+    useImmer(demoPart1Results); // The Raw, unfiltered Result Data that contains every event from every calendar
   const [filteredCalendarData, setFilteredCalendarData] =
-    useImmer(demoPart1Results);
-  const [ignoreSlots, setIgnoreSlots] = useState([]);
-  const [textEngineLaunched, setTextEngineLaunched] = useState(false);
+    useImmer(demoPart1Results); // The filtered result data that screens out events from calendars that are not selected for display
   const [calendarAccounts, setCalendarAccounts] =
-    useImmer<Array<RegisteredAccount>>(fetched_calendars); // TODO: This should be fetched from context or something
+    useImmer<Array<RegisteredAccount>>(fetched_calendars); // The copy of the calendar accounts we keep in state. This gets updated, though updating the default settings is not yet included
+  const [ignoreSlots, setIgnoreSlots] = useState([]); // The free slots that get ignored by the text engine
+  const [textEngineLaunched, setTextEngineLaunched] = useState(false); // Defines if our text engine is launched
 
-  let textSnippetArray = demo1ArrayOfSnippets[0];
+  let textSnippetArray = demo1ArrayOfSnippets[0]; // DUMMY: The text snippets
 
-  // Is an event thats part of a calendar (just by name and email for now) one that should be displayed?
+  // Checks if an event is part of a calendar that is selected for display
   function _IsSelected(name: string, accountEmail: string) {
     for (const group of calendarAccounts) {
       for (const calendar of group.calendars) {
@@ -98,8 +98,36 @@ export default function ResultEngine(props: ResultEngineProps) {
     return false;
   }
 
+  function _findIdxInUnfilteredData(day_idx, event_idx) {
+    // Grab data to identify the event we are looking for
+    const { start_time, end_time, title, url } =
+      filteredCalendarData.days[day_idx].events[event_idx];
+
+    for (let i = 0; i < calendarResultData.days[day_idx].events.length; i++) {
+      let potentialMatch = calendarResultData.days[day_idx].events[i];
+
+      if (
+        potentialMatch.start_time == start_time &&
+        potentialMatch.end_time == end_time &&
+        potentialMatch.title == title &&
+        potentialMatch.url == url
+      ) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+
+  // Listen for updates to the unfiltered data, the accounts, and the text engine launch status
   useEffect(() => {
-    myConsole.log('data: ', calendarResultData.days[0].events.length);
+    // If text engine launched, make intervals 1 hour
+    UpdateFilteredData();
+  }, [textEngineLaunched, calendarResultData, calendarAccounts]);
+
+  // When raw unfiltered data changes, update the free slots on the filtered data
+  // Also makes the interval size between free slots larger when the text engine is launched to simplify UI and text generation
+  function UpdateFilteredData() {
     setFilteredCalendarData((draft) => {
       // TODO: this is probably inefficient
       for (let i = 0; i < calendarResultData.days.length; i++) {
@@ -116,31 +144,9 @@ export default function ResultEngine(props: ResultEngineProps) {
         }
 
         draft.days[i].events = validEvents;
-        // console.log(draft);
       }
     });
-  }, [calendarAccounts, calendarResultData]);
 
-  // ----------------------------------- CALLBACKS ----------------------------------- //
-
-  // Handles the creation of our array that stores the free_slots that we plan to ignore when creating the text
-  // The text engine will set some initial slot state, then we can remove or add to it via the UI
-  // Index of the form [x, y, z] where x = day_idx, y = free_block idx, z = free_slot idx
-  const updateIgnoredSlots = (index: number[], action: string) => {
-    if (action === 'remove') {
-      setIgnoreSlots([...ignoreSlots, index]);
-    } else if (action === 'add-back') {
-      let newSlots = ignoreSlots.filter(
-        (slot) => JSON.stringify(slot) != JSON.stringify(index)
-      );
-      setIgnoreSlots(newSlots);
-    }
-  };
-
-  // This useeffect makes the interval size between free slots larger when the text engine is launched to simplify UI and text generation
-  // Note that this means the Ignored Slots apply only to the "post engine launch" free slots
-  useEffect(() => {
-    // If text engine launched, make intervals 1 hour
     if (textEngineLaunched) {
       setFilteredCalendarData((draft) => {
         for (var i = 0; i < calendarResultData.days.length; i++) {
@@ -170,11 +176,23 @@ export default function ResultEngine(props: ResultEngineProps) {
         }
       });
     }
-  }, [textEngineLaunched, calendarResultData]);
+  }
 
-  // we have the filtered data and the raw data. In order to accurate update the events, we need access to the raw data.
-  //Modifying existing events currently works because we find the index of the event, and then modify it in the raw data.
-  // what we want is the raw data to update and that to update the filtered data
+  // ----------------------------------- CALLBACKS ----------------------------------- //
+
+  // Handles the creation of our array that stores the free_slots that we plan to ignore when creating the text
+  // The text engine will set some initial slot state, then we can remove or add to it via the UI
+  // Index of the form [x, y, z] where x = day_idx, y = free_block idx, z = free_slot idx
+  const updateIgnoredSlots = (index: number[], action: string) => {
+    if (action === 'remove') {
+      setIgnoreSlots([...ignoreSlots, index]);
+    } else if (action === 'add-back') {
+      let newSlots = ignoreSlots.filter(
+        (slot) => JSON.stringify(slot) != JSON.stringify(index)
+      );
+      setIgnoreSlots(newSlots);
+    }
+  };
 
   // Checks if two times are on the same day
   function isSameDay(time, originalTime) {
@@ -249,6 +267,7 @@ export default function ResultEngine(props: ResultEngineProps) {
       calendar: {
         name: calendar_name,
         color: calendar_color,
+        accountEmail: 'testAccount1@gmail.com',
       },
       index_of_overlapped_events: [],
     });
@@ -274,27 +293,6 @@ export default function ResultEngine(props: ResultEngineProps) {
     });
   };
 
-  function _findIdxInUnfilteredData(day_idx, event_idx) {
-    // Grab data to identify the event we are looking for
-    const { start_time, end_time, title, url } =
-      filteredCalendarData.days[day_idx].events[event_idx];
-
-    for (let i = 0; i < calendarResultData.days[day_idx].events.length; i++) {
-      let potentialMatch = calendarResultData.days[day_idx].events[i];
-
-      if (
-        potentialMatch.start_time == start_time &&
-        potentialMatch.end_time == end_time &&
-        potentialMatch.title == title &&
-        potentialMatch.url == url
-      ) {
-        return i;
-      }
-    }
-
-    return -1;
-  }
-
   // Modifies information for some existing event
   const modifyExistingEvent = (
     start_time: string,
@@ -310,11 +308,6 @@ export default function ResultEngine(props: ResultEngineProps) {
     // TODO: Need to actually do the scheduling here with the calendar API
 
     let event_idx = _findIdxInUnfilteredData(day_idx, orig_event_idx);
-    myConsole.log(
-      'okay: ',
-      event_idx,
-      calendarResultData.days[day_idx].events[event_idx]
-    );
 
     // Find position to insert into events
     const newEventStartTime = DateTime.fromISO(start_time);
@@ -401,6 +394,7 @@ export default function ResultEngine(props: ResultEngineProps) {
       calendar: {
         name: calendar_name,
         color: calendar_color,
+        accountEmail: 'testAccount1@gmail.com',
       },
       index_of_overlapped_events: [],
     });
