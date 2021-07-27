@@ -56,7 +56,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: 'Work Calendar',
-            accountEmail: 'testAccount1@gmail.com',
+            googleAccount: 'testAccount1@gmail.com',
             color: '#7986cb',
           },
           index_of_overlapped_events: [],
@@ -69,7 +69,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: 'Work Calendar',
-            accountEmail: 'testAccount1@gmail.com',
+            googleAccount: 'testAccount1@gmail.com',
             color: '#7986cb',
           },
           index_of_overlapped_events: [],
@@ -82,7 +82,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: 'Work Calendar',
-            accountEmail: 'testAccount1@gmail.com',
+            googleAccount: 'testAccount1@gmail.com',
             color: '#7986cb',
           },
           index_of_overlapped_events: [],
@@ -95,7 +95,7 @@ export const demoPart1Results = {
           color: '#33b679',
           calendar: {
             name: "Alex's Personal Calendar",
-            accountEmail: 'testAccount1@gmail.com',
+            googleAccount: 'testAccount1@gmail.com',
             color: '#33b679',
           },
           index_of_overlapped_events: [],
@@ -117,7 +117,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: 'Work Calendar',
-            accountEmail: 'testAccount1@gmail.com',
+            googleAccount: 'testAccount1@gmail.com',
             color: '#7986cb',
           },
           index_of_overlapped_events: [],
@@ -130,7 +130,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: 'Work Calendar',
-            accountEmail: 'testAccount1@gmail.com',
+            googleAccount: 'testAccount1@gmail.com',
             color: '#33b679',
           },
           index_of_overlapped_events: [],
@@ -143,7 +143,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: "Alex's Personal Calendar",
-            accountEmail: 'testAccount1@gmail.com',
+            googleAccount: 'testAccount1@gmail.com',
             color: '#33b679',
           },
           index_of_overlapped_events: [],
@@ -164,7 +164,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: 'Work Calendar',
-            accountEmail: 'testAccount1@gmail.com',
+            googleAccount: 'testAccount1@gmail.com',
             color: '#7986cb',
           },
           index_of_overlapped_events: [],
@@ -177,7 +177,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: 'Work Calendar',
-            accountEmail: 'testAccount1@gmail.com',
+            googleAccount: 'testAccount1@gmail.com',
             color: '#33b679',
           },
           index_of_overlapped_events: [],
@@ -190,7 +190,7 @@ export const demoPart1Results = {
           color: '#7986cb',
           calendar: {
             name: "Alex's Personal Calendar",
-            accountEmail: 'testAccount1@gmail.com',
+            googleAccount: 'testAccount1@gmail.com',
             color: '#33b679',
           },
           index_of_overlapped_events: [],

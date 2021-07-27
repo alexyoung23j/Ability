@@ -32,6 +32,12 @@ const user_settings = {
   time_zone_offset: -7, // Offset from UTC
 };
 
+// Object that contains configs to be passed to DateTime.fromObject()
+export const USER_SETTINGS_DATE_TIME_CONFIG = {
+  hard_start_hours: {hour: 8},
+  hard_stop_hours: {hour: 21}
+}
+
 export function chooseYearForDateFilter(day: number, month: number): number {
   const toCompareTo = DateTime.fromObject({ day, month });
   const now = DateTime.now().startOf('day');
@@ -709,7 +715,7 @@ export function _generateRangeArrays(
     }
 
     default:
-      assert(false, 'Somehow we dont have an action type');
+      assert(false, `Somehow we dont have an action type: ${actionType}`);
   }
 
   return rangeArrays;

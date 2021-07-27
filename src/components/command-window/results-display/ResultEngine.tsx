@@ -1,29 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import React, { useEffect, useState } from 'react';
 import { useImmer } from 'use-immer';
-import CalendarView from './calendar_display/CalendarView';
-import TextSnippetDropdown from './snippet_display/TextSnippetDropdown';
-import { textSnippet, RegisteredAccount } from '../types';
-import { ContentState } from 'draft-js';
 import {
-  calendarDummyResults,
-  demoPart1Results,
-  demo1ArrayOfSnippets,
-  part2SnippetArray,
-  demoPart2Results,
-  demoPart3Results,
-} from '../constants';
-import {
-  generateIntervals,
-  roundToNearestInterval,
   CalculateFreeBlocks,
   HydrateOverlapEvents,
 } from '../../util/CalendarViewUtil';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { demo1ArrayOfSnippets } from '../constants';
+import { Calendar, RegisteredAccount } from '../types';
+import CalendarView from './calendar_display/CalendarView';
+import TextSnippetDropdown from './snippet_display/TextSnippetDropdown';
 const { DateTime } = require('luxon');
 
-// pick a date util library
-import DateFnsUtils from '@date-io/date-fns';
-import { Piece } from '../types';
 const dropdownArrowNormal = require('/src/content/svg/DropdownArrowNormal.svg');
 const dropdownArrowHighlight = require('/src/content/svg/DropdownArrowHighlight.svg');
 const redirect = require('/src/content/svg/Redirect.svg');
@@ -31,9 +19,30 @@ const redirect = require('/src/content/svg/Redirect.svg');
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
+type FreeBlock = any;
+export interface CalendarResultEvent {
+  start_time: string;
+  end_time: string;
+  title: string;
+  url: string;
+  color: string;
+  calendar: Calendar;
+  index_of_overlapped_events: Array<number>;
+}
+
+export interface CalendarResultDay {
+  calendar_date: string;
+  hard_start: string;
+  hard_end: string;
+  free_blocks: Array<FreeBlock>;
+  events: Array<CalendarResultEvent>;
+}
+export interface CalendarResultData {
+  days: Array<CalendarResultDay>;
+}
+
 interface ResultEngineProps {
-  // TODO: create an actual type for this
-  calendarResultData: any;
+  calendarResultData: CalendarResultData;
 }
 
 export default function ResultEngine(props: ResultEngineProps) {
@@ -70,11 +79,13 @@ export default function ResultEngine(props: ResultEngineProps) {
     },
   ];
 
-  // TODO: use the prop instead of state
-  const [calendarResultData, setCalendarResultData] =
-    useImmer(demoPart1Results); // The Raw, unfiltered Result Data that contains every event from every calendar
-  const [filteredCalendarData, setFilteredCalendarData] =
-    useImmer(demoPart1Results); // The filtered result data that screens out events from calendars that are not selected for display
+  // TODO: Determine if this is the best way to do this
+  const [calendarResultData, setCalendarResultData] = useImmer(
+    props.calendarResultData
+  ); // The Raw, unfiltered Result Data that contains every event from every calendar
+  const [filteredCalendarData, setFilteredCalendarData] = useImmer(
+    props.calendarResultData
+  ); // The filtered result data that screens out events from calendars that are not selected for display
   const [calendarAccounts, setCalendarAccounts] =
     useImmer<Array<RegisteredAccount>>(fetched_calendars); // The copy of the calendar accounts we keep in state. This gets updated, though updating the default settings is not yet included
   const [ignoreSlots, setIgnoreSlots] = useState([]); // The free slots that get ignored by the text engine
@@ -83,11 +94,11 @@ export default function ResultEngine(props: ResultEngineProps) {
   let textSnippetArray = demo1ArrayOfSnippets[0]; // DUMMY: The text snippets
 
   // Checks if an event is part of a calendar that is selected for display
-  function _IsSelected(name: string, accountEmail: string) {
+  function _IsSelected(name: string, googleAccount: string) {
     for (const group of calendarAccounts) {
       for (const calendar of group.calendars) {
         if (
-          group.accountEmail == accountEmail &&
+          group.accountEmail == googleAccount &&
           calendar.name == name &&
           calendar.selectedForDisplay == true
         ) {
@@ -138,7 +149,7 @@ export default function ResultEngine(props: ResultEngineProps) {
         for (const event of currentDay.events) {
           let eventCalendar = event.calendar;
 
-          if (_IsSelected(eventCalendar.name, eventCalendar.accountEmail)) {
+          if (_IsSelected(eventCalendar.name, eventCalendar.googleAccount)) {
             validEvents.push(event);
           }
         }

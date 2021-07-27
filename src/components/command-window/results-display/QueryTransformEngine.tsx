@@ -6,6 +6,7 @@ import {
   applyPrepositionActionToFilter,
   extractModifierGroups,
   generateDefaultFilterForModifier,
+  USER_SETTINGS_DATE_TIME_CONFIG,
 } from '../../util/QueryTransformUtil';
 import { DEFAULT_PREPOSITION_LIBRARY } from '../TransformFixtures';
 import {
@@ -16,7 +17,10 @@ import {
   PrepositionPiece,
   QueryTransformEngineProps,
 } from '../types';
-import ResultEngine from './ResultEngine';
+import ResultEngine, {
+  CalendarResultData,
+  CalendarResultEvent,
+} from './ResultEngine';
 import * as CalendarIndexUtil from '../../util/CalendarIndexUtil';
 import _ from 'underscore';
 
@@ -83,7 +87,7 @@ export function QueryTransformEngine(
 ): JSX.Element | null {
   const modifierGroups = extractModifierGroups(props.queryPieces);
 
-  let filter = null;
+  let filter: CalendarIndexFilter | null = null;
 
   const rangeModifierExists =
     modifierGroups.findIndex(
@@ -165,11 +169,69 @@ export function QueryTransformEngine(
   );
 
   // Step 2: Use other parts of filter and build result data for each index in the calendar index (lol)
-  indices.map((index) => {
-    console.log(
-      CalendarIndexUtil.getDateAtIndex(calendarIndex, index).toLocaleString()
-    );
-  });
+  const daysFromCalendarIndex = indices.map((index) =>
+    CalendarIndexUtil.getDayAtIndex(calendarIndex, index)
+  );
 
-  return <ResultEngine calendarResultData={[]} />;
+  const calendarResultData = transformToResultData(
+    daysFromCalendarIndex,
+    filter
+  );
+
+  return <ResultEngine calendarResultData={calendarResultData} />;
+}
+
+function transformToResultData(
+  daysFromCalendarIndex: Array<CalendarIndexUtil.CalendarIndexDay>,
+  filter: CalendarIndexFilter
+): CalendarResultData {
+  return {
+    days: daysFromCalendarIndex.map((calendarIndexDay) => {
+      const hard_start_hour =
+        filter.startTime?.hour ??
+        USER_SETTINGS_DATE_TIME_CONFIG.hard_start_hours.hour;
+      const hard_stop_hour =
+        filter.endTime?.hour ??
+        USER_SETTINGS_DATE_TIME_CONFIG.hard_stop_hours.hour;
+
+      const { day, month, year } = calendarIndexDay.date;
+
+      return {
+        calendar_date: calendarIndexDay.date.toISODate(),
+        hard_start: DateTime.fromObject({
+          day,
+          month,
+          year,
+          hour: hard_start_hour,
+        }).toISO(),
+        hard_end: DateTime.fromObject({
+          day,
+          month,
+          year,
+          hour: hard_stop_hour,
+        }).toISO(),
+        free_blocks: [],
+        events: calendarIndexDay.events.map(
+          ({
+            startTime,
+            endTime,
+            summary,
+            eventHtmlLink,
+          }): CalendarResultEvent => ({
+            start_time: startTime.dateTime,
+            end_time: endTime.dateTime,
+            color: 'blue',
+            title: summary,
+            url: eventHtmlLink,
+            calendar: {
+              name: 'Work Calendar',
+              googleAccount: 'testAccount1@gmail.com',
+              color: 'blue',
+            },
+            index_of_overlapped_events: [],
+          })
+        ),
+      };
+    }),
+  };
 }

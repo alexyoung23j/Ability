@@ -13,7 +13,7 @@ const enum Color {
   BLUE = 'BLUE',
 }
 
-interface Event {
+interface CalendarIndexEvent {
   startTime: calendar_v3.Schema$EventDateTime;
   endTime: calendar_v3.Schema$EventDateTime;
   // map color Id --> unique color that hasn't been used yet
@@ -25,8 +25,15 @@ interface Event {
 
 // Organized by start time
 export interface CalendarIndexDay {
-  events: Array<Event>;
+  events: Array<CalendarIndexEvent>;
   date: DateTime;
+}
+
+export function getDayAtIndex(
+  calendarIndex: CalendarIndex,
+  index: number = 0
+): CalendarIndexDay {
+  return calendarIndex[index];
 }
 
 export function getDateAtIndex(
@@ -60,7 +67,7 @@ export function mapDateToIndex(
 }
 
 function _getEventIndexInDay(
-  eventsInDay: Array<Event>,
+  eventsInDay: Array<CalendarIndexEvent>,
   eventToAdd: calendar_v3.Schema$Event
 ) {
   for (const [idx, event] of eventsInDay.entries()) {
@@ -213,7 +220,7 @@ export function parseCalendarApiResponse(
         );
         const dayIndex = mapDateToIndex(eventTime, days[0].date);
 
-        const event: Event = {
+        const event: CalendarIndexEvent = {
           startTime: singleDayEventFromServer.start,
           endTime: singleDayEventFromServer.end,
           color: Color.BLUE,
@@ -221,7 +228,6 @@ export function parseCalendarApiResponse(
           calendarId,
           summary: singleDayEventFromServer.summary,
         };
-
 
         // Insert at index: _getIndexInDay()
         days[dayIndex].events.splice(
