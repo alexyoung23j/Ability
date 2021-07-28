@@ -133,6 +133,7 @@ export default function ResultEngine(props: ResultEngineProps) {
   // Listen for updates to the unfiltered data, the accounts, and the text engine launch status
   useEffect(() => {
     // If text engine launched, make intervals 1 hour
+    console.log('Should be updatin');
     UpdateFilteredData();
   }, [textEngineLaunched, calendarResultData, calendarAccounts]);
 
@@ -148,6 +149,7 @@ export default function ResultEngine(props: ResultEngineProps) {
 
         for (const event of currentDay.events) {
           let eventCalendar = event.calendar;
+          myConsole.log(event.title, event.calendar);
 
           if (_IsSelected(eventCalendar.name, eventCalendar.googleAccount)) {
             validEvents.push(event);
@@ -188,6 +190,8 @@ export default function ResultEngine(props: ResultEngineProps) {
       });
     }
   }
+
+  console.log(filteredCalendarData);
 
   // ----------------------------------- CALLBACKS ----------------------------------- //
 
@@ -278,7 +282,7 @@ export default function ResultEngine(props: ResultEngineProps) {
       calendar: {
         name: calendar_name,
         color: calendar_color,
-        accountEmail: 'testAccount1@gmail.com',
+        googleAccount: 'testAccount1@gmail.com',
       },
       index_of_overlapped_events: [],
     });
@@ -405,7 +409,7 @@ export default function ResultEngine(props: ResultEngineProps) {
       calendar: {
         name: calendar_name,
         color: calendar_color,
-        accountEmail: 'testAccount1@gmail.com',
+        googleAccount: 'testAccount1@gmail.com',
       },
       index_of_overlapped_events: [],
     });
