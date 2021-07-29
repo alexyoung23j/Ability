@@ -34,9 +34,16 @@ const user_settings = {
 
 // Object that contains configs to be passed to DateTime.fromObject()
 export const USER_SETTINGS_DATE_TIME_CONFIG = {
-  hard_start_hours: {hour: 8},
-  hard_stop_hours: {hour: 21}
-}
+  hard_start_hours: { hour: 8 },
+  hard_stop_hours: { hour: 21 },
+};
+
+export const USER_SETTINGS_DEFAULT_FILTERS = {
+  duration: 60,
+  startTime: DateTime.now().startOf('day').plus({ hours: 8 }),
+  endTime: DateTime.now().startOf('day').plus({ hours: 21 }),
+  range: [[DateTime.now().startOf('day')]], // TODO: This only shows today, maybe we should be showing the entire week?
+};
 
 export function chooseYearForDateFilter(day: number, month: number): number {
   const toCompareTo = DateTime.fromObject({ day, month });
@@ -605,6 +612,29 @@ export function _generateRangeArrays(
         }
         // Note weeks start on mondays
         rangeArrays.push(rangeArray);
+      }
+      break;
+    }
+    case 'WEEKEND': {
+      // find the next saturday, unless today is sunday or saturday
+
+      /* if (now.weekday == 6 || now.weekday == 7) {
+        baseDate = now.startOf('week').plus({ days: 5 });
+      } else {
+        baseDate = now.plus({ weeks: 1 }).startOf('week').plus({ days: 5 });
+      } */
+
+      // Basedate should now be the first saturday we want to add
+      baseDate = now.startOf('week').plus({ days: 5 });
+      let i = 0;
+      while (i < 365) {
+        let rangeArray: Array<DateTime> = [];
+        rangeArray.push(baseDate.plus({ days: i }));
+        rangeArray.push(baseDate.plus({ days: i + 1 }));
+
+        rangeArrays.push(rangeArray);
+
+        i += 7;
       }
       break;
     }

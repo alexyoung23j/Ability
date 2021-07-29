@@ -81,6 +81,7 @@ export const modifierStringToRangeGeneratorMap = {
   saturday: 'WEEKDAY',
   sunday: 'WEEKDAY',
   week: 'WEEK',
+  weekend: 'WEEKEND',
   month: 'MONTH',
   year: 'YEAR',
   day: 'DAY',

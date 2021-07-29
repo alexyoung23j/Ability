@@ -7,6 +7,7 @@ import {
   extractModifierGroups,
   generateDefaultFilterForModifier,
   USER_SETTINGS_DATE_TIME_CONFIG,
+  USER_SETTINGS_DEFAULT_FILTERS,
 } from '../../util/QueryTransformUtil';
 import { DEFAULT_PREPOSITION_LIBRARY } from '../TransformFixtures';
 import {
@@ -157,6 +158,9 @@ export function QueryTransformEngine(
     '-----------------------------------------------------------------'
   ); */
 
+  // Replace null values with defaults
+  filter = _hydrateNullFields(filter);
+
   const calendarIndex = useContext(CalendarContext);
   // so we're going to convert the filter --> calendar result data here right?
   // Step 1: Convert range to indices
@@ -179,6 +183,15 @@ export function QueryTransformEngine(
   );
 
   return <ResultEngine calendarResultData={calendarResultData} />;
+}
+
+function _hydrateNullFields(filter: CalendarIndexFilter): CalendarIndexFilter {
+  return {
+    duration: filter.duration ?? USER_SETTINGS_DEFAULT_FILTERS.duration,
+    startTime: filter.startTime ?? USER_SETTINGS_DEFAULT_FILTERS.startTime,
+    endTime: filter.endTime ?? USER_SETTINGS_DEFAULT_FILTERS.endTime,
+    range: filter.range ?? USER_SETTINGS_DEFAULT_FILTERS.range,
+  };
 }
 
 function transformToResultData(
