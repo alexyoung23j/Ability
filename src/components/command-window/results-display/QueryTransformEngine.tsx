@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { CalendarContext } from '../../../App';
 import { assert } from '../../../assert';
 import {
@@ -17,6 +17,7 @@ import {
   ModifierPiece,
   PrepositionPiece,
   QueryTransformEngineProps,
+  Piece,
 } from '../types';
 import ResultEngine, {
   CalendarResultData,
@@ -27,6 +28,38 @@ import _ from 'underscore';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
+
+// Renders ResultEngine
+export function QueryTransformEngine(
+  props: QueryTransformEngineProps
+): JSX.Element | null {
+  const calendarIndex = useContext(CalendarContext);
+  const [lastSelectedIndex, setLastSelectedIndex] = useState(null); // Keeps track of the last index we displayed
+
+  let filter = createFilter(props.queryPieces);
+
+  // so we're going to convert the filter --> calendar result data here right?
+  // Step 1: Convert range to indices
+  const dateAtIndexZero: DateTime = CalendarIndexUtil.getDateAtIndex(
+    calendarIndex,
+    0
+  );
+  const indices = _.flatten(filter.range).map((date: DateTime) =>
+    CalendarIndexUtil.mapDateToIndex(date, dateAtIndexZero)
+  );
+
+  // Step 2: Use other parts of filter and build result data for each index in the calendar index (lol)
+  const daysFromCalendarIndex = indices.map((index) =>
+    CalendarIndexUtil.getDayAtIndex(calendarIndex, index)
+  );
+
+  const calendarResultData = transformToResultData(
+    daysFromCalendarIndex,
+    filter
+  );
+
+  return <ResultEngine calendarResultData={calendarResultData} />;
+}
 
 function intersectFilters(
   filter1: CalendarIndexFilter,
@@ -82,11 +115,8 @@ function shouldApplyPreposition(
   );
 }
 
-// Renders ResultEngine
-export function QueryTransformEngine(
-  props: QueryTransformEngineProps
-): JSX.Element | null {
-  const modifierGroups = extractModifierGroups(props.queryPieces);
+function createFilter(queryPieces: Array<Piece>): CalendarIndexFilter {
+  const modifierGroups = extractModifierGroups(queryPieces);
 
   let filter: CalendarIndexFilter | null = null;
 
@@ -136,55 +166,12 @@ export function QueryTransformEngine(
       }
     }
   }
-  // if  that bool is false, we intersect one more time with default range
-
-  // Note: These functions need to APPLY each of the filters to specific days when building
-  //const calendarData: Array<Day> = filterCalendarIndex(filter);
-  // convert Day --> ResultData
-  // Note: This functions needs to APPLY the start time, end time, and duration to EACH day when building result data.
-  //        These values will have incorrect dates (but correct times) and so they must be converted to match the hard_start and hard_end for each day in resultData
-  //const calendarResultData = convert(calendarData);
-
-  /* console.log(
-    '-----------------------------------------------------------------'
-  );
-  for (const arr of filter.range) {
-    for (const date of arr) {
-      console.log(date.toLocaleString());
-    }
-  }
-  console.log(filter);
-  console.log(
-    '-----------------------------------------------------------------'
-  ); */
 
   // Replace null values with defaults
   filter = _hydrateNullFields(filter);
 
-  const calendarIndex = useContext(CalendarContext);
-  // so we're going to convert the filter --> calendar result data here right?
-  // Step 1: Convert range to indices
-  const dateAtIndexZero: DateTime = CalendarIndexUtil.getDateAtIndex(
-    calendarIndex,
-    0
-  );
-  const indices = _.flatten(filter.range).map((date: DateTime) =>
-    CalendarIndexUtil.mapDateToIndex(date, dateAtIndexZero)
-  );
-
-  // Step 2: Use other parts of filter and build result data for each index in the calendar index (lol)
-  const daysFromCalendarIndex = indices.map((index) =>
-    CalendarIndexUtil.getDayAtIndex(calendarIndex, index)
-  );
-
-  const calendarResultData = transformToResultData(
-    daysFromCalendarIndex,
-    filter
-  );
-
-  return <ResultEngine calendarResultData={calendarResultData} />;
+  return filter;
 }
-
 function _hydrateNullFields(filter: CalendarIndexFilter): CalendarIndexFilter {
   return {
     duration: filter.duration ?? USER_SETTINGS_DEFAULT_FILTERS.duration,
@@ -199,6 +186,7 @@ function transformToResultData(
   filter: CalendarIndexFilter
 ): CalendarResultData {
   return {
+    minDuration: filter.duration,
     days: daysFromCalendarIndex.map((calendarIndexDay) => {
       const hard_start_hour =
         filter.startTime?.hour ??

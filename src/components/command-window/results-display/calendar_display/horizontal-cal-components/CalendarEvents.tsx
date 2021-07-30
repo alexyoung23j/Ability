@@ -116,7 +116,6 @@ function CalendarEvent(props: CalendarEventProps) {
   function HandleMouseLeave() {
     setColor('#A7A7A7');
     setDepth(start_depth);
-    setCurrentlyHoveredEventIdx(-1);
     setCurrentlySelectedEventIdx(-1);
   }
 

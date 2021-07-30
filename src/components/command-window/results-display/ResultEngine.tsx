@@ -39,6 +39,7 @@ export interface CalendarResultDay {
 }
 export interface CalendarResultData {
   days: Array<CalendarResultDay>;
+  minDuration: number;
 }
 
 interface ResultEngineProps {
@@ -164,7 +165,7 @@ export default function ResultEngine(props: ResultEngineProps) {
           draft.days[i].free_blocks = CalculateFreeBlocks(
             draft.days[i].hard_start,
             draft.days[i].hard_end,
-            60,
+            draft.minDuration,
             60,
             60,
             draft.days[i].events
@@ -179,7 +180,7 @@ export default function ResultEngine(props: ResultEngineProps) {
           draft.days[i].free_blocks = CalculateFreeBlocks(
             draft.days[i].hard_start,
             draft.days[i].hard_end,
-            60,
+            draft.minDuration,
             60,
             30,
             draft.days[i].events
