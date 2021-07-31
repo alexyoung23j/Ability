@@ -34,7 +34,7 @@ export default function CalendarView(props: CalendarView) {
     setCalendarAccounts,
   } = props;
 
-  const [calendarPickerLaunched, setCalendarPickerLaunched] = useState(false);
+  const [calendarPickerLaunched, setCalendarPickerLaunched] = useState(true);
 
   return (
     <div style={calendarViewStyle}>

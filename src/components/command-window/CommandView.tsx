@@ -1,7 +1,12 @@
 import CSS from 'csstype';
 import 'draft-js/dist/Draft.css';
 import React, { useEffect, useState } from 'react';
-import { Piece, QueryPieceType } from './types';
+import {
+  Piece,
+  QueryPieceType,
+  ModifierCategory,
+  ModifierPiece,
+} from './types';
 import CommandLine from './command-line/CommandLine';
 import Parser from './Parser';
 import ResultEngine from './results-display/ResultEngine';
@@ -11,6 +16,12 @@ const { ipcRenderer } = require('electron');
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
+
+const DEFAULT_AUTOCOMPLETE: ModifierPiece = {
+  value: 'week',
+  category: ModifierCategory.RANGE,
+  type: QueryPieceType.MODIFIER,
+};
 
 export default function CommandView() {
   // State
@@ -24,7 +35,8 @@ export default function CommandView() {
   const [validAutocompletes, setValidAutocompletes] = useState<Piece[]>([]);
 
   const [currentQueryFragment, setCurrentQueryFragment] = useState('');
-  const [currentAutocomplete, setCurrentAutocomplete] = useState<Piece>();
+  const [currentAutocomplete, setCurrentAutocomplete] =
+    useState<Piece>(DEFAULT_AUTOCOMPLETE);
   const [currentAutocompleteIdx, setCurrentAutocompleteIdx] = useState(0);
   const [alertCommandLineToClear, setAlertCommandLineToClear] =
     useState('default');
@@ -35,71 +47,6 @@ export default function CommandView() {
       setCurrentClearing(true);
     });
   });
-
-  // // Performs the work of fetching text snippets (replace with real logic)
-  // async function fetchSnippets() {
-  //   var myContentState1 = ContentState.createFromText(
-  //     'Would any of the following times work for you? \n\n Tuesday 3/18 - 4:00 PM, 5:00 PM, or 6:30 PM\n\n I think a one hour meeting woud be great!'
-  //   );
-  //   var myContentState2 = ContentState.createFromText(
-  //     'Would any of the following times work for you? \n\n Monday 3/17 - 4:00 PM, 5:00 PM, or 6:30 PM\n\n I think a two hour meeting woud be great!'
-  //   );
-
-  //   let textSnippetArray: textSnippet[];
-  //   textSnippetArray = [
-  //     { content: myContentState1, id: '1', title: 'email' },
-  //     { content: myContentState2, id: '2', title: 'slack' },
-  //   ];
-
-  //   return textSnippetArray;
-  // }
-
-  // AUTOCOMPLETE PARSER (to be swapped out)//
-  // eventually this will handle the preposition work and prevent us from recommending invalid preposition followers
-  // const autocompleteParser = (rawFragment: string) => {
-  //   console.log("That: ", fragment)
-  //   //  Strip Fragment of Spaces to avoid confusion
-  //   const fragment = rawFragment.trim();
-
-  //   const autocompleteDummyVals = ['lunch', 'monday', 'april 2', 'next week'];
-  //   if (fragment.length > 1) {
-  //     setValidAutocompletes([]);
-
-  //     setCurrentAutocomplete({
-  //       value: autocompleteDummyVals[0],
-  //       category: ModifierCategory.TIME,
-  //       type: QueryPieceType.MODIFIER,
-  //     });
-
-  //     for (var i = 0; i < autocompleteDummyVals.length; i++) {
-  //       const piece: Piece = {
-  //         value: autocompleteDummyVals[i],
-  //         type: QueryPieceType.MODIFIER,
-  //         category: ModifierCategory.DURATION,
-  //       };
-  //       setValidAutocompletes((validAutocompletes) => [
-  //         ...validAutocompletes,
-  //         piece,
-  //       ]);
-  //     }
-  //     setAutocompleteInProgress(true);
-
-  //     /// setValidAutocompletes should be called too
-  //   } else if (fragment.length > 1) {
-  //     setCurrentAutocompleteIdx(0);
-  //     setValidAutocompletes([]);
-  //     setCurrentAutocomplete({
-  //       value: 'on',
-  //       type: QueryPieceType.PREPOSITION,
-  //       category: PrepositionCategory.FOR_DATE,
-  //     });
-  //     setAutocompleteInProgress(true);
-  //   } else {
-  //     setCurrentAutocompleteIdx(0);
-  //     setValidAutocompletes([]);
-  //     setAutocompleteInProgress(false);
-  //   }
-  // };
 
   // ---------------- USE EFFECT METHODS ------------------- //
 

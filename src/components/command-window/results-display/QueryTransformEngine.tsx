@@ -18,6 +18,7 @@ import {
   PrepositionPiece,
   QueryTransformEngineProps,
   Piece,
+  QueryPieceType,
 } from '../types';
 import ResultEngine, {
   CalendarResultData,
@@ -116,7 +117,9 @@ function shouldApplyPreposition(
 }
 
 function createFilter(queryPieces: Array<Piece>): CalendarIndexFilter {
-  const modifierGroups = extractModifierGroups(queryPieces);
+  let modifierGroups: Array<ModifierGroup>;
+
+  modifierGroups = extractModifierGroups(queryPieces);
 
   let filter: CalendarIndexFilter | null = null;
 

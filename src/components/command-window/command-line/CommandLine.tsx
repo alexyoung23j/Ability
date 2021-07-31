@@ -336,11 +336,13 @@ export default function CommandLine(props: CommandLineProps) {
       // QUERY ENDS HERE
 
       // Ensure our final query piece was indeed a modifier, not a preposition
-      if (queryPieces[queryPieces.length-1].type === 'MODIFIER') {
+      if (queryPieces[queryPieces.length - 1].type === 'MODIFIER') {
         finalQueryLaunchedHandler(true);
       }
-      
+
       return 'handled';
+    } else if (currentQueryFragment === '' && queryPiecePositions.length == 1) {
+      performAutocompletion();
     }
 
     // Generate new Editor State with Autocomplete
@@ -446,12 +448,11 @@ export default function CommandLine(props: CommandLineProps) {
         parseOutSpaces(currentAutocomplete.value) === fragmentWithoutFinalSpace)
     ) {
       // Catch situations where we have on autocomplete but it is open ended ("august _" for instance)
-      if (!validAutocompletes[0].value.includes("_")) {
+      if (!validAutocompletes[0].value.includes('_')) {
         return true;
       } else {
-        return false
+        return false;
       }
-      
     } else {
       return false;
     }
@@ -503,21 +504,23 @@ export default function CommandLine(props: CommandLineProps) {
       // TODO: Add logic for routing to settings view with information about the query that was entered
       return (
         <div
-          onClick={(e) => {e.stopPropagation(); ipcRenderer.send('open-settings')}}
-          style={{position: 'absolute',
-          marginLeft: '545px',
-          marginTop: '2px',}}
+          onClick={(e) => {
+            e.stopPropagation();
+            ipcRenderer.send('open-settings');
+          }}
+          style={{
+            position: 'absolute',
+            marginLeft: '545px',
+            marginTop: '2px',
+          }}
         >
           <img
             style={{
               height: '18px',
-              
             }}
             src={settingsIcon}
-           
           />
         </div>
-        
       );
     } else {
       return <div />;
@@ -552,15 +555,14 @@ export default function CommandLine(props: CommandLineProps) {
 
 // Display the default message
 function DefaultText() {
-
-  return(
+  return (
     <div
-      style={{position: "absolute", marginLeft: "3px"}}
+      style={{ position: 'absolute', marginLeft: '3px' }}
       className="commandLineDefaultText"
     >
       start your calendar search!
     </div>
-  )
+  );
 }
 
 // Styling
