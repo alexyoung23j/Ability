@@ -51,6 +51,12 @@ export default function CommandView() {
   // ---------------- USE EFFECT METHODS ------------------- //
 
   useEffect(() => {
+    if (queryPieces.length == 0) {
+      setCurrentAutocomplete(DEFAULT_AUTOCOMPLETE);
+    }
+  }, [currentQueryFragment]);
+
+  useEffect(() => {
     if (validAutocompletes.length > 0) {
       setCurrentAutocomplete(validAutocompletes[0]);
       setCurrentAutocompleteIdx(0);

@@ -400,27 +400,32 @@ export default function CommandLine(props: CommandLineProps) {
       return getDefaultKeyBinding(e);
     } else if (e.keyCode === 8) {
       // backspace key
+
       // handle completely empty editor
       if (currentQueryFragment === '' && queryPieces.length === 0) {
         return 'do-nothing';
       }
-      const focusInQueryPiece = focusLocation();
 
-      if (focusInQueryPiece === -1) {
-        // If we have nothing typed, delete the most recent Piece
-        if (currentQueryFragment === '') {
+      if (e.metaKey) {
+      } else {
+        const focusInQueryPiece = focusLocation();
+
+        if (focusInQueryPiece === -1) {
+          // If we have nothing typed, delete the most recent Piece
+          if (currentQueryFragment === '') {
+            setUpdateCurrentQueryFragment(false);
+            deleteQueryPiece(queryPiecePositions.length - 2);
+            return 'delete-existing';
+          }
+          // Otherwise just let us update the query fragment normally
+          setUpdateCurrentQueryFragment(true);
+          return getDefaultKeyBinding(e);
+        } else {
+          // If we are focused inside the query, delete the existing query piece
           setUpdateCurrentQueryFragment(false);
-          deleteQueryPiece(queryPiecePositions.length - 2);
+          deleteQueryPiece(focusInQueryPiece);
           return 'delete-existing';
         }
-        // Otherwise just let us update the query fragment normally
-        setUpdateCurrentQueryFragment(true);
-        return getDefaultKeyBinding(e);
-      } else {
-        // If we are focused inside the query, delete the existing query piece
-        setUpdateCurrentQueryFragment(false);
-        deleteQueryPiece(focusInQueryPiece);
-        return 'delete-existing';
       }
     } else {
       const focusInQueryPiece = focusLocation();
