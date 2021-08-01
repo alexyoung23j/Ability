@@ -39,6 +39,7 @@ interface CommandLineProps {
   validAutocompletes: Piece[];
 
   // callback function props
+  clearCommandLine: any;
   currentQueryFragmentHandler: any;
   finalQueryLaunchedHandler: any;
   addToQueryPiecePositionsHandler: any;
@@ -62,6 +63,7 @@ export default function CommandLine(props: CommandLineProps) {
   const validAutocompletes = props.validAutocompletes;
 
   // Callbacks to update props
+  const clearCommandLine = props.clearCommandLine;
   const currentQueryFragmentHandler = props.currentQueryFragmentHandler;
   const finalQueryLaunchedHandler = props.finalQueryLaunchedHandler;
   const addToQueryPiecePositionsHandler = props.addToQueryPiecePositionsHandler;
@@ -407,6 +409,7 @@ export default function CommandLine(props: CommandLineProps) {
       }
 
       if (e.metaKey) {
+        clearCommandLine();
       } else {
         const focusInQueryPiece = focusLocation();
 

@@ -207,6 +207,7 @@ export default function CommandView() {
           validAutocompletes={validAutocompletes}
           alertCommandLineToClear={alertCommandLineToClear}
           currentlyClearing={currentlyClearing}
+          clearCommandLine={clearCommandLine}
           currentQueryFragmentHandler={setCurrentQueryFragment}
           finalQueryLaunchedHandler={setFinalQueryLaunched}
           addToQueryPiecePositionsHandler={addToQueryPiecePositionsHandler}
