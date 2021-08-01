@@ -6,6 +6,7 @@ import {
   Tray,
   Menu,
   session,
+  nativeImage,
 } from 'electron';
 import {
   BrowserWindowConstructorOptions,
@@ -83,8 +84,10 @@ const createSentinelWindow = (): void => {
 // Build the tray and context menus
 const createTray = () => {
   // Handle Tray and Menus
-  let logoPath = path.join(app.getAppPath(), '/src/content/smallTrayLogo.png');
-  tray = new Tray(logoPath);
+  let trayIcon = nativeImage.createFromPath(
+    path.join(app.getAppPath(), '/src/content/png/TrayIcon.png')
+  );
+  tray = new Tray(trayIcon.resize({ width: 15, height: 15 }));
 
   const contextMenu = Menu.buildFromTemplate([
     {
