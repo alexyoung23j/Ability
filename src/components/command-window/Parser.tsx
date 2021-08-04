@@ -48,7 +48,11 @@ function _insertNumbers(
           hydratedValue.push(cleanedNumeric);
           numIdx += 1;
         } else {
-          hydratedValue.push(char);
+          if (char === NUMERIC_WILDCARD) {
+            hydratedValue.push('1');
+          } else {
+            hydratedValue.push(char);
+          }
         }
       }
 
