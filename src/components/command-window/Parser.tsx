@@ -56,6 +56,21 @@ function _insertNumbers(
         ...completion,
         value: hydratedValue.join(''),
       });
+    } else if (completion.value.includes(NUMERIC_WILDCARD)) {
+      const hydratedValue = [];
+      for (const char of completion.value) {
+        if (char === NUMERIC_WILDCARD) {
+          // This cleans out any leading 0's
+          hydratedValue.push('1');
+        } else {
+          hydratedValue.push(char);
+        }
+      }
+
+      hydratedCompletions.push({
+        ...completion,
+        value: hydratedValue.join(''),
+      });
     } else {
       hydratedCompletions.push(completion);
     }

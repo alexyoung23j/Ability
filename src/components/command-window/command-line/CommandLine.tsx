@@ -455,11 +455,15 @@ export default function CommandLine(props: CommandLineProps) {
       (currentAutocomplete != null &&
         parseOutSpaces(currentAutocomplete.value) === fragmentWithoutFinalSpace)
     ) {
-      // Catch situations where we have on autocomplete but it is open ended ("august _" for instance)
-      if (!validAutocompletes[0].value.includes('_')) {
-        return true;
-      } else {
+      // Catch situations where we have one autocomplete but it is open ended (could be january 1 or january 2 etc)
+      if (
+        validAutocompletes[0].value.includes('_') ||
+        (validAutocompletes[0].value.includes('1') &&
+          !fragmentWithoutFinalSpace.includes('1'))
+      ) {
         return false;
+      } else {
+        return true;
       }
     } else {
       return false;
