@@ -57,13 +57,12 @@ export function mapDateToIndex(
   const normalizedDate = date.startOf('day');
   const normalizedStart = dateAtIndexZero.startOf('day');
   const { days: diff } = normalizedDate.diff(normalizedStart, 'day').toObject();
-  assert(
-    diff < NUM_DAYS,
-    `Date is too far out from index 0 date:\n
-    Date at index 0: ${dateAtIndexZero.toLocaleString()}\n
-    Date to map: ${date.toLocaleString()}`
-  );
-  return diff;
+
+  if (diff < NUM_DAYS && diff >= 0) {
+    return diff;
+  } else {
+    return -1;
+  }
 }
 
 function _getEventIndexInDay(

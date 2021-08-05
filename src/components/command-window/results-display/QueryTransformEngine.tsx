@@ -49,6 +49,8 @@ export function QueryTransformEngine(
     CalendarIndexUtil.mapDateToIndex(date, dateAtIndexZero)
   );
 
+  console.log(indices);
+
   // Step 2: Use other parts of filter and build result data for each index in the calendar index (lol)
   const daysFromCalendarIndex = indices.map((index) =>
     CalendarIndexUtil.getDayAtIndex(calendarIndex, index)
