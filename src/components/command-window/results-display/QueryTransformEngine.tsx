@@ -26,6 +26,7 @@ import ResultEngine, {
 } from './ResultEngine';
 import * as CalendarIndexUtil from '../../util/CalendarIndexUtil';
 import _ from 'underscore';
+import ErrorResult from './ErrorResult';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -51,17 +52,28 @@ export function QueryTransformEngine(
 
   console.log(indices);
 
-  // Step 2: Use other parts of filter and build result data for each index in the calendar index (lol)
-  const daysFromCalendarIndex = indices.map((index) =>
-    CalendarIndexUtil.getDayAtIndex(calendarIndex, index)
-  );
+  let calendarResultData: CalendarResultData = null;
+  let showError = false;
 
-  const calendarResultData = transformToResultData(
-    daysFromCalendarIndex,
-    filter
-  );
+  if (indices.includes(-1)) {
+    showError = true;
+  } else {
+    // Step 2: Use other parts of filter and build result data for each index in the calendar index (lol)
+    const daysFromCalendarIndex = indices.map((index) =>
+      CalendarIndexUtil.getDayAtIndex(calendarIndex, index)
+    );
 
-  return <ResultEngine calendarResultData={calendarResultData} />;
+    calendarResultData = transformToResultData(daysFromCalendarIndex, filter);
+  }
+
+  return (
+    // TODO: Add handling for different error messages
+    <div>
+      {(!showError && (
+        <ResultEngine calendarResultData={calendarResultData} />
+      )) || <ErrorResult errorType="out-of-range" />}
+    </div>
+  );
 }
 
 function intersectFilters(
