@@ -114,6 +114,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "emotion": "^11.0.0",
     "es6-shim": "^0.35.6",
+    "firebase": "^8.9.0",
     "framer-motion": "^4.1.17",
     "googleapis": "^76.0.0",
     "immer": "^9.0.3",

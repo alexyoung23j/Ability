@@ -1,14 +1,29 @@
 import React, { useState } from 'react';
-import { Auth } from './components/auth/auth';
+import { SignInAuth } from './components/auth/auth';
 import CommandView from './components/command-window/CommandView';
 import { CALENDAR_INDEX_1, EVENTS } from './tests/EventsFixtures';
 import SettingsView from './components/settings-window/SettingsView';
 const { ipcRenderer } = require('electron');
 const css = require('./index.css');
 
+// Firebase App (the core Firebase SDK) is always required and must be listed first
+import firebase from 'firebase/app';
+
 import { config } from 'dotenv';
 import { CalendarIndexDay } from './components/util/CalendarIndexUtil';
 config();
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyD5RcBlac1hImiP4ryaxIqAaTnS6awA4wE',
+  authDomain: 'ability-317805.firebaseapp.com',
+  projectId: 'ability-317805',
+  storageBucket: 'ability-317805.appspot.com',
+  messagingSenderId: '344477472418',
+  appId: '1:344477472418:web:1138e2c3d1e8c2cdf869fb',
+  measurementId: 'G-EXL45SNTSJ',
+};
+
+firebase.initializeApp(firebaseConfig);
 
 ipcRenderer.setMaxListeners(Infinity);
 
@@ -69,12 +84,12 @@ function App() {
 
   return (
     <CalendarContext.Provider value={calendarIndex}>
-      {/* <Auth /> */}
-      <div>
+      <SignInAuth />
+      {/* <div>
         {(showCommand && <CommandView />) || (
           <SettingsView toggleWindowHandler={toggleBetweenWindows} />
         )}
-      </div>
+      </div> */}
     </CalendarContext.Provider>
   );
 }
