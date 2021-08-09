@@ -66,13 +66,13 @@ export default function ResultEngine(props: ResultEngineProps) {
         },
         {
           name: 'Work Calendar',
-          color: '#33b679',
+          color: 'blue',
           googleAccount: 'testAccount1@gmail.com',
           selectedForDisplay: true,
         },
         {
           name: 'Calendar 3',
-          color: 'green',
+          color: 'pink',
           googleAccount: 'testAccount1@gmail.com',
           selectedForDisplay: true,
         },
