@@ -151,6 +151,8 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     setModalEventCalendar({
       name: "Alex's Personal Calendar",
       color: '#33b679',
+      googleAccount: 'testAccount1@gmail.com',
+      selectedForDisplay: true,
     }); // TODO: Use the default calendar
     setCurrentlyHoveredEventIdx(-1);
   }

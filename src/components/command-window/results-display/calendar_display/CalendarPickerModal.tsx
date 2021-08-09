@@ -5,6 +5,7 @@ import CalendarBody from './CalendarBody';
 import { Calendar, RegisteredAccount } from '../../types';
 import { useImmer } from 'use-immer';
 import { Checkbox } from 'reakit/Checkbox';
+import { css } from '@emotion/css';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -30,6 +31,8 @@ export function CalendarPickerModal(props: {
             paddingRight: '10px',
             backgroundColor: '#F1F1F1',
             borderRadius: '5px',
+            marginLeft: '10px',
+            marginRight: '10px',
           }}
         >
           <CalendarGroup
@@ -52,8 +55,6 @@ function CalendarGroup(props: {
   return (
     <div
       style={{
-        marginLeft: '5px',
-        marginRight: '5px',
         borderRadius: '5px',
       }}
     >
@@ -124,6 +125,34 @@ function CalendarEntry(props: {
     }
   };
 
+  // Styles for the checkboxes
+  const checkboxStyle = css`
+    appearance: none;
+    border: 1px solid ${calendar.color};
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    width: 12px;
+    height: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 5px;
+    &:after {
+      content: '✔';
+      display: none;
+      color: white;
+      font-size: 60%;
+    }
+    &:checked {
+      background-color: ${calendar.color};
+      border: 2px solid ${calendar.color};
+      &:after {
+        display: block;
+      }
+    }
+  `;
+
   return (
     <div
       style={{
@@ -133,34 +162,30 @@ function CalendarEntry(props: {
       }}
     >
       <div>
-        <Checkbox checked={checked} onChange={CheckToggled} />
+        <Checkbox
+          checked={checked}
+          onChange={CheckToggled}
+          className={checkboxStyle}
+        />
       </div>
       <div
         style={{
           marginLeft: '10px',
           marginRight: '20px',
-          fontSize: '12px',
+          fontSize: '11px',
           fontStyle: 'bold',
         }}
         className="basicTextClass"
       >
         {calendar.name}
       </div>
-      <div
-        style={{
-          width: '6px',
-          height: '6px',
-          backgroundColor: calendar.color,
-          borderRadius: '20px',
-        }}
-      ></div>
     </div>
   );
 }
 
 const CalendarPickerModalStyle: CSS.Properties = {
   minWidth: '230px',
-  minHeight: '250px',
+  minHeight: '200px',
   maxHeight: '300px',
   backgroundColor: '#FFFFFF',
   boxShadow: '0 0 100px rgba(0,0,0, 0.3)',
@@ -169,8 +194,9 @@ const CalendarPickerModalStyle: CSS.Properties = {
   justifyContent: 'flex-start',
   alignItems: 'center',
   flexDirection: 'column',
-  marginBottom: '0px',
-  marginRight: '770px',
+  marginTop: '30px',
   position: 'absolute',
+  marginLeft: '-220px',
+  overflow: 'scroll',
   zIndex: 70,
 };

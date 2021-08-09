@@ -34,26 +34,10 @@ export default function CalendarView(props: CalendarView) {
     setCalendarAccounts,
   } = props;
 
-  const [calendarPickerLaunched, setCalendarPickerLaunched] = useState(true);
+  const [calendarPickerLaunched, setCalendarPickerLaunched] = useState(false);
 
   return (
-    <div style={calendarViewStyle}>
-      <CalendarHeader
-        calendar_data={calendar_data}
-        showButtons={true} // Whether we allow user to skip forward or not
-        calendarPickerLaunched={calendarPickerLaunched}
-        setCalendarPickerLaunched={setCalendarPickerLaunched}
-      />
-      <CalendarBody
-        calendar_data={filteredCalendarData}
-        calendarAccounts={calendarAccounts}
-        ignoreHandler={ignoreHandler}
-        ignoredSlots={ignoredSlots}
-        textEngineLaunched={textEngineLaunched}
-        scheduleNewEvent={scheduleNewEvent}
-        modifyExistingEvent={modifyExistingEvent}
-      />
-
+    <div>
       {calendarPickerLaunched && (
         <CalendarPickerModal
           calendarAccounts={calendarAccounts}
@@ -61,6 +45,23 @@ export default function CalendarView(props: CalendarView) {
           setCalendarPickerLaunched={setCalendarPickerLaunched}
         />
       )}
+      <div style={calendarViewStyle}>
+        <CalendarHeader
+          calendar_data={calendar_data}
+          showButtons={true} // Whether we allow user to skip forward or not
+          calendarPickerLaunched={calendarPickerLaunched}
+          setCalendarPickerLaunched={setCalendarPickerLaunched}
+        />
+        <CalendarBody
+          calendar_data={filteredCalendarData}
+          calendarAccounts={calendarAccounts}
+          ignoreHandler={ignoreHandler}
+          ignoredSlots={ignoredSlots}
+          textEngineLaunched={textEngineLaunched}
+          scheduleNewEvent={scheduleNewEvent}
+          modifyExistingEvent={modifyExistingEvent}
+        />
+      </div>
     </div>
   );
 }

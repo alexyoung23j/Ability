@@ -20,16 +20,22 @@ export default function CalendarPickerComponent(props: CalendarPickerProps) {
   // TODO: Add access to context containing the calendar information
   const calendars: Array<Calendar> = [
     {
-      name: 'Work Calendar',
-      color: '#7986cb',
-    },
-    {
       name: "Alex's Personal Calendar",
       color: '#33b679',
+      googleAccount: 'testAccount1@gmail.com',
+      selectedForDisplay: true,
     },
     {
-      name: 'Marketing Team Calendar',
-      color: '#f5511d',
+      name: 'Work Calendar',
+      color: 'blue',
+      googleAccount: 'testAccount1@gmail.com',
+      selectedForDisplay: true,
+    },
+    {
+      name: 'Calendar 3',
+      color: 'pink',
+      googleAccount: 'testAccount1@gmail.com',
+      selectedForDisplay: true,
     },
   ];
 
