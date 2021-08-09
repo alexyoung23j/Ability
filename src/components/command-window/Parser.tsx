@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AutocompleteEngine, {
   BaseAutocompleteEngineProps,
 } from './autocomplete/AutocompleteEngine';
-import { Piece, QueryFragment } from './autocomplete/types';
+import { Piece, QueryFragment } from './types';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -16,14 +16,21 @@ interface ParserProps extends BaseAutocompleteEngineProps {
   updateRoot: (autocompletions: Array<Piece>) => void;
 }
 
-// Replace whitespace with non break whitespace and replace numbers with x
+const ONE_OR_TWO_NUMBERS_WITH_LEADING_ZEROS_REGEX = /(?<!\d)[0]*\d\d?(?!\d)/g;
+
+// Replace whitespace with non break whitespace and replace numbers with numeric wildcard
 function _normalizeQuery({ value }: QueryFragment): string {
-  return value.replace(/\u00A0/, ' ').replace(/\d+/g, NUMERIC_WILDCARD);
+  return (
+    value
+      .replace(/\u00A0/, ' ')
+      // Replace with wildcard IFF each consecutive set of numeric digits is 1-2 characters in a row.
+      .replace(ONE_OR_TWO_NUMBERS_WITH_LEADING_ZEROS_REGEX, NUMERIC_WILDCARD)
+  );
 }
 
 function _insertNumbers(
   autocompletions: Array<Piece>,
-  numerics: Array<String>
+  numerics: Array<string>
 ): Array<Piece> {
   const hydratedCompletions = [];
   for (const completion of autocompletions) {
@@ -36,14 +43,34 @@ function _insertNumbers(
       let numIdx = 0;
       for (const char of completion.value) {
         if (char === NUMERIC_WILDCARD && numIdx <= numerics.length - 1) {
-          
-          hydratedValue.push(numerics[numIdx]);
+          // This cleans out any leading 0's
+          const cleanedNumeric = parseFloat(numerics[numIdx]).toString();
+          hydratedValue.push(cleanedNumeric);
           numIdx += 1;
+        } else {
+          if (char === NUMERIC_WILDCARD) {
+            hydratedValue.push('1');
+          } else {
+            hydratedValue.push(char);
+          }
+        }
+      }
+
+      hydratedCompletions.push({
+        ...completion,
+        value: hydratedValue.join(''),
+      });
+    } else if (completion.value.includes(NUMERIC_WILDCARD)) {
+      const hydratedValue = [];
+      for (const char of completion.value) {
+        if (char === NUMERIC_WILDCARD) {
+          // This cleans out any leading 0's
+          hydratedValue.push('1');
         } else {
           hydratedValue.push(char);
         }
       }
-      
+
       hydratedCompletions.push({
         ...completion,
         value: hydratedValue.join(''),
@@ -66,7 +93,7 @@ export default function Parser(props: ParserProps) {
     value: _normalizeQuery(queryFragment),
     type: queryFragment.type,
   };
-  const numerics = value.match(/\d+/g);
+  const numerics = value.match(ONE_OR_TWO_NUMBERS_WITH_LEADING_ZEROS_REGEX);
 
   // create array of numerical characters separated by any other characters
 

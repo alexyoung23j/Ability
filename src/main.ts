@@ -6,6 +6,7 @@ import {
   Tray,
   Menu,
   session,
+  nativeImage,
 } from 'electron';
 import {
   BrowserWindowConstructorOptions,
@@ -83,8 +84,10 @@ const createSentinelWindow = (): void => {
 // Build the tray and context menus
 const createTray = () => {
   // Handle Tray and Menus
-  let logoPath = path.join(app.getAppPath(), '/src/content/smallTrayLogo.png');
-  tray = new Tray(logoPath);
+  let trayIcon = nativeImage.createFromPath(
+    path.join(app.getAppPath(), '/src/content/png/TrayIcon.png')
+  );
+  tray = new Tray(trayIcon.resize({ width: 15, height: 15 }));
 
   const contextMenu = Menu.buildFromTemplate([
     {
@@ -112,22 +115,22 @@ const reactDevToolsPath = path.join(
 );
 app
   .whenReady()
-  /* .then(() => {
-    session.defaultSession.webRequest.onBeforeSendHeaders(
-      (details, callback) => {
-        details.requestHeaders['User-Agent'] = 'Chrome';
-        callback({ cancel: false, requestHeaders: details.requestHeaders });
-      }
-    );
-  }) */
+  // .then(() => {
+  //   session.defaultSession.webRequest.onBeforeSendHeaders(
+  //     (details, callback) => {
+  //       details.requestHeaders['User-Agent'] = 'Chrome';
+  //       callback({ cancel: false, requestHeaders: details.requestHeaders });
+  //     }
+  //   );
+  // })
   .then(() => {
     globalShortcut.register('CommandOrControl+E', () => {
       keyboardShortcutHandler();
     });
   })
-  /* .then(async () => {
-    await session.defaultSession.loadExtension(reactDevToolsPath);
-  }) */
+  // .then(async () => {
+  //   await session.defaultSession.loadExtension(reactDevToolsPath);
+  // })
   .then(createSentinelWindow);
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -149,8 +152,8 @@ app.on('activate', () => {
 
 app.on('browser-window-blur', () => {
   sentinelWindow.hide();
-  app.hide()
-})
+  app.hide();
+});
 
 /// ------------------------- IPC LISTENERS ------------------------ ///
 
@@ -158,14 +161,14 @@ app.on('browser-window-blur', () => {
 ipcMain.on('command-line-native-blur', () => {
   windowDisplayHandler('COMMMAND', true);
   sentinelWindow.hide();
-  app.hide()
+  app.hide();
 });
 
 // Close the settings window (with a button)
 ipcMain.on('close-settings', () => {
   sentinelWindow.hide();
   windowDisplayHandler('COMMAND', false);
-  app.hide()
+  app.hide();
 });
 
 // Update our "state" to indicate the command line is currently in the sentinelWindow
@@ -179,8 +182,8 @@ ipcMain.on('settings-showing', () => {
 });
 
 ipcMain.on('open-settings', () => {
-  openSettingsView()
-})
+  openSettingsView();
+});
 
 /// ----------------------------- OTHER METHODS ------------------- ///
 
@@ -193,7 +196,7 @@ function keyboardShortcutHandler() {
     if (sentinelWindow.isVisible()) {
       //sentinelWindow.webContents.send('clear-command-line', 'keyboard shortcut triggered') TODO: Fix the bug that occurs when this is going
       sentinelWindow.hide();
-      app.hide()
+      app.hide();
     } else {
       sentinelWindow.show();
     }

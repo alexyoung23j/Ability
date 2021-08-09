@@ -3,7 +3,7 @@ import CSS from 'csstype';
 import useDragScroll from 'use-drag-scroll';
 import ReactDOM from 'react-dom';
 import ReactTooltip from 'react-tooltip'
-import { datetimeToOffset } from '../../../../util/CalendarUtil';
+import { datetimeToOffset } from '../../../../util/CalendarViewUtil';
 import Popup from 'reactjs-popup';
 const plusIcon = require('/src/content/svg/Plus.svg');
 const minusIcon = require('/src/content/svg/Minus.svg');

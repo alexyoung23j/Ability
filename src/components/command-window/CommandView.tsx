@@ -1,15 +1,27 @@
 import CSS from 'csstype';
 import 'draft-js/dist/Draft.css';
 import React, { useEffect, useState } from 'react';
-import { Piece, QueryPieceType } from './autocomplete/types';
+import {
+  Piece,
+  QueryPieceType,
+  ModifierCategory,
+  ModifierPiece,
+} from './types';
 import CommandLine from './command-line/CommandLine';
 import Parser from './Parser';
 import ResultEngine from './results-display/ResultEngine';
+import { QueryTransformEngine } from './results-display/QueryTransformEngine';
 
 const { ipcRenderer } = require('electron');
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
+
+const DEFAULT_AUTOCOMPLETE: ModifierPiece = {
+  value: 'week',
+  category: ModifierCategory.RANGE,
+  type: QueryPieceType.MODIFIER,
+};
 
 export default function CommandView() {
   // State
@@ -23,7 +35,8 @@ export default function CommandView() {
   const [validAutocompletes, setValidAutocompletes] = useState<Piece[]>([]);
 
   const [currentQueryFragment, setCurrentQueryFragment] = useState('');
-  const [currentAutocomplete, setCurrentAutocomplete] = useState<Piece>();
+  const [currentAutocomplete, setCurrentAutocomplete] =
+    useState<Piece>(DEFAULT_AUTOCOMPLETE);
   const [currentAutocompleteIdx, setCurrentAutocompleteIdx] = useState(0);
   const [alertCommandLineToClear, setAlertCommandLineToClear] =
     useState('default');
@@ -33,74 +46,15 @@ export default function CommandView() {
     clearCommandLine().then(() => {
       setCurrentClearing(true);
     });
-  })
-
-  // // Performs the work of fetching text snippets (replace with real logic)
-  // async function fetchSnippets() {
-  //   var myContentState1 = ContentState.createFromText(
-  //     'Would any of the following times work for you? \n\n Tuesday 3/18 - 4:00 PM, 5:00 PM, or 6:30 PM\n\n I think a one hour meeting woud be great!'
-  //   );
-  //   var myContentState2 = ContentState.createFromText(
-  //     'Would any of the following times work for you? \n\n Monday 3/17 - 4:00 PM, 5:00 PM, or 6:30 PM\n\n I think a two hour meeting woud be great!'
-  //   );
-
-  //   let textSnippetArray: textSnippet[];
-  //   textSnippetArray = [
-  //     { content: myContentState1, id: '1', title: 'email' },
-  //     { content: myContentState2, id: '2', title: 'slack' },
-  //   ];
-
-  //   return textSnippetArray;
-  // }
-
-  // AUTOCOMPLETE PARSER (to be swapped out)//
-  // eventually this will handle the preposition work and prevent us from recommending invalid preposition followers
-  // const autocompleteParser = (rawFragment: string) => {
-  //   console.log("That: ", fragment)
-  //   //  Strip Fragment of Spaces to avoid confusion
-  //   const fragment = rawFragment.trim();
-
-  //   const autocompleteDummyVals = ['lunch', 'monday', 'april 2', 'next week'];
-  //   if (fragment.length > 1) {
-  //     setValidAutocompletes([]);
-
-  //     setCurrentAutocomplete({
-  //       value: autocompleteDummyVals[0],
-  //       category: ModifierCategory.TIME,
-  //       type: QueryPieceType.MODIFIER,
-  //     });
-
-  //     for (var i = 0; i < autocompleteDummyVals.length; i++) {
-  //       const piece: Piece = {
-  //         value: autocompleteDummyVals[i],
-  //         type: QueryPieceType.MODIFIER,
-  //         category: ModifierCategory.DURATION,
-  //       };
-  //       setValidAutocompletes((validAutocompletes) => [
-  //         ...validAutocompletes,
-  //         piece,
-  //       ]);
-  //     }
-  //     setAutocompleteInProgress(true);
-
-  //     /// setValidAutocompletes should be called too
-  //   } else if (fragment.length > 1) {
-  //     setCurrentAutocompleteIdx(0);
-  //     setValidAutocompletes([]);
-  //     setCurrentAutocomplete({
-  //       value: 'on',
-  //       type: QueryPieceType.PREPOSITION,
-  //       category: PrepositionCategory.FOR_DATE,
-  //     });
-  //     setAutocompleteInProgress(true);
-  //   } else {
-  //     setCurrentAutocompleteIdx(0);
-  //     setValidAutocompletes([]);
-  //     setAutocompleteInProgress(false);
-  //   }
-  // };
+  });
 
   // ---------------- USE EFFECT METHODS ------------------- //
+
+  useEffect(() => {
+    if (queryPieces.length == 0) {
+      setCurrentAutocomplete(DEFAULT_AUTOCOMPLETE);
+    }
+  }, [currentQueryFragment]);
 
   useEffect(() => {
     if (validAutocompletes.length > 0) {
@@ -240,14 +194,8 @@ export default function CommandView() {
   }, [alertCommandLineToClear]);
 
   return (
-    <div 
-      style={commandAreaStyle} 
-      onClick={() => triggerBrowserWindowBlur()}
-    >
-      <div 
-        style={commandStyle} 
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div style={commandAreaStyle} onClick={() => triggerBrowserWindowBlur()}>
+      <div style={commandStyle} onClick={(e) => e.stopPropagation()}>
         <CommandLine
           queryPiecePositions={queryPiecePositions}
           autocompleteInProgress={autocompleteInProgress}
@@ -259,6 +207,7 @@ export default function CommandView() {
           validAutocompletes={validAutocompletes}
           alertCommandLineToClear={alertCommandLineToClear}
           currentlyClearing={currentlyClearing}
+          clearCommandLine={clearCommandLine}
           currentQueryFragmentHandler={setCurrentQueryFragment}
           finalQueryLaunchedHandler={setFinalQueryLaunched}
           addToQueryPiecePositionsHandler={addToQueryPiecePositionsHandler}
@@ -269,7 +218,9 @@ export default function CommandView() {
           autocompleteItemClickedHandler={setAutocompleteItemClicked}
           alertCommandLineClearHandler={setAlertCommandLineToClear}
         />
-        {(finalQueryLaunched && <ResultEngine />) || (
+        {(finalQueryLaunched && (
+          <QueryTransformEngine queryPieces={queryPieces} />
+        )) || (
           <Parser
             updateRoot={setValidAutocompletes}
             validAutocompletes={validAutocompletes}
@@ -286,10 +237,9 @@ export default function CommandView() {
               value: currentQueryFragment,
               type: QueryPieceType.MODIFIER,
             }}
-            
           />
         )}
-       </div>
+      </div>
     </div>
   );
 }
@@ -302,7 +252,7 @@ const commandStyle: CSS.Properties = {
   borderRadius: '12px',
   flexDirection: 'column',
   outline: 'none',
-  marginTop: "5%",
+  marginTop: '5%',
   boxShadow: '0 0 50px rgba(0,0,0, 0.3)',
 };
 
@@ -312,6 +262,6 @@ const commandAreaStyle: CSS.Properties = {
   justifyContent: 'center',
   height: '100%',
   backgroundColor: 'rgba(211,211,211, 0.05)',
-  position: "fixed",
-  width: "100%"
+  position: 'fixed',
+  width: '100%',
 };

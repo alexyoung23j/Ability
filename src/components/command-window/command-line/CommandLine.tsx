@@ -15,7 +15,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Piece, QueryPieceType, ModifierCategory } from '../autocomplete/types';
+import { Piece, QueryPieceType, ModifierCategory } from '../types';
 const { ipcRenderer } = require('electron');
 
 const enterIcon = require('/src/content/svg/enterIcon.svg');
@@ -39,6 +39,7 @@ interface CommandLineProps {
   validAutocompletes: Piece[];
 
   // callback function props
+  clearCommandLine: any;
   currentQueryFragmentHandler: any;
   finalQueryLaunchedHandler: any;
   addToQueryPiecePositionsHandler: any;
@@ -62,6 +63,7 @@ export default function CommandLine(props: CommandLineProps) {
   const validAutocompletes = props.validAutocompletes;
 
   // Callbacks to update props
+  const clearCommandLine = props.clearCommandLine;
   const currentQueryFragmentHandler = props.currentQueryFragmentHandler;
   const finalQueryLaunchedHandler = props.finalQueryLaunchedHandler;
   const addToQueryPiecePositionsHandler = props.addToQueryPiecePositionsHandler;
@@ -334,8 +336,15 @@ export default function CommandLine(props: CommandLineProps) {
     if (currentQueryFragment === '' && queryPiecePositions.length > 1) {
       // We haven't started creating a new piece anymore,
       // QUERY ENDS HERE
-      finalQueryLaunchedHandler(true);
+
+      // Ensure our final query piece was indeed a modifier, not a preposition
+      if (queryPieces[queryPieces.length - 1].type === 'MODIFIER') {
+        finalQueryLaunchedHandler(true);
+      }
+
       return 'handled';
+    } else if (currentQueryFragment === '' && queryPiecePositions.length == 1) {
+      performAutocompletion();
     }
 
     // Generate new Editor State with Autocomplete
@@ -393,27 +402,33 @@ export default function CommandLine(props: CommandLineProps) {
       return getDefaultKeyBinding(e);
     } else if (e.keyCode === 8) {
       // backspace key
+
       // handle completely empty editor
       if (currentQueryFragment === '' && queryPieces.length === 0) {
         return 'do-nothing';
       }
-      const focusInQueryPiece = focusLocation();
 
-      if (focusInQueryPiece === -1) {
-        // If we have nothing typed, delete the most recent Piece
-        if (currentQueryFragment === '') {
+      if (e.metaKey) {
+        clearCommandLine();
+      } else {
+        const focusInQueryPiece = focusLocation();
+
+        if (focusInQueryPiece === -1) {
+          // If we have nothing typed, delete the most recent Piece
+          if (currentQueryFragment === '') {
+            setUpdateCurrentQueryFragment(false);
+            deleteQueryPiece(queryPiecePositions.length - 2);
+            return 'delete-existing';
+          }
+          // Otherwise just let us update the query fragment normally
+          setUpdateCurrentQueryFragment(true);
+          return getDefaultKeyBinding(e);
+        } else {
+          // If we are focused inside the query, delete the existing query piece
           setUpdateCurrentQueryFragment(false);
-          deleteQueryPiece(queryPiecePositions.length - 2);
+          deleteQueryPiece(focusInQueryPiece);
           return 'delete-existing';
         }
-        // Otherwise just let us update the query fragment normally
-        setUpdateCurrentQueryFragment(true);
-        return getDefaultKeyBinding(e);
-      } else {
-        // If we are focused inside the query, delete the existing query piece
-        setUpdateCurrentQueryFragment(false);
-        deleteQueryPiece(focusInQueryPiece);
-        return 'delete-existing';
       }
     } else {
       const focusInQueryPiece = focusLocation();
@@ -440,13 +455,16 @@ export default function CommandLine(props: CommandLineProps) {
       (currentAutocomplete != null &&
         parseOutSpaces(currentAutocomplete.value) === fragmentWithoutFinalSpace)
     ) {
-      // Catch situations where we have on autocomplete but it is open ended ("august _" for instance)
-      if (!validAutocompletes[0].value.includes("_")) {
-        return true;
+      // Catch situations where we have one autocomplete but it is open ended (could be january 1 or january 2 etc)
+      if (
+        validAutocompletes[0].value.includes('_') ||
+        (validAutocompletes[0].value.includes('1') &&
+          !fragmentWithoutFinalSpace.includes('1'))
+      ) {
+        return false;
       } else {
-        return false
+        return true;
       }
-      
     } else {
       return false;
     }
@@ -498,21 +516,23 @@ export default function CommandLine(props: CommandLineProps) {
       // TODO: Add logic for routing to settings view with information about the query that was entered
       return (
         <div
-          onClick={(e) => {e.stopPropagation(); ipcRenderer.send('open-settings')}}
-          style={{position: 'absolute',
-          marginLeft: '545px',
-          marginTop: '2px',}}
+          onClick={(e) => {
+            e.stopPropagation();
+            ipcRenderer.send('open-settings');
+          }}
+          style={{
+            position: 'absolute',
+            marginLeft: '545px',
+            marginTop: '2px',
+          }}
         >
           <img
             style={{
               height: '18px',
-              
             }}
             src={settingsIcon}
-           
           />
         </div>
-        
       );
     } else {
       return <div />;
@@ -547,15 +567,14 @@ export default function CommandLine(props: CommandLineProps) {
 
 // Display the default message
 function DefaultText() {
-
-  return(
+  return (
     <div
-      style={{position: "absolute", marginLeft: "3px"}}
+      style={{ position: 'absolute', marginLeft: '3px' }}
       className="commandLineDefaultText"
     >
       start your calendar search!
     </div>
-  )
+  );
 }
 
 // Styling

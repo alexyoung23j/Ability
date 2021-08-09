@@ -3,7 +3,7 @@ import dirtyChai from 'dirty-chai';
 import { DateTime } from 'luxon';
 
 import { EVENT_1A, EVENT_1B, EVENT_2A, EVENT_3A } from '../../EventsFixtures';
-import * as CalendarIndexUtil from '../../../components/command-window/CalendarIndexUtil';
+import * as CalendarIndexUtil from '../../../components/util/CalendarIndexUtil';
 
 chai.use(dirtyChai);
 
@@ -53,20 +53,20 @@ describe('CalendarIndexUtil', () => {
 
   it.only('calculates position in calendar index based on date and date at position 0', () => {
     const today = DateTime.now();
-    expect(CalendarIndexUtil._mapDateToIndex(today)).equal(0);
-    expect(CalendarIndexUtil._mapDateToIndex(today.plus({ days: 1 }))).equal(1);
-    expect(CalendarIndexUtil._mapDateToIndex(today.plus({ days: 5 }))).equal(5);
+    expect(CalendarIndexUtil.mapDateToIndex(today)).equal(0);
+    expect(CalendarIndexUtil.mapDateToIndex(today.plus({ days: 1 }))).equal(1);
+    expect(CalendarIndexUtil.mapDateToIndex(today.plus({ days: 5 }))).equal(5);
 
     // Index 0 is yesterday
     expect(
-      CalendarIndexUtil._mapDateToIndex(
+      CalendarIndexUtil.mapDateToIndex(
         today.plus({ days: 5 }),
         today.minus({ days: 1 })
       )
     ).equal(6);
 
     expect(() =>
-      CalendarIndexUtil._mapDateToIndex(today.plus({ days: 400 }))
+      CalendarIndexUtil.mapDateToIndex(today.plus({ days: 400 }))
     ).throws();
   });
 

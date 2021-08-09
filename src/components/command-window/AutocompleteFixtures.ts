@@ -3,7 +3,7 @@ import {
   ModifierCategory,
   QueryPieceType,
   PrepositionPiece,
-} from '../components/command-window/autocomplete/types';
+} from './types';
 
 /* ----------------- Official Modifiers Guide -----------------
 
@@ -50,6 +50,10 @@ export const DURATION_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   '_minutes',
   '_min',
   '_minute',
+  '_._ hour',
+  '_._ hours',
+  '_._hour',
+  '_._hours',
 ].map((value) => ({
   value,
   category: ModifierCategory.DURATION,
@@ -73,8 +77,7 @@ export const TIME_MODIFIER_FIXTURES: Array<ModifierPiece> = [
 }));
 
 export const DATE_MODIFIER_FIXTURES: Array<ModifierPiece> = [
-  'tomorrow',
-  'today',
+  // Generic dates:
   'monday',
   'tuesday',
   'wednesday',
@@ -82,13 +85,10 @@ export const DATE_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   'friday',
   'saturday',
   'sunday',
-  'mondays',
-  'tuesdays',
-  'wednesdays',
-  'thursdays',
-  'fridays',
-  'saturdays',
-  'sundays',
+  // Specific dates:
+  'tomorrow',
+  'today',
+  'yesterday',
   '_/_',
   '_/_/2021',
   '_/_/2022',
@@ -116,6 +116,7 @@ export const DATE_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   'october _',
   'november _',
   'december _',
+  // TODO: add with year? "january 1, 2021" or something
 ].map((value) => ({
   value,
   category: ModifierCategory.DATE,

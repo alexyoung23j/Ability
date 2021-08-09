@@ -1,296 +1,324 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 
-
 ::-webkit-scrollbar {
-    width: 3px;
+  width: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(125,125,125, .5);
-    border-radius: 900px;
-    border-top: 4px transparent
+  background: rgba(125, 125, 125, 0.5);
+  border-radius: 900px;
+  border-top: 4px transparent;
 }
- 
+
 .titlebar {
-    -webkit-user-select: none;
-    -webkit-app-region: drag;
-  }
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+}
 .commandLineStyle {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 24px;
-    font-weight: normal;
-    min-width: 200px;
-    color: #7D7D7D;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 24px;
+  font-weight: normal;
+  min-width: 200px;
+  color: #7d7d7d;
 }
 
 .commandLineDefaultText {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 24px;
-    font-weight: normal;
-    color: rgba(125,125,125,0.3)
+  font-family: 'Montserrat', sans-serif;
+  font-size: 24px;
+  font-weight: normal;
+  color: rgba(125, 125, 125, 0.3);
 }
 
 .visibleTextSnippetStyle {
-    font-family: 'Montserrat', sans-serif;
-    font-style: normal;
-    font-weight: normal;
-    line-height: 1.5;
-    font-size: 15px;
-    color: #7D7D7D;
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1.5;
+  font-size: 15px;
+  color: #7d7d7d;
 }
 
 .hiddenTextSnippetStyle {
-    font-family: 'Arial';
-    font-style: normal;
-    font-weight: normal;
-    font-size: 10px;
+  font-family: 'Arial';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 10px;
 }
 
 .textSnippetTabStandard {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 12;
-    color: #7D7D7D;
-    font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12;
+  color: #7d7d7d;
+  font-weight: 600;
 }
 
 .textSnippetTabLaunched {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 12;
-    background: linear-gradient(90deg, rgba(135, 220, 215, 1), rgba(125, 189, 220, 1));
-    -webkit-text-fill-color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-    font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12;
+  background: linear-gradient(
+    90deg,
+    rgba(135, 220, 215, 1),
+    rgba(125, 189, 220, 1)
+  );
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  font-weight: 600;
 }
 
 .clipboardCopiedText {
-    font-family: 'Montserrat', sans-serif;
-    font-style: italic;
-    font-weight: normal;
-    color: #7D7D7D;
-    font-size: 14px;
-    display: flex;
+  font-family: 'Montserrat', sans-serif;
+  font-style: italic;
+  font-weight: normal;
+  color: #7d7d7d;
+  font-size: 14px;
+  display: flex;
 }
 
 .leftGradientBar {
-    background: linear-gradient(90deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0))
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 1),
+    rgba(255, 255, 255, 0)
+  );
 }
 
 .rightGradientBar {
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .95))
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.95)
+  );
 }
 
 .timeBarText {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: lighter;
-    color: #7D7D7D;
-    font-size: 11px;
-    display: flex;
-    height: 10px;
-    width: 40px;
-    margin-bottom: 5px;
-    margin-left: 2px; 
-    justify-content: center;
-    align-items: center
+  font-family: 'Montserrat', sans-serif;
+  font-weight: lighter;
+  color: #7d7d7d;
+  font-size: 11px;
+  display: flex;
+  height: 10px;
+  width: 40px;
+  margin-bottom: 5px;
+  margin-left: 2px;
+  justify-content: center;
+  align-items: center;
 }
 
 .horizontalCalendarDateText {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: lighter;
-    color: #7D7D7D;
-    font-size: 13px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: lighter;
+  color: #7d7d7d;
+  font-size: 13px;
 }
 
 .freeBlock {
-    background: linear-gradient(90deg, rgba(135, 220, 215, .4), rgba(125, 189, 220, .4))
+  background: linear-gradient(
+    90deg,
+    rgba(135, 220, 215, 0.4),
+    rgba(125, 189, 220, 0.4)
+  );
 }
 
 .launchTextEngineTextStandard {
-    font-family: 'Montserrat';
-    font-weight: medium;
-    color: #7D7D7D;
-    font-size: 15px;
+  font-family: 'Montserrat';
+  font-weight: medium;
+  color: #7d7d7d;
+  font-size: 15px;
 }
 
 .launchTextEngineTextLaunched {
-    font-family: 'Montserrat';
-    font-weight: medium;
-    background: linear-gradient(90deg, rgba(135, 220, 215, 1), rgba(125, 189, 220, 1));
-    -webkit-text-fill-color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-    font-size: 15px;
+  font-family: 'Montserrat';
+  font-weight: medium;
+  background: linear-gradient(
+    90deg,
+    rgba(135, 220, 215, 1),
+    rgba(125, 189, 220, 1)
+  );
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  font-size: 15px;
 }
 
 .textEditButton {
-    font-family: 'Montserrat';
-    font-weight: medium;
-    text-decoration: underline;
-    color: #7D7D7D;
-    font-size: 14px;
-
+  font-family: 'Montserrat';
+  font-weight: medium;
+  text-decoration: underline;
+  color: #7d7d7d;
+  font-size: 14px;
 }
 
 .copyTextButton {
-    font-family: 'Montserrat';
-    font-weight: medium;
-    color: #FFFFFF;
-    font-size: 12px;
+  font-family: 'Montserrat';
+  font-weight: medium;
+  color: #ffffff;
+  font-size: 12px;
 }
 
 .event-tooltip {
-    filter: drop-shadow(0 0 4px rgba(172, 170, 170, 0.5));
-    border-radius: 8px;
-    border-width: 0px;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    cursor: pointer;
-    z-index: 20 !important
-
-
+  filter: drop-shadow(0 0 4px rgba(172, 170, 170, 0.5));
+  border-radius: 8px;
+  border-width: 0px;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  cursor: pointer;
+  z-index: 20 !important;
 }
 
 .event-tooltip:hover {
-    visibility: visible !important;
-    opacity: 1 !important;
-
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
-
 .eventTooltipText {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: bolder;
-    color: #7D7D7D;
-    font-size: 13px;
-    max-width: 150px
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bolder;
+  color: #7d7d7d;
+  font-size: 13px;
+  max-width: 150px;
 }
 
 .eventTooltipDateText {
-    font-family: 'Montserrat';
-    font-weight: bolder;
-    color: #7D7D7D;
-    font-size: 10px;
-    max-width: 150px;
-    margin-left: 12px;
-    margin-top: 5px;
+  font-family: 'Montserrat';
+  font-weight: bolder;
+  color: #7d7d7d;
+  font-size: 10px;
+  max-width: 150px;
+  margin-left: 12px;
+  margin-top: 5px;
 }
 
 .eventModalTitle {
-    font-family: 'Montserrat';
-    font-weight: lighter;
-    color: #3F3F3F;
-    font-size: 20px;
-    border: none;
-    outline: none;
-    width: 350px;
+  font-family: 'Montserrat';
+  font-weight: lighter;
+  color: #3f3f3f;
+  font-size: 20px;
+  border: none;
+  outline: none;
+  width: 350px;
 }
 
-
 .eventModalLocation {
-    font-family: 'Montserrat';
-    font-weight: lighter;
-    color: #7D7D7D;
-    font-size: 14px;
-    border: none;
-    outline: none;
-    width: 200px;
+  font-family: 'Montserrat';
+  font-weight: lighter;
+  color: #7d7d7d;
+  font-size: 14px;
+  border: none;
+  outline: none;
+  width: 200px;
 }
 
 .eventModalDescription {
-    font-family: 'Montserrat';
-    font-weight: lighter;
-    color: #7D7D7D;
-    font-size: 14px;
-    border: none;
-    outline: none;
-    width: 350px;
-    resize: none;
-    min-height: 200px;
+  font-family: 'Montserrat';
+  font-weight: lighter;
+  color: #7d7d7d;
+  font-size: 14px;
+  border: none;
+  outline: none;
+  width: 350px;
+  resize: none;
+  min-height: 200px;
 }
 
 .eventModalSaveButton {
-    background: linear-gradient(90deg, rgba(135, 220, 215, 1), rgba(125, 189, 220, 1));
+  background: linear-gradient(
+    90deg,
+    rgba(135, 220, 215, 1),
+    rgba(125, 189, 220, 1)
+  );
 }
 
-
 .eventModalSaveButtonText {
-    font-family: 'Montserrat';
-    font-weight: lighter;
-    color: #FFFFFF;
-    font-size: 14px
+  font-family: 'Montserrat';
+  font-weight: lighter;
+  color: #ffffff;
+  font-size: 14px;
 }
 
 .eventModalCancelButtonText {
-    font-family: 'Montserrat';
-    font-weight: lighter;
-    text-decoration: underline;
-    color: #7D7D7D;
-    font-size: 12px
+  font-family: 'Montserrat';
+  font-weight: lighter;
+  text-decoration: underline;
+  color: #7d7d7d;
+  font-size: 12px;
 }
 
 .eventModalTime {
-    font-family: 'Montserrat';
-    font-weight: bolder;
-    color: #7D7D7D;
-    font-size: 13px;
+  font-family: 'Montserrat';
+  font-weight: bolder;
+  color: #7d7d7d;
+  font-size: 13px;
 }
 
 .eventModalCalendarText {
-    font-family: 'Montserrat';
-    font-weight: bolder;
-    color: #7D7D7D;
-    font-size: 13px;
+  font-family: 'Montserrat';
+  font-weight: bolder;
+  color: #7d7d7d;
+  font-size: 13px;
 }
 
 .eventTimePickerTimeOption {
-    font-family: 'Montserrat';
-    font-weight: bolder;
-    color: #7D7D7D;
-    font-size: 13px;
-    height: 30px;
-    cursor: pointer;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    margin-left: 6px;
-    margin-right: 6px
+  font-family: 'Montserrat';
+  font-weight: bolder;
+  color: #7d7d7d;
+  font-size: 13px;
+  height: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  margin-left: 6px;
+  margin-right: 6px;
 }
 
 .eventModalTimePlainString {
-    font-family: 'Montserrat';
-    font-weight: lighter;
-    color: #7D7D7D;
-    font-size: 13px;
-    margin-left: 15px;
-    margin-right: 17px
+  font-family: 'Montserrat';
+  font-weight: lighter;
+  color: #7d7d7d;
+  font-size: 13px;
+  margin-left: 15px;
+  margin-right: 17px;
 }
 
-
-::-webkit-input-placeholder { 
-    color: rgba(172, 170, 170, 0.7);
+::-webkit-input-placeholder {
+  color: rgba(172, 170, 170, 0.7);
 }
 
 .datePicker {
-    font-family: 'Montserrat';
-    font-weight: lighter;
-    height: 26px;
-    width: 150px;
+  font-family: 'Montserrat';
+  font-weight: lighter;
+  height: 26px;
+  width: 150px;
 }
 
 .MuiInputBase-input {
-    color: "blue"
+  color: 'blue';
 }
 
 .calendarPopupText {
-    font-family: 'Montserrat';
-    font-weight: lighter;
-    font-size: 13px;
-    
+  font-family: 'Montserrat';
+  font-weight: lighter;
+  font-size: 13px;
 }
 
 .calendarHeaderText {
-    font-family: 'Montserrat';
-    font-weight: lighter;
-    color: #7D7D7D;
-    font-size: 15px;
+  font-family: 'Montserrat';
+  font-weight: lighter;
+  color: #7d7d7d;
+  font-size: 15px;
+}
+
+.chooseCalendarsTitleText {
+  font-family: 'Montserrat';
+  font-weight: lighter;
+  color: #7d7d7d;
+  font-size: 17px;
+  margin-top: 16px;
+}
+
+.basicTextClass {
+  font-family: 'Montserrat';
+  font-weight: lighter;
+  color: #7d7d7d;
 }
