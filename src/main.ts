@@ -107,6 +107,8 @@ const createTray = () => {
 
 /// -------------------------- APP EVENT HANDLERS -------------------- ///
 
+app.setAsDefaultProtocolClient('ability');
+
 // Setup when app launches
 // TODO: set to only run this on DEBUG mode
 const reactDevToolsPath = path.join(
