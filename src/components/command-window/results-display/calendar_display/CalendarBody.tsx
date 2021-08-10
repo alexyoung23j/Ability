@@ -65,7 +65,6 @@ export default function CalendarBody(props: CalendarBody) {
     scrollMarginTop: '5px',
   };
 
-  // console.log('wtfL ', calendar_data);
   // Since each slot in our ignoredSlots array has a day index associated with it, we extract only the block and slot indices
   // for processing with the horizontal calendar itself
   function reduceIgnoredSlotsArray(day_idx) {

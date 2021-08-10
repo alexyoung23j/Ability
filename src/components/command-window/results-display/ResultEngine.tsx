@@ -131,6 +131,28 @@ export default function ResultEngine(props: ResultEngineProps) {
     return -1;
   }
 
+  useEffect(() => {
+    if (textEngineLaunched) {
+      let slotsToIgnore = [];
+      for (
+        var day_idx = 0;
+        day_idx < filteredCalendarData.days.length;
+        day_idx += 1
+      ) {
+        const blocks = filteredCalendarData.days[day_idx].free_blocks;
+        for (var block_idx = 0; block_idx < blocks.length; block_idx += 1) {
+          const slots =
+            filteredCalendarData.days[day_idx].free_blocks[block_idx]
+              .free_slots;
+          for (var slot_idx = 0; slot_idx < slots.length; slot_idx += 1) {
+            slotsToIgnore.push([day_idx, block_idx, slot_idx]);
+          }
+        }
+      }
+      setIgnoreSlots(slotsToIgnore);
+    }
+  }, [filteredCalendarData]);
+
   // Listen for updates to the unfiltered data, the accounts, and the text engine launch status
   useEffect(() => {
     // If text engine launched, make intervals 1 hour
@@ -468,9 +490,14 @@ export default function ResultEngine(props: ResultEngineProps) {
         <Scheduler
           textEngineLaunched={textEngineLaunched}
           setTextEngineLaunched={setTextEngineLaunched}
+          ignoreHandler={updateIgnoredSlots}
+          calendar_data={filteredCalendarData}
         />
         {textEngineLaunched && (
-          <TextSnippetDropdown snippetPayload={textSnippetArray} />
+          <TextSnippetDropdown
+            ignoredSlots={ignoreSlots}
+            snippetPayload={textSnippetArray}
+          />
         )}
       </div>
     </MuiPickersUtilsProvider>
@@ -478,8 +505,18 @@ export default function ResultEngine(props: ResultEngineProps) {
 }
 
 // Button for opening up the text engine
-function Scheduler(props: { textEngineLaunched; setTextEngineLaunched }) {
-  const { textEngineLaunched, setTextEngineLaunched } = props;
+function Scheduler(props: {
+  textEngineLaunched;
+  setTextEngineLaunched;
+  ignoreHandler;
+  calendar_data;
+}) {
+  const {
+    textEngineLaunched,
+    setTextEngineLaunched,
+    ignoreHandler,
+    calendar_data,
+  } = props;
 
   const className =
     textEngineLaunched === true
@@ -488,6 +525,13 @@ function Scheduler(props: { textEngineLaunched; setTextEngineLaunched }) {
 
   const arrowToDisplay =
     textEngineLaunched === true ? dropdownArrowHighlight : dropdownArrowNormal;
+
+  function launchTextEngine() {
+    // Set Every Slot to be ignored (we want you to add in the slots you like)
+
+    // Launch Engine
+    setTextEngineLaunched(!textEngineLaunched);
+  }
 
   return (
     <div
@@ -499,7 +543,7 @@ function Scheduler(props: { textEngineLaunched; setTextEngineLaunched }) {
       }}
     >
       <div
-        onClick={() => setTextEngineLaunched(!textEngineLaunched)}
+        onClick={() => launchTextEngine()}
         style={{
           cursor: 'pointer',
           display: 'flex',
