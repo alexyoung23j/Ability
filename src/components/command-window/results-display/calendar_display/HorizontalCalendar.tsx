@@ -13,6 +13,7 @@ import CalendarEvents from './horizontal-cal-components/CalendarEvents';
 import ReactTooltip from 'react-tooltip';
 import EventTooltip from './horizontal-cal-components/EventTooltip';
 import { current } from 'immer';
+import { NumberLiteralType } from 'typescript';
 const { DateTime } = require('luxon');
 
 var nodeConsole = require('console');
@@ -32,8 +33,9 @@ interface HorizontalCalendar {
   ignoredSlots: Array<Array<number>>;
   eventTooltipId: string;
   event_overlap_depth: number;
-  scheduleNewEvent: any;
+  initial_scroll_amount: number;
 
+  scheduleNewEvent: any;
   setModalShow: any;
   setModalEventDayIdx: any;
   setModalEventIdxInDay: any;
@@ -59,6 +61,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     ignoredSlots,
     eventTooltipId,
     event_overlap_depth,
+    initial_scroll_amount,
     scheduleNewEvent,
     setModalShow,
     setModalEventDayIdx,
@@ -94,22 +97,9 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
 
   useEffect(() => {
     if (scrollRef.current !== null) {
-      const xScrollAmount = 450; // TODO: Actually figure out how we want scrolling to work
-      scrollRef.current.scrollTo(xScrollAmount, 0);
+      scrollRef.current.scrollTo(initial_scroll_amount, 0);
     }
-  }, []);
-
-  // Scrolls to the first occurence of a free slot
-  function calculateScroll() {
-    if (free_blocks.length > 0) {
-      const earliestTime = DateTime.fromISO(free_blocks[0].start_time);
-      const earliestHour = earliestTime.hour;
-
-      return earliestHour * BAR_WIDTH - BAR_WIDTH * 0.25;
-    } else {
-      return 300;
-    }
-  }
+  }, [initial_scroll_amount]);
 
   // -------------------------- CALLBACKS -------------------------- //
 

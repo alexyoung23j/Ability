@@ -4,6 +4,7 @@ import HorizontalCalendar from './HorizontalCalendar';
 import EventModal from './EventModal';
 import { RegisteredAccount } from '../../types';
 const { DateTime } = require('luxon');
+import { BAR_WIDTH } from '../../../util/CalendarViewUtil';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -52,6 +53,10 @@ export default function CalendarBody(props: CalendarBody) {
   }); // TODO: Fetch from context
   const [modalEventDescription, setModalEventDescription] = useState('');
 
+  const initial_scroll_amount = calculateScroll(
+    calendar_data.days[0].free_blocks
+  );
+
   const calendarBodyStyle: CSS.Properties = {
     display: 'flex',
     alignItems: 'center',
@@ -79,6 +84,18 @@ export default function CalendarBody(props: CalendarBody) {
     return reducedArray;
   }
 
+  // Scrolls to the first occurence of a free slot
+  function calculateScroll(free_blocks: Array<any>) {
+    if (free_blocks.length > 0) {
+      const earliestTime = DateTime.fromISO(free_blocks[0].start_time);
+      const earliestHour = earliestTime.hour;
+
+      return earliestHour * BAR_WIDTH - BAR_WIDTH * 0.25;
+    } else {
+      return 300;
+    }
+  }
+
   return (
     <div style={calendarBodyStyle} ref={bodyRef}>
       {calendar_data.days.map((data, idx) => (
@@ -102,6 +119,7 @@ export default function CalendarBody(props: CalendarBody) {
             textSnippetOpen={textEngineLaunched}
             ignoredSlots={reduceIgnoredSlotsArray(idx)}
             eventTooltipId={idx.toString() + data.hard_start}
+            initial_scroll_amount={initial_scroll_amount}
             scheduleNewEvent={scheduleNewEvent}
             event_overlap_depth={data.event_overlap_depth}
             setModalShow={setModalShow}
