@@ -103,3 +103,31 @@ export interface RegisteredAccount {
   calendars: Array<Calendar>;
   accountEmail: string;
 }
+
+export interface TextSnippetPackage {
+  textSnippetPieces: Array<string>;
+  textObjects: Array<TextObject>;
+  name: string;
+  id: string;
+}
+
+export type TextObject =
+  | DateTextObject
+  | DurationTextObject
+  | TimeZoneTextObject;
+
+export interface DateTextObject {
+  settings: {
+    abbreviateTimes: boolean;
+    inlineText: boolean;
+    includeDates: boolean; // etc..
+  };
+}
+
+export interface DurationTextObject {
+  settings: {
+    abbreviate: boolean;
+  };
+}
+
+export interface TimeZoneTextObject {}

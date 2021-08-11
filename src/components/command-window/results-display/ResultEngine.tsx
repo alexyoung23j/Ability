@@ -10,6 +10,7 @@ import { demo1ArrayOfSnippets } from '../constants';
 import { Calendar, RegisteredAccount } from '../types';
 import CalendarView from './calendar_display/CalendarView';
 import TextSnippetDropdown from './snippet_display/TextSnippetDropdown';
+import TextEngine from './TextEngine';
 const { DateTime } = require('luxon');
 
 const dropdownArrowNormal = require('/src/content/svg/DropdownArrowNormal.svg');
@@ -131,6 +132,7 @@ export default function ResultEngine(props: ResultEngineProps) {
     return -1;
   }
 
+  // Sets the slots to be all ignored when we first open the text engine
   useEffect(() => {
     if (textEngineLaunched) {
       let slotsToIgnore = [];
@@ -494,8 +496,9 @@ export default function ResultEngine(props: ResultEngineProps) {
           calendar_data={filteredCalendarData}
         />
         {textEngineLaunched && (
-          <TextSnippetDropdown
+          <TextEngine
             ignoredSlots={ignoreSlots}
+            calendar_data={filteredCalendarData}
             snippetPayload={textSnippetArray}
           />
         )}
