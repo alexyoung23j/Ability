@@ -3,6 +3,8 @@ import { google } from 'googleapis';
 import { OAuth2Client } from 'googleapis-common';
 import { GoogleLogin, GoogleLoginResponse } from 'react-google-login';
 
+import { shell } from 'electron';
+
 import firebase from 'firebase/app';
 
 // This import hydrates firebase with an auth property (I think)
@@ -13,6 +15,8 @@ import { CalendarContext } from '../../App';
 import * as CalendarIndexUtil from '../util/CalendarIndexUtil';
 
 const CALENDAR_ID = 'abilityapptester01@gmail.com';
+
+const SIGN_IN_URL = 'https://ability-317805.web.app';
 
 // Helpers for testing in CDT
 // window.CalendarDAO = CalendarDAO;
@@ -28,9 +32,7 @@ export function SignInAuth() {
 
   const signIn = async () => {
     try {
-      const result = await firebase.auth().signInWithPopup(provider);
-      const { credential, user } = result;
-      const { accessToken } = credential as firebase.auth.OAuthCredential;
+      shell.openExternal(SIGN_IN_URL);
     } catch (e) {
       console.log(e);
       throw e;

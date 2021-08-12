@@ -43,7 +43,7 @@ const createSentinelWindow = (): void => {
     frame: false,
     height: maxiSize.height,
     width: maxiSize.width,
-    transparent: true,
+    transparent: false,
     show: true,
     title: 'COMMAND',
     movable: false,
@@ -155,6 +155,11 @@ app.on('activate', () => {
 app.on('browser-window-blur', () => {
   sentinelWindow.hide();
   app.hide();
+});
+
+app.on('open-url', () => {
+  sentinelWindow.webContents.send('woo');
+  openCommandLine();
 });
 
 /// ------------------------- IPC LISTENERS ------------------------ ///

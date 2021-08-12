@@ -82,14 +82,20 @@ function App() {
     ipcRenderer.send('settings-showing');
   });
 
+  ipcRenderer.on('woo', () => {
+    console.log('received muchachos');
+  });
+
   return (
     <CalendarContext.Provider value={calendarIndex}>
-      {/* <SignInAuth /> */}
-      <div>
-        {(showCommand && <CommandView />) || (
-          <SettingsView toggleWindowHandler={toggleBetweenWindows} />
-        )}
-      </div>
+      <>
+        <SignInAuth />
+        <div>
+          {(showCommand && <CommandView />) || (
+            <SettingsView toggleWindowHandler={toggleBetweenWindows} />
+          )}
+        </div>
+      </>
     </CalendarContext.Provider>
   );
 }
