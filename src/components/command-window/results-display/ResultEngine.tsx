@@ -9,7 +9,6 @@ import {
 import { demo1ArrayOfSnippets } from '../constants';
 import { Calendar, RegisteredAccount } from '../types';
 import CalendarView from './calendar_display/CalendarView';
-import TextSnippetDropdown from './snippet_display/TextSnippetDropdown';
 import TextEngine from './TextEngine';
 const { DateTime } = require('luxon');
 

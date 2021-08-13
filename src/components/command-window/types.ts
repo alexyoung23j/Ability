@@ -68,12 +68,6 @@ export function isModifierPiece(
   return 'category' in piece && piece.type === QueryPieceType.MODIFIER;
 }
 
-export interface textSnippet {
-  content: ContentState;
-  id: string;
-  title: string;
-}
-
 export interface QueryTransformEngineProps {
   queryPieces: Array<Piece>;
 }
@@ -105,8 +99,7 @@ export interface RegisteredAccount {
 }
 
 export interface TextSnippetPackage {
-  textSnippetPieces: Array<string>;
-  textObjects: Array<TextObject>;
+  textSnippetPieces: Array<string | TextObject>; // The first text snippet will always come before the first text object. If you want to "start" with a text
   name: string;
   id: string;
 }
@@ -119,9 +112,16 @@ export type TextObject =
 export interface DateTextObject {
   settings: {
     abbreviateTimes: boolean;
+    listTimes: boolean;
     inlineText: boolean;
     includeDates: boolean; // etc..
   };
+}
+
+export function isDateTextObject(
+  snippetPiece: TextObject
+): snippetPiece is DateTextObject {
+  return 'abbreviateTimes' in snippetPiece.settings;
 }
 
 export interface DurationTextObject {
@@ -130,4 +130,27 @@ export interface DurationTextObject {
   };
 }
 
-export interface TimeZoneTextObject {}
+export function isDurationTextObject(
+  snippetPiece: TextObject
+): snippetPiece is DurationTextObject {
+  return 'abbreviate' in snippetPiece.settings;
+}
+
+export interface TimeZoneTextObject {
+  settings: {
+    timeZone: number;
+  };
+}
+
+export function isTimeZoneTextObject(
+  snippetPiece: TextObject
+): snippetPiece is TimeZoneTextObject {
+  return 'timeZone' in snippetPiece.settings;
+}
+
+export interface TextSnippet {
+  // This is what gets passed down to the TextSnippetDropdown Component
+  content: ContentState;
+  id: string;
+  title: string;
+}
