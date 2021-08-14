@@ -50,16 +50,16 @@ const dummy_packages: Array<TextSnippetPackage> = [
 ];
 
 interface TextEngineProps {
-  snippetPayload: TextSnippet[];
   calendar_data: CalendarResultData;
   ignoredSlots: Array<Array<number>>;
 }
 
 export default function TextEngine(props: TextEngineProps) {
-  const { snippetPayload, calendar_data, ignoredSlots } = props;
+  const { calendar_data, ignoredSlots } = props;
 
   // Should be fetching this from context
   const TextSnippetPackages = dummy_packages;
+  console.log('ignored: ', ignoredSlots);
 
   // Grab the chosen slots
   const timeSlots = _extractTimeSlots(calendar_data, ignoredSlots);
@@ -69,7 +69,6 @@ export default function TextEngine(props: TextEngineProps) {
     TextSnippetPackages,
     calendar_data.minDuration
   );
-  console.log(calendar_data);
 
   return (
     <TextSnippetDropdown ignoredSlots={ignoredSlots} snippetPayload={payload} />

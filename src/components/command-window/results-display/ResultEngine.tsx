@@ -150,6 +150,7 @@ export default function ResultEngine(props: ResultEngineProps) {
           }
         }
       }
+      console.log('setting slots');
       setIgnoreSlots(slotsToIgnore);
     }
   }, [filteredCalendarData]);
@@ -494,11 +495,10 @@ export default function ResultEngine(props: ResultEngineProps) {
           ignoreHandler={updateIgnoredSlots}
           calendar_data={filteredCalendarData}
         />
-        {textEngineLaunched && (
+        {textEngineLaunched && ignoreSlots.length > 0 && (
           <TextEngine
             ignoredSlots={ignoreSlots}
             calendar_data={filteredCalendarData}
-            snippetPayload={textSnippetArray}
           />
         )}
       </div>

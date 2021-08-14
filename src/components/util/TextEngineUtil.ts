@@ -68,6 +68,44 @@ function _containsThisDate(
   return false;
 }
 
+function _insertAndCombineContiguousBlocks(
+  slots: Array<any>,
+  start_time: DateTime,
+  end_time: DateTime
+) {
+  let combined_slots = [];
+
+  slots.push({
+    start_time: start_time,
+    end_time: end_time,
+  });
+
+  slots = slots.sort((slot1, slot2) =>
+    slot1.end_time > slot2.end_time ? 1 : -1
+  );
+
+  let i = 0;
+  while (i < slots.length) {
+    let curSlot = {
+      start_time: slots[i].start_time,
+      end_time: slots[i].end_time,
+    };
+
+    while (
+      i < slots.length &&
+      slots[i].start_time.diff(curSlot.end_time).toMillis() <= 0
+    ) {
+      curSlot.end_time = slots[i].end_time;
+      i += 1;
+    }
+
+    combined_slots.push(curSlot);
+    i += 1;
+  }
+
+  return combined_slots;
+}
+
 function _groupTimeSlots(timeSlots: Array<any>) {
   let dayGroups = []; // array of groups of days with timeslots sorted
 
@@ -81,13 +119,10 @@ function _groupTimeSlots(timeSlots: Array<any>) {
         i += 1;
       }
 
-      dayGroups[i].slots.push({
-        start_time: startTime,
-        end_time: endTime,
-      });
-
-      dayGroups[i].slots = dayGroups[i].slots.sort((slot1, slot2) =>
-        slot1.end_time > slot2.end_time ? 1 : -1
+      dayGroups[i].slots = _insertAndCombineContiguousBlocks(
+        dayGroups[i].slots,
+        startTime,
+        endTime
       );
     } else {
       let group = {
@@ -208,16 +243,12 @@ function _createDayText(day: any, snippetPiece: DateTextObject) {
   return resultText;
 }
 
-function _combineContiguousBlocks(day: any) {
-  return day;
-}
-
 function _dateTextFilter(timeSlots: Array<any>, snippetPiece: DateTextObject) {
   const groupedTimeSlots = _groupTimeSlots(timeSlots); // All entries are now DateTimeObjects, not strings
 
   let resultString = snippetPiece.settings.inlineText == true ? '' : '\n';
   for (let i = 0; i < groupedTimeSlots.length; i++) {
-    const day = _combineContiguousBlocks(groupedTimeSlots[i]);
+    const day = groupedTimeSlots[i];
     if (snippetPiece.settings.inlineText == true) {
       resultString += _createDayText(day, snippetPiece);
 
