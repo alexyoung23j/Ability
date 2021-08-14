@@ -7,6 +7,7 @@ import {
   isDateTextObject,
   isDurationTextObject,
   isTimeZoneTextObject,
+  DurationTextObject,
 } from '../command-window/types';
 import { ContentState } from 'draft-js';
 import { DateTime } from 'luxon';
@@ -108,21 +109,179 @@ function _groupTimeSlots(timeSlots: Array<any>) {
   );
 }
 
+function _abbreviatedTimeString(hour: number, minute: number) {
+  let curHour = (((hour + 11) % 12) + 1).toString();
+
+  let curMin = minute === 0 ? '' : ':' + minute.toString;
+
+  return curHour + curMin;
+}
+
+function _cleanedTimeString(
+  slot: any,
+  abbreviate: boolean,
+  includePeriod: boolean
+) {
+  let resultString = '';
+  if (abbreviate) {
+    let firstTime = _abbreviatedTimeString(
+      slot.start_time.hour,
+      slot.start_time.minute
+    );
+
+    let secondTime = _abbreviatedTimeString(
+      slot.end_time.hour,
+      slot.end_time.minute
+    );
+
+    resultString += firstTime + '-' + secondTime;
+  } else {
+    let firstTime = slot.start_time.toLocaleString({
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    if (firstTime[0] === '0') {
+      firstTime = firstTime.slice(1, firstTime.length);
+    }
+
+    firstTime = firstTime.slice(0, firstTime.length - 3);
+
+    let secondTime = slot.end_time.toLocaleString({
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    if (secondTime[0] === '0') {
+      secondTime = secondTime.slice(1, secondTime.length);
+    }
+
+    if (!includePeriod) {
+      secondTime = secondTime.slice(secondTime.length - 3);
+    }
+
+    resultString += firstTime + '-' + secondTime;
+  }
+
+  return resultString;
+}
+
+function _createTimeSlotText(day: any, abbreviate: boolean) {
+  let resultText = '';
+
+  for (let i = 0; i < day.slots.length; i++) {
+    const slot = day.slots[i];
+    resultText += _cleanedTimeString(slot, abbreviate, true);
+
+    if (i === day.slots.length - 2) {
+      if (day.slots.length > 2) {
+        resultText += ', or ';
+      } else {
+        resultText += ' or ';
+      }
+    } else if (i < day.slots.length - 1) {
+      resultText += ', ';
+    }
+  }
+
+  return resultText;
+}
+
+function _createDayText(day: any, snippetPiece: DateTextObject) {
+  let resultText = '';
+
+  resultText += day.date.toLocaleString({ weekday: 'long' });
+
+  if (snippetPiece.settings.includeDates) {
+    resultText +=
+      ', ' + day.date.toLocaleString({ day: '2-digit', month: '2-digit' });
+  }
+
+  if (snippetPiece.settings.abbreviateTimes) {
+    resultText += ' from ';
+    resultText += _createTimeSlotText(day, true);
+  } else {
+    resultText += ': ';
+    resultText += _createTimeSlotText(day, false);
+  }
+
+  return resultText;
+}
+
+function _combineContiguousBlocks(day: any) {
+  return day;
+}
+
 function _dateTextFilter(timeSlots: Array<any>, snippetPiece: DateTextObject) {
   const groupedTimeSlots = _groupTimeSlots(timeSlots); // All entries are now DateTimeObjects, not strings
 
-  for (const day of groupedTimeSlots) {
+  let resultString = snippetPiece.settings.inlineText == true ? '' : '\n';
+  for (let i = 0; i < groupedTimeSlots.length; i++) {
+    const day = _combineContiguousBlocks(groupedTimeSlots[i]);
+    if (snippetPiece.settings.inlineText == true) {
+      resultString += _createDayText(day, snippetPiece);
+
+      if (i < groupedTimeSlots.length - 1) {
+        if (i === groupedTimeSlots.length - 2) {
+          resultString += groupedTimeSlots.length > 2 ? ', and ' : ' and ';
+        } else {
+          resultString += ', ';
+        }
+      }
+    } else {
+      resultString += '\n';
+      resultString += _createDayText(day, snippetPiece);
+    }
   }
-  return '';
+
+  if (snippetPiece.settings.inlineText) {
+    resultString += '';
+  } else {
+    resultString += '\n\n';
+  }
+  return resultString;
 }
 
+function _minutesToHoursAndMinutes(rawMinutes: number) {
+  let hours = Math.floor(rawMinutes / 60);
+  let minutes = rawMinutes % 60;
+
+  return [hours, minutes];
+}
+
+function _durationTextFilter(
+  snippetPiece: DurationTextObject,
+  duration: number
+) {
+  const time = _minutesToHoursAndMinutes(duration);
+
+  const hours = time[0];
+  const minutes = time[1];
+
+  let resultText = '';
+  if (snippetPiece.settings.abbreviate) {
+    /// Idk what to do here tbh
+  } else {
+    if (hours >= 1) {
+      resultText += hours.toString() + ' hour ';
+    }
+
+    if (minutes > 0) {
+      resultText += minutes.toString() + ' minutes ';
+    }
+  }
+
+  return resultText;
+}
 function _formatTextObject(
   timeSlots: Array<any>,
-  snippetPiece: TextObject
+  snippetPiece: TextObject,
+  duration: number
 ): string {
   if (isDateTextObject(snippetPiece)) {
     return _dateTextFilter(timeSlots, snippetPiece);
   } else if (isDurationTextObject(snippetPiece)) {
+    return _durationTextFilter(snippetPiece, duration);
   } else if (isTimeZoneTextObject(snippetPiece)) {
   }
 
@@ -131,7 +290,8 @@ function _formatTextObject(
 
 function _generateSnippetContent(
   snippetPackage: TextSnippetPackage,
-  timeSlots: Array<any>
+  timeSlots: Array<any>,
+  duration: number
 ): string {
   let snippetString = '';
 
@@ -139,7 +299,7 @@ function _generateSnippetContent(
     if (typeof snippetPiece === 'string') {
       snippetString += snippetPiece;
     } else {
-      snippetString += _formatTextObject(timeSlots, snippetPiece);
+      snippetString += _formatTextObject(timeSlots, snippetPiece, duration);
     }
   }
 
@@ -148,12 +308,13 @@ function _generateSnippetContent(
 
 export function createSnippetPayload(
   timeSlots: any,
-  snippetPackages: Array<TextSnippetPackage>
+  snippetPackages: Array<TextSnippetPackage>,
+  duration: number
 ): Array<TextSnippet> {
   let snippets = [];
   for (const snippetPackage of snippetPackages) {
     let textSnippet = {
-      content: _generateSnippetContent(snippetPackage, timeSlots),
+      content: _generateSnippetContent(snippetPackage, timeSlots, duration),
       id: snippetPackage.id,
       title: snippetPackage.name,
     };

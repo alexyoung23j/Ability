@@ -112,7 +112,6 @@ export type TextObject =
 export interface DateTextObject {
   settings: {
     abbreviateTimes: boolean;
-    listTimes: boolean;
     inlineText: boolean;
     includeDates: boolean; // etc..
   };

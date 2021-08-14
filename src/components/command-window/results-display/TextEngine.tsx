@@ -13,25 +13,39 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 const dummy_packages: Array<TextSnippetPackage> = [
   {
     textSnippetPieces: [
-      'Let me know if any of the following times work: ',
+      'Would any of the following times work for you?',
       {
         settings: {
-          abbreviateTimes: true,
-          listTimes: true,
+          abbreviateTimes: false,
           inlineText: false,
           includeDates: true,
         },
       },
-      'I am available for ',
+      'I think a ',
       {
         settings: {
           abbreviate: false,
         },
       },
-      '.',
+      'meeting would work best.',
     ],
     name: 'Email',
     id: '1',
+  },
+  {
+    textSnippetPieces: [
+      'Hey! I am free ',
+      {
+        settings: {
+          abbreviateTimes: true,
+          inlineText: true,
+          includeDates: false,
+        },
+      },
+      '. Let me know what works 😊 ',
+    ],
+    name: 'Personal',
+    id: '2',
   },
 ];
 
@@ -50,7 +64,12 @@ export default function TextEngine(props: TextEngineProps) {
   // Grab the chosen slots
   const timeSlots = _extractTimeSlots(calendar_data, ignoredSlots);
 
-  const payload = createSnippetPayload(timeSlots, TextSnippetPackages);
+  const payload = createSnippetPayload(
+    timeSlots,
+    TextSnippetPackages,
+    calendar_data.minDuration
+  );
+  console.log(calendar_data);
 
   return (
     <TextSnippetDropdown ignoredSlots={ignoredSlots} snippetPayload={payload} />

@@ -27,6 +27,8 @@ export default function TextSnippetDropdown(props: TextSnippetDisplay) {
     setWasCopied(true);
   }
 
+  console.log(snippetPayload);
+
   useEffect(() => {
     if (wasCopied) {
       setCopyButtonOpacity('70%');
