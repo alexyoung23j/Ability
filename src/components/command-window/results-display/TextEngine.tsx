@@ -59,7 +59,6 @@ export default function TextEngine(props: TextEngineProps) {
 
   // Should be fetching this from context
   const TextSnippetPackages = dummy_packages;
-  console.log('ignored: ', ignoredSlots);
 
   // Grab the chosen slots
   const timeSlots = _extractTimeSlots(calendar_data, ignoredSlots);

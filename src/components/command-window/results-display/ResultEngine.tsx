@@ -91,6 +91,7 @@ export default function ResultEngine(props: ResultEngineProps) {
     useImmer<Array<RegisteredAccount>>(fetched_calendars); // The copy of the calendar accounts we keep in state. This gets updated, though updating the default settings is not yet included
   const [ignoreSlots, setIgnoreSlots] = useState([]); // The free slots that get ignored by the text engine
   const [textEngineLaunched, setTextEngineLaunched] = useState(false); // Defines if our text engine is launched
+  const [initialIgnoredSlotsSet, setInitialIgnoredSlotSet] = useState(false);
 
   let textSnippetArray = demo1ArrayOfSnippets[0]; // DUMMY: The text snippets
 
@@ -150,10 +151,17 @@ export default function ResultEngine(props: ResultEngineProps) {
           }
         }
       }
-      console.log('setting slots');
       setIgnoreSlots(slotsToIgnore);
     }
   }, [filteredCalendarData]);
+
+  useEffect(() => {
+    if (textEngineLaunched) {
+      setInitialIgnoredSlotSet(true);
+    } else {
+      setInitialIgnoredSlotSet(false);
+    }
+  }, [ignoreSlots]);
 
   // Listen for updates to the unfiltered data, the accounts, and the text engine launch status
   useEffect(() => {
@@ -493,9 +501,10 @@ export default function ResultEngine(props: ResultEngineProps) {
           textEngineLaunched={textEngineLaunched}
           setTextEngineLaunched={setTextEngineLaunched}
           ignoreHandler={updateIgnoredSlots}
+          setIgnoreSlots={setIgnoreSlots}
           calendar_data={filteredCalendarData}
         />
-        {textEngineLaunched && ignoreSlots.length > 0 && (
+        {textEngineLaunched && initialIgnoredSlotsSet && (
           <TextEngine
             ignoredSlots={ignoreSlots}
             calendar_data={filteredCalendarData}
@@ -511,12 +520,14 @@ function Scheduler(props: {
   textEngineLaunched;
   setTextEngineLaunched;
   ignoreHandler;
+  setIgnoreSlots;
   calendar_data;
 }) {
   const {
     textEngineLaunched,
     setTextEngineLaunched,
     ignoreHandler,
+    setIgnoreSlots,
     calendar_data,
   } = props;
 
@@ -530,6 +541,10 @@ function Scheduler(props: {
 
   function launchTextEngine() {
     // Set Every Slot to be ignored (we want you to add in the slots you like)
+
+    if (textEngineLaunched) {
+      setIgnoreSlots([]);
+    }
 
     // Launch Engine
     setTextEngineLaunched(!textEngineLaunched);

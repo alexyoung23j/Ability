@@ -68,21 +68,10 @@ function _containsThisDate(
   return false;
 }
 
-function _insertAndCombineContiguousBlocks(
-  slots: Array<any>,
-  start_time: DateTime,
-  end_time: DateTime
-) {
+function _combineContiguousBlocks(slots: Array<any>) {
   let combined_slots = [];
 
-  slots.push({
-    start_time: start_time,
-    end_time: end_time,
-  });
-
-  slots = slots.sort((slot1, slot2) =>
-    slot1.end_time > slot2.end_time ? 1 : -1
-  );
+  console.log(slots);
 
   let i = 0;
   while (i < slots.length) {
@@ -100,7 +89,6 @@ function _insertAndCombineContiguousBlocks(
     }
 
     combined_slots.push(curSlot);
-    i += 1;
   }
 
   return combined_slots;
@@ -118,11 +106,13 @@ function _groupTimeSlots(timeSlots: Array<any>) {
       while (dayGroups[i].date.ordinal != startTime.ordinal) {
         i += 1;
       }
+      dayGroups[i].slots.push({
+        start_time: startTime,
+        end_time: endTime,
+      });
 
-      dayGroups[i].slots = _insertAndCombineContiguousBlocks(
-        dayGroups[i].slots,
-        startTime,
-        endTime
+      dayGroups[i].slots = dayGroups[i].slots.sort((slot1, slot2) =>
+        slot1.end_time > slot2.end_time ? 1 : -1
       );
     } else {
       let group = {
@@ -137,6 +127,10 @@ function _groupTimeSlots(timeSlots: Array<any>) {
 
       dayGroups.push(group);
     }
+  }
+
+  for (let i = 0; i < dayGroups.length; i++) {
+    dayGroups[i].slots = _combineContiguousBlocks(dayGroups[i].slots);
   }
 
   return dayGroups.sort((group1, group2) =>
