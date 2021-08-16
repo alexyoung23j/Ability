@@ -129,6 +129,7 @@ function _groupTimeSlots(timeSlots: Array<any>) {
     }
   }
 
+  // Collapse timeslots into chunks
   for (let i = 0; i < dayGroups.length; i++) {
     dayGroups[i].slots = _combineContiguousBlocks(dayGroups[i].slots);
   }
