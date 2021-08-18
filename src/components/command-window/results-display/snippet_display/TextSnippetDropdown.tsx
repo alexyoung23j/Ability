@@ -4,14 +4,14 @@ import CSS from 'csstype';
 import { motion, useAnimation } from 'framer-motion';
 
 import TextField from './TextField';
-import { textSnippet } from '../../types';
+import { TextSnippet } from '../../types';
 
 const { ipcRenderer } = require('electron');
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 interface TextSnippetDisplay {
-  snippetPayload: textSnippet[];
+  snippetPayload: TextSnippet[];
   ignoredSlots: any;
 }
 

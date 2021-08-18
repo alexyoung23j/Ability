@@ -106,22 +106,24 @@ function Slot(props: FreeSlotProps) {
     launchModalFromFreeSlot,
   } = props;
 
-  let initialColor;
-
-  if (textSnippetOpen) {
-    initialColor =
-      slotIsIgnored === false
-        ? 'rgba(135, 220, 215, 1)'
-        : 'rgba(135, 220, 215, 0)';
-  } else {
-    initialColor = 'rgba(135, 220, 215, 0)';
-  }
-
   const [isActive, setIsActive] = useState(slotIsIgnored);
-  const [color, setColor] = useState(initialColor);
+  const [color, setColor] = useState('rgba(135, 220, 215, 0)');
   const [zIndex, setZIndex] = useState(0);
   const [showPlus, setShowPlus] = useState(false);
   const [showMinus, setShowMinus] = useState(false);
+
+  useEffect(() => {
+    if (textSnippetOpen) {
+      let curColor =
+        slotIsIgnored === false
+          ? 'rgba(135, 220, 215, 0)'
+          : 'rgba(135, 220, 215, 1)';
+
+      setColor(curColor);
+    } else {
+      setColor('rgba(135, 220, 215, 0)');
+    }
+  }, [textSnippetOpen]);
 
   function handleClick() {
     if (textSnippetOpen) {

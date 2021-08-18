@@ -50,8 +50,6 @@ export function QueryTransformEngine(
     CalendarIndexUtil.mapDateToIndex(date, dateAtIndexZero)
   );
 
-  console.log(indices);
-
   let calendarResultData: CalendarResultData = null;
   let showError = false;
 

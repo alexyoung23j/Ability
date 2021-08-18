@@ -1,4 +1,7 @@
-import { PREPOSITION_FIXTURES, MODIFIER_FIXTURES } from './AutocompleteFixtures';
+import {
+  PREPOSITION_FIXTURES,
+  MODIFIER_FIXTURES,
+} from './AutocompleteFixtures';
 import { assert } from '../../assert';
 import {
   Piece,
