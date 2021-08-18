@@ -11,7 +11,7 @@ import {
   PrepositionPiece,
   PrepositionQueryFragment,
   QueryFragment,
-  ALL_MODIFIER_CATEGORIES
+  ALL_MODIFIER_CATEGORIES,
 } from '../types';
 
 var nodeConsole = require('console');
@@ -79,7 +79,6 @@ export default function AutocompleteEngine(props: AutocompleteEngineProps) {
   );
 
   autocompletions = onAutocompletion(autocompletions);
-  
 
   useEffect(() => {
     if (queryFragment.value.length > 0) {

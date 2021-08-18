@@ -121,7 +121,8 @@ export function durationFilter(
   // Get plain word
   const durationModifierString = modifierPiece.value
     .replace(/\d+\.?\d*/, '')
-    .trim();
+    .trim()
+    .toLowerCase();
 
   // pair word with map to number of minutes, multiply this default by our extracted number
   let durationInMinutes = DurationModifiersDurationMap[durationModifierString];
@@ -141,7 +142,8 @@ export function timeFilter(modifierPiece: ModifierPiece): CalendarIndexFilter {
   const timeModifierString = modifierPiece.value
     .replace(ONE_OR_MORE_NUMBERS, '')
     .replace(':', '')
-    .trim();
+    .trim()
+    .toLowerCase();
 
   let hour = 0;
   let minute = 0;
@@ -213,7 +215,8 @@ export function dateFilter(modifierPiece: ModifierPiece): CalendarIndexFilter {
   const dateModifierStringArg = modifierPiece.value
     .replace(ONE_OR_MORE_NUMBERS, '')
     .replace('/', '')
-    .trim();
+    .trim()
+    .toLowerCase();
 
   // Get numbers from modifier
   const numbers: Array<string> =
@@ -270,7 +273,8 @@ export function dateFilter(modifierPiece: ModifierPiece): CalendarIndexFilter {
 export function rangeFilter(modifierPiece: ModifierPiece): CalendarIndexFilter {
   const rangeModifierString = modifierPiece.value
     .replace(ONE_OR_MORE_NUMBERS, '')
-    .trim();
+    .trim()
+    .toLowerCase();
 
   return {
     range: _generateRangeArrays(rangeModifierString),
@@ -296,7 +300,7 @@ export function applyPrepositionActionToFilter(
       break;
 
     case ModifierCategory.TIME:
-      switch (preposition.value) {
+      switch (preposition.value.toLowerCase()) {
         case 'at':
           finalFilter = filter;
           break;
@@ -339,7 +343,7 @@ export function applyPrepositionActionToFilter(
       break;
 
     case ModifierCategory.DATE:
-      switch (preposition.value) {
+      switch (preposition.value.toLowerCase()) {
         case 'this':
           // take first occurence
           finalFilter = {
@@ -415,7 +419,7 @@ export function applyPrepositionActionToFilter(
       // We have a number
       if (numbers.length > 0) {
         const number = parseFloat(numbers[0]);
-        switch (preposition.value) {
+        switch (preposition.value.toLowerCase()) {
           case 'this':
             {
               finalFilter = {
@@ -459,7 +463,7 @@ export function applyPrepositionActionToFilter(
           }
         }
       } else {
-        switch (preposition.value) {
+        switch (preposition.value.toLowerCase()) {
           case 'this':
             {
               finalFilter = {
