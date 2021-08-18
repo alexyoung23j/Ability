@@ -170,11 +170,22 @@ export function timeFilter(modifierPiece: ModifierPiece): CalendarIndexFilter {
       break;
 
     case 'PM':
-      start_time = default_time.set({ hour: hour + 12, minute: minute });
+      if (hour >= 12) {
+        //handles 12 pm
+        start_time = default_time.set({ hour: hour, minute: minute });
+      } else {
+        start_time = default_time.set({ hour: hour + 12, minute: minute });
+      }
+
       break;
 
     case 'AM':
-      start_time = default_time.set({ hour: hour, minute: minute });
+      if (hour === 12) {
+        start_time = default_time.set({ hour: 0, minute: minute });
+      } else {
+        start_time = default_time.set({ hour: hour, minute: minute });
+      }
+
       break;
 
     default:
