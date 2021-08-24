@@ -57,19 +57,34 @@ interface TextEngineProps {
 export default function TextEngine(props: TextEngineProps) {
   const { calendar_data, ignoredSlots } = props;
 
+  const [selectedTimeZone, setSelectedTimeZone] = useState({
+    name: 'PST',
+    utc_offset: 'UTC-7',
+    timezone_enabled: false,
+  });
+
   // Should be fetching this from context
   const TextSnippetPackages = dummy_packages;
 
   // Grab the chosen slots
-  const timeSlots = _extractTimeSlots(calendar_data, ignoredSlots);
+  const timeSlots = _extractTimeSlots(
+    calendar_data,
+    ignoredSlots,
+    selectedTimeZone
+  );
 
   const payload = createSnippetPayload(
     timeSlots,
     TextSnippetPackages,
-    calendar_data.minDuration
+    calendar_data.minDuration,
+    selectedTimeZone
   );
 
   return (
-    <TextSnippetDropdown ignoredSlots={ignoredSlots} snippetPayload={payload} />
+    <TextSnippetDropdown
+      snippetPayload={payload}
+      selectedTimeZone={selectedTimeZone}
+      setSelectedTimeZone={setSelectedTimeZone}
+    />
   );
 }

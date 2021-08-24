@@ -6,7 +6,6 @@ import {
   TextObject,
   isDateTextObject,
   isDurationTextObject,
-  isTimeZoneTextObject,
   DurationTextObject,
 } from '../command-window/types';
 import { ContentState } from 'draft-js';
@@ -18,7 +17,8 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 // This is hilariously stupid but I don't want to improve it rn
 export function _extractTimeSlots(
   calendar_data: CalendarResultData,
-  ignoredSlots: Array<Array<number>>
+  ignoredSlots: Array<Array<number>>,
+  timeZoneData: { name: string; utc_offset: string; timezone_enabled: boolean }
 ) {
   let timeSlots = [];
   for (var day_idx = 0; day_idx < calendar_data.days.length; day_idx += 1) {
@@ -50,7 +50,23 @@ export function _extractTimeSlots(
     }
   }
 
-  return timeSlots;
+  let zoneAdjustedSlots = [];
+
+  for (const slot of timeSlots) {
+    let adjustedStart = DateTime.fromISO(slot.start_time)
+      .setZone(timeZoneData.utc_offset)
+      .toISO();
+    let adjustedEnd = DateTime.fromISO(slot.end_time)
+      .setZone(timeZoneData.utc_offset)
+      .toISO();
+
+    zoneAdjustedSlots.push({
+      start_time: adjustedStart,
+      end_time: adjustedEnd,
+    });
+  }
+
+  return zoneAdjustedSlots;
 }
 
 function _containsThisDate(
@@ -70,8 +86,6 @@ function _containsThisDate(
 
 function _combineContiguousBlocks(slots: Array<any>) {
   let combined_slots = [];
-
-  console.log(slots);
 
   let i = 0;
   while (i < slots.length) {
@@ -94,12 +108,12 @@ function _combineContiguousBlocks(slots: Array<any>) {
   return combined_slots;
 }
 
-function _groupTimeSlots(timeSlots: Array<any>) {
+function _groupTimeSlots(timeSlots: Array<any>, utc_offset: string) {
   let dayGroups = []; // array of groups of days with timeslots sorted
 
   for (const { start_time, end_time } of timeSlots) {
-    const startTime = DateTime.fromISO(start_time);
-    const endTime = DateTime.fromISO(end_time);
+    const startTime = DateTime.fromISO(start_time, { zone: utc_offset });
+    const endTime = DateTime.fromISO(end_time, { zone: utc_offset });
 
     if (_containsThisDate(startTime.ordinal, dayGroups)) {
       let i = 0;
@@ -201,6 +215,7 @@ function _createTimeSlotText(day: any, abbreviate: boolean) {
 
   for (let i = 0; i < day.slots.length; i++) {
     const slot = day.slots[i];
+    console.log('slot: ', slot);
     resultText += _cleanedTimeString(slot, abbreviate, true);
 
     if (i === day.slots.length - 2) {
@@ -217,7 +232,11 @@ function _createTimeSlotText(day: any, abbreviate: boolean) {
   return resultText;
 }
 
-function _createDayText(day: any, snippetPiece: DateTextObject) {
+function _createDayText(
+  day: any,
+  snippetPiece: DateTextObject,
+  timeZoneNameString: string
+) {
   let resultText = '';
 
   resultText += day.date.toLocaleString({ weekday: 'long' });
@@ -235,17 +254,25 @@ function _createDayText(day: any, snippetPiece: DateTextObject) {
     resultText += _createTimeSlotText(day, false);
   }
 
+  if (timeZoneNameString.length > 0) {
+    resultText += ' (' + timeZoneNameString + ')';
+  }
+
   return resultText;
 }
 
-function _dateTextFilter(timeSlots: Array<any>, snippetPiece: DateTextObject) {
-  const groupedTimeSlots = _groupTimeSlots(timeSlots); // All entries are now DateTimeObjects, not strings
+function _dateTextFilter(
+  timeSlots: Array<any>,
+  snippetPiece: DateTextObject,
+  timeZoneData: { name: string; utc_offset: string; timezone_enabled: boolean }
+) {
+  const groupedTimeSlots = _groupTimeSlots(timeSlots, timeZoneData.utc_offset); // All entries are now DateTimeObjects, not strings
 
   let resultString = snippetPiece.settings.inlineText == true ? '' : '\n';
   for (let i = 0; i < groupedTimeSlots.length; i++) {
     const day = groupedTimeSlots[i];
     if (snippetPiece.settings.inlineText == true) {
-      resultString += _createDayText(day, snippetPiece);
+      resultString += _createDayText(day, snippetPiece, '');
 
       if (i < groupedTimeSlots.length - 1) {
         if (i === groupedTimeSlots.length - 2) {
@@ -256,12 +283,19 @@ function _dateTextFilter(timeSlots: Array<any>, snippetPiece: DateTextObject) {
       }
     } else {
       resultString += '\n';
-      resultString += _createDayText(day, snippetPiece);
+      if (timeZoneData.timezone_enabled) {
+        resultString += _createDayText(day, snippetPiece, timeZoneData.name);
+      } else {
+        resultString += _createDayText(day, snippetPiece, '');
+      }
     }
   }
 
   if (snippetPiece.settings.inlineText) {
     resultString += '';
+    if (timeZoneData.timezone_enabled) {
+      resultString += ' (' + timeZoneData.name + ')';
+    }
   } else {
     resultString += '\n\n';
   }
@@ -302,22 +336,23 @@ function _durationTextFilter(
 function _formatTextObject(
   timeSlots: Array<any>,
   snippetPiece: TextObject,
-  duration: number
+  duration: number,
+  timeZoneData: { name: string; utc_offset: string; timezone_enabled: boolean }
 ): string {
   if (isDateTextObject(snippetPiece)) {
-    return _dateTextFilter(timeSlots, snippetPiece);
+    return _dateTextFilter(timeSlots, snippetPiece, timeZoneData);
   } else if (isDurationTextObject(snippetPiece)) {
     return _durationTextFilter(snippetPiece, duration);
-  } else if (isTimeZoneTextObject(snippetPiece)) {
   }
 
-  return 'tf';
+  return 'whoaa im not supposed to be here';
 }
 
 function _generateSnippetContent(
   snippetPackage: TextSnippetPackage,
   timeSlots: Array<any>,
-  duration: number
+  duration: number,
+  timeZoneData: { name: string; utc_offset: string; timezone_enabled: boolean }
 ): string {
   let snippetString = '';
 
@@ -325,7 +360,12 @@ function _generateSnippetContent(
     if (typeof snippetPiece === 'string') {
       snippetString += snippetPiece;
     } else {
-      snippetString += _formatTextObject(timeSlots, snippetPiece, duration);
+      snippetString += _formatTextObject(
+        timeSlots,
+        snippetPiece,
+        duration,
+        timeZoneData
+      );
     }
   }
 
@@ -335,12 +375,18 @@ function _generateSnippetContent(
 export function createSnippetPayload(
   timeSlots: any,
   snippetPackages: Array<TextSnippetPackage>,
-  duration: number
+  duration: number,
+  timeZoneData: { name: string; utc_offset: string; timezone_enabled: boolean }
 ): Array<TextSnippet> {
   let snippets = [];
   for (const snippetPackage of snippetPackages) {
     let textSnippet = {
-      content: _generateSnippetContent(snippetPackage, timeSlots, duration),
+      content: _generateSnippetContent(
+        snippetPackage,
+        timeSlots,
+        duration,
+        timeZoneData
+      ),
       id: snippetPackage.id,
       title: snippetPackage.name,
     };
