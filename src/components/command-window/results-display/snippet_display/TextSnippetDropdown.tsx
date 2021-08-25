@@ -7,6 +7,7 @@ import { css } from '@emotion/css';
 
 import TextField from './TextField';
 import { TextSnippet } from '../../types';
+import { TimeZoneData } from '../TextEngine';
 
 const { ipcRenderer } = require('electron');
 var nodeConsole = require('console');
@@ -115,7 +116,7 @@ function CopyMessageComponent(props: {
 }
 
 function TimeZoneComponent(props: {
-  selectedTimeZone: any;
+  selectedTimeZone: TimeZoneData;
   setSelectedTimeZone: any;
 }) {
   const { selectedTimeZone, setSelectedTimeZone } = props;

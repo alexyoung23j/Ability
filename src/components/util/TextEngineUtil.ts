@@ -10,6 +10,8 @@ import {
 } from '../command-window/types';
 import { ContentState } from 'draft-js';
 import { DateTime } from 'luxon';
+const { zones } = require('tzdata');
+import { TimeZoneData } from '../command-window/results-display/TextEngine';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -18,7 +20,7 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 export function _extractTimeSlots(
   calendar_data: CalendarResultData,
   ignoredSlots: Array<Array<number>>,
-  timeZoneData: { name: string; utc_offset: string; timezone_enabled: boolean }
+  timeZoneData: TimeZoneData
 ) {
   let timeSlots = [];
   for (var day_idx = 0; day_idx < calendar_data.days.length; day_idx += 1) {
@@ -215,7 +217,6 @@ function _createTimeSlotText(day: any, abbreviate: boolean) {
 
   for (let i = 0; i < day.slots.length; i++) {
     const slot = day.slots[i];
-    console.log('slot: ', slot);
     resultText += _cleanedTimeString(slot, abbreviate, true);
 
     if (i === day.slots.length - 2) {
@@ -264,7 +265,7 @@ function _createDayText(
 function _dateTextFilter(
   timeSlots: Array<any>,
   snippetPiece: DateTextObject,
-  timeZoneData: { name: string; utc_offset: string; timezone_enabled: boolean }
+  timeZoneData: TimeZoneData
 ) {
   const groupedTimeSlots = _groupTimeSlots(timeSlots, timeZoneData.utc_offset); // All entries are now DateTimeObjects, not strings
 
@@ -337,7 +338,7 @@ function _formatTextObject(
   timeSlots: Array<any>,
   snippetPiece: TextObject,
   duration: number,
-  timeZoneData: { name: string; utc_offset: string; timezone_enabled: boolean }
+  timeZoneData: TimeZoneData
 ): string {
   if (isDateTextObject(snippetPiece)) {
     return _dateTextFilter(timeSlots, snippetPiece, timeZoneData);
@@ -352,7 +353,7 @@ function _generateSnippetContent(
   snippetPackage: TextSnippetPackage,
   timeSlots: Array<any>,
   duration: number,
-  timeZoneData: { name: string; utc_offset: string; timezone_enabled: boolean }
+  timeZoneData: TimeZoneData
 ): string {
   let snippetString = '';
 
@@ -376,7 +377,7 @@ export function createSnippetPayload(
   timeSlots: any,
   snippetPackages: Array<TextSnippetPackage>,
   duration: number,
-  timeZoneData: { name: string; utc_offset: string; timezone_enabled: boolean }
+  timeZoneData: TimeZoneData
 ): Array<TextSnippet> {
   let snippets = [];
   for (const snippetPackage of snippetPackages) {
@@ -395,4 +396,8 @@ export function createSnippetPayload(
   }
 
   return snippets;
+}
+
+export function createDefaultTimeZoneData() {
+  console.log(DateTime.now().setZone('UTC-8').offsetNameLong);
 }

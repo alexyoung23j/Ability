@@ -5,10 +5,17 @@ import { CalendarResultData } from './ResultEngine';
 import {
   _extractTimeSlots,
   createSnippetPayload,
+  createDefaultTimeZoneData,
 } from '../../util/TextEngineUtil';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
+
+export interface TimeZoneData {
+  name: string;
+  utc_offset: string;
+  timezone_enabled: boolean;
+}
 
 const dummy_packages: Array<TextSnippetPackage> = [
   {
@@ -57,7 +64,7 @@ interface TextEngineProps {
 export default function TextEngine(props: TextEngineProps) {
   const { calendar_data, ignoredSlots } = props;
 
-  const [selectedTimeZone, setSelectedTimeZone] = useState({
+  const [selectedTimeZone, setSelectedTimeZone] = useState<TimeZoneData>({
     name: 'PST',
     utc_offset: 'UTC-7',
     timezone_enabled: false,
@@ -65,6 +72,8 @@ export default function TextEngine(props: TextEngineProps) {
 
   // Should be fetching this from context
   const TextSnippetPackages = dummy_packages;
+
+  createDefaultTimeZoneData();
 
   // Grab the chosen slots
   const timeSlots = _extractTimeSlots(

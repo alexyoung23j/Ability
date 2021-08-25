@@ -134,6 +134,7 @@
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^2.0.3",
     "ts-node": "^10.0.0",
+    "tzdata": "^1.0.25",
     "use-drag-scroll": "^1.0.1",
     "use-immer": "^0.5.2"
   }
