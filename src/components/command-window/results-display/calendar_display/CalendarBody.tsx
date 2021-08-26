@@ -17,6 +17,8 @@ interface CalendarBody {
   textEngineLaunched: boolean;
   scheduleNewEvent: any;
   modifyExistingEvent: any;
+  selectedDayIdx: number;
+  setSelectedDayIdx: any;
 }
 
 // State needs to contain the folllwing information about the event that is currently selected (or none is selected):
@@ -30,6 +32,8 @@ export default function CalendarBody(props: CalendarBody) {
     textEngineLaunched,
     scheduleNewEvent,
     modifyExistingEvent,
+    selectedDayIdx,
+    setSelectedDayIdx,
   } = props;
 
   const bodyRef = useRef(null);
@@ -122,6 +126,7 @@ export default function CalendarBody(props: CalendarBody) {
             initial_scroll_amount={initial_scroll_amount}
             scheduleNewEvent={scheduleNewEvent}
             event_overlap_depth={data.event_overlap_depth}
+            selectedDayIdx={selectedDayIdx}
             setModalShow={setModalShow}
             setModalEventDayIdx={setModalEventDayIdx}
             setModalEventIdxInDay={setModalEventIdxInDay}
@@ -132,6 +137,7 @@ export default function CalendarBody(props: CalendarBody) {
             setModalEventLocation={setModalEventLocation}
             setModalEventDescription={setModalEventDescription}
             setModalEventCalendar={setModalEventCalendar}
+            setSelectedDayIdx={setSelectedDayIdx}
           />
         </div>
       ))}

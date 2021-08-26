@@ -5,6 +5,7 @@ import CalendarBody from './CalendarBody';
 import { Calendar, RegisteredAccount } from '../../types';
 import { useImmer } from 'use-immer';
 import { CalendarPickerModal } from './CalendarPickerModal';
+import DailyCalendarView from './DailyCalendarView';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -35,6 +36,7 @@ export default function CalendarView(props: CalendarView) {
   } = props;
 
   const [calendarPickerLaunched, setCalendarPickerLaunched] = useState(false);
+  const [selectedDayIdx, setSelectedDayIdx] = useState(0); // TODO: initialize to the current date if present
 
   return (
     <div>
@@ -60,7 +62,15 @@ export default function CalendarView(props: CalendarView) {
           textEngineLaunched={textEngineLaunched}
           scheduleNewEvent={scheduleNewEvent}
           modifyExistingEvent={modifyExistingEvent}
+          selectedDayIdx={selectedDayIdx}
+          setSelectedDayIdx={setSelectedDayIdx}
         />
+        {!textEngineLaunched && (
+          <DailyCalendarView
+            calendar_data={filteredCalendarData}
+            selected_day_idx={selectedDayIdx}
+          />
+        )}
       </div>
     </div>
   );
