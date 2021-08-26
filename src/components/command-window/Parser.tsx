@@ -41,7 +41,8 @@ function _insertNumbers(
     ) {
       const hydratedValue = [];
       let numIdx = 0;
-      for (const char of completion.value) {
+      for (let i = 0; i < completion.value.length; i++) {
+        const char = completion.value[i];
         if (char === NUMERIC_WILDCARD && numIdx <= numerics.length - 1) {
           // This cleans out any leading 0's
           const cleanedNumeric = parseFloat(numerics[numIdx]).toString();
@@ -49,7 +50,17 @@ function _insertNumbers(
           numIdx += 1;
         } else {
           if (char === NUMERIC_WILDCARD) {
-            hydratedValue.push('1');
+            // Check if the last character was a colon
+
+            if (
+              i > 0 &&
+              (completion.value[i - 1] === ':' ||
+                completion.value[i - 1] === '/')
+            ) {
+              hydratedValue.push('01');
+            } else {
+              hydratedValue.push('1');
+            }
           } else {
             hydratedValue.push(char);
           }
@@ -62,10 +73,16 @@ function _insertNumbers(
       });
     } else if (completion.value.includes(NUMERIC_WILDCARD)) {
       const hydratedValue = [];
-      for (const char of completion.value) {
+      for (let i = 0; i < completion.value.length; i++) {
+        const char = completion.value[i];
         if (char === NUMERIC_WILDCARD) {
           // This cleans out any leading 0's
-          hydratedValue.push('1');
+          if (
+            i > 0 &&
+            (completion.value[i - 1] === ':' || completion.value[i - 1] === '/')
+          ) {
+            hydratedValue.push('01');
+          }
         } else {
           hydratedValue.push(char);
         }
