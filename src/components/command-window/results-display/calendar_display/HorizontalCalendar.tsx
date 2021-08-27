@@ -34,6 +34,7 @@ interface HorizontalCalendar {
   eventTooltipId: string;
   event_overlap_depth: number;
   initial_scroll_amount: number;
+  selectedDayIdx: number;
 
   scheduleNewEvent: any;
   setModalShow: any;
@@ -46,6 +47,7 @@ interface HorizontalCalendar {
   setModalEventLocation: any;
   setModalEventDescription: any;
   setModalEventCalendar: any;
+  setSelectedDayIdx: any;
 }
 
 export default function HorizontalCalendar(props: HorizontalCalendar) {
@@ -63,6 +65,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     event_overlap_depth,
     initial_scroll_amount,
     scheduleNewEvent,
+    selectedDayIdx,
     setModalShow,
     setModalEventDayIdx,
     setModalEventIdxInDay,
@@ -73,6 +76,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     setModalEventLocation,
     setModalEventDescription,
     setModalEventCalendar,
+    setSelectedDayIdx,
   } = props;
 
   // State
@@ -155,8 +159,13 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
         justifyContent: 'center',
         alignItems: 'center',
       }}
+      onMouseDown={() => setSelectedDayIdx(index)}
     >
-      <DateText dateText={date} isToday={isToday} />
+      <DateText
+        dateText={date}
+        isToday={isToday}
+        isSelected={index === selectedDayIdx}
+      />
       <GradientEdges />
       <div ref={scrollRef} style={horizontalCalendarStyle}>
         <HorizontalBars overlap_depth={event_overlap_depth} />
@@ -251,8 +260,12 @@ function TodayTimeMarker() {
   );
 }
 
-function DateText(props: { dateText: string; isToday: boolean }) {
-  const { dateText, isToday } = props;
+function DateText(props: {
+  dateText: string;
+  isToday: boolean;
+  isSelected: boolean;
+}) {
+  const { dateText, isToday, isSelected } = props;
   const dateObj = DateTime.fromISO(dateText);
 
   const weekdays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
@@ -268,6 +281,31 @@ function DateText(props: { dateText: string; isToday: boolean }) {
     '/' +
     dayOfMonth.toString();
 
+  function TodayRedDot() {
+    return (
+      <div>
+        {isToday && (
+          <div style={{ position: 'relative' }}>
+            <div
+              style={{
+                backgroundColor: 'red',
+                width: '4px',
+                height: '4px',
+                borderRadius: '20px',
+                position: 'absolute',
+                right: '5px',
+                top: '6px',
+              }}
+            ></div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const backgroundHighlightColor = isSelected
+    ? 'rgba(135, 220, 215, 0.3)'
+    : 'rgba(0,0,0,0)';
   return (
     <div
       style={{
@@ -279,23 +317,15 @@ function DateText(props: { dateText: string; isToday: boolean }) {
         marginRight: '5px',
         minWidth: '70px',
         maxWidth: '70px',
+        backgroundColor: backgroundHighlightColor,
+        borderRadius: '4px',
+        paddingBottom: '3px',
+        paddingTop: '3px',
+        paddingLeft: '1px',
+        paddingRight: '1px',
       }}
     >
-      {isToday && (
-        <div style={{ position: 'relative' }}>
-          <div
-            style={{
-              backgroundColor: 'red',
-              width: '4px',
-              height: '4px',
-              borderRadius: '20px',
-              position: 'absolute',
-              right: '5px',
-              top: '6px',
-            }}
-          ></div>
-        </div>
-      )}
+      <TodayRedDot />
       <div className="horizontalCalendarDateText">{dayString}</div>
     </div>
   );

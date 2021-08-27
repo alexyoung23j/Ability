@@ -2,8 +2,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import CSS from 'csstype';
 import HorizontalCalendar from './HorizontalCalendar';
 import EventModal from './EventModal';
-import { RegisteredAccount } from '../../types';
-const { DateTime } = require('luxon');
+import { RegisteredAccount, Calendar } from '../../types';
+import { DateTime } from 'luxon';
 import { BAR_WIDTH } from '../../../util/CalendarViewUtil';
 
 var nodeConsole = require('console');
@@ -17,6 +17,26 @@ interface CalendarBody {
   textEngineLaunched: boolean;
   scheduleNewEvent: any;
   modifyExistingEvent: any;
+  selectedDayIdx: number;
+  setSelectedDayIdx: any;
+  selectedEventIdxInSelectedDay: number;
+  setSelectedEventIdxInSelectedDay: any;
+  modalShow: boolean;
+  setModalShow: any;
+  setModalShowsNewEvent: any;
+  modalShowsNewEvent: boolean;
+  modalEventStart: DateTime;
+  setModalEventStart: any;
+  modalEventEnd: DateTime;
+  setModalEventEnd: any;
+  modalEventTitle: string;
+  setModalEventTitle: any;
+  modalEventLocation: string;
+  setModalEventLocation: any;
+  modalEventCalendar: Calendar;
+  setModalEventCalendar: any;
+  modalEventDescription: string;
+  setModalEventDescription: any;
 }
 
 // State needs to contain the folllwing information about the event that is currently selected (or none is selected):
@@ -30,28 +50,31 @@ export default function CalendarBody(props: CalendarBody) {
     textEngineLaunched,
     scheduleNewEvent,
     modifyExistingEvent,
+    selectedDayIdx,
+    setSelectedDayIdx,
+    selectedEventIdxInSelectedDay,
+    setSelectedEventIdxInSelectedDay,
+    modalShow,
+    setModalShow,
+    modalShowsNewEvent,
+    setModalShowsNewEvent,
+    modalEventStart,
+    setModalEventStart,
+    modalEventEnd,
+    setModalEventEnd,
+    modalEventTitle,
+    setModalEventTitle,
+    modalEventLocation,
+    setModalEventLocation,
+    modalEventCalendar,
+    setModalEventCalendar,
+    modalEventDescription,
+    setModalEventDescription,
   } = props;
 
   const bodyRef = useRef(null);
 
   // State
-  const [modalShow, setModalShow] = useState(false);
-  const [modalEventDayIdx, setModalEventDayIdx] = useState(0);
-  const [modalEventIdxInDay, setModalEventIdxInDay] = useState(0);
-  const [modalShowsNewEvent, setModalShowsNewEvent] = useState(false);
-  const [modalEventStart, setModalEventStart] = useState(
-    DateTime.fromISO('2021-06-09T16:10:00-07:00')
-  );
-  const [modalEventEnd, setModalEventEnd] = useState(
-    DateTime.fromISO('2021-06-09T17:10:00-07:00')
-  );
-  const [modalEventTitle, setModalEventTitle] = useState('');
-  const [modalEventLocation, setModalEventLocation] = useState('');
-  const [modalEventCalendar, setModalEventCalendar] = useState({
-    name: "Alex's Calendar",
-    color: 'blue',
-  }); // TODO: Fetch from context
-  const [modalEventDescription, setModalEventDescription] = useState('');
 
   const initial_scroll_amount = calculateScroll(
     calendar_data.days[0].free_blocks
@@ -122,9 +145,10 @@ export default function CalendarBody(props: CalendarBody) {
             initial_scroll_amount={initial_scroll_amount}
             scheduleNewEvent={scheduleNewEvent}
             event_overlap_depth={data.event_overlap_depth}
+            selectedDayIdx={selectedDayIdx}
             setModalShow={setModalShow}
-            setModalEventDayIdx={setModalEventDayIdx}
-            setModalEventIdxInDay={setModalEventIdxInDay}
+            setModalEventDayIdx={setSelectedDayIdx}
+            setModalEventIdxInDay={setSelectedEventIdxInSelectedDay}
             setShowsNewEvent={setModalShowsNewEvent}
             setModalEventEnd={setModalEventEnd}
             setModalEventStart={setModalEventStart}
@@ -132,13 +156,14 @@ export default function CalendarBody(props: CalendarBody) {
             setModalEventLocation={setModalEventLocation}
             setModalEventDescription={setModalEventDescription}
             setModalEventCalendar={setModalEventCalendar}
+            setSelectedDayIdx={setSelectedDayIdx}
           />
         </div>
       ))}
       <div style={{ height: '20px' }}></div>
       {modalShow && (
         <EventModal
-          dayIdx={modalEventDayIdx}
+          dayIdx={selectedDayIdx}
           isNewEvent={modalShowsNewEvent}
           eventStart={modalEventStart}
           eventEnd={modalEventEnd}
@@ -146,7 +171,7 @@ export default function CalendarBody(props: CalendarBody) {
           eventLocation={modalEventLocation}
           eventCalendar={modalEventCalendar}
           eventDescription={modalEventDescription}
-          modalEventIdxInDay={modalEventIdxInDay}
+          modalEventIdxInDay={selectedEventIdxInSelectedDay}
           setIsOpen={setModalShow}
           setShowsNewEvent={setModalShowsNewEvent}
           setEventStart={setModalEventStart}
