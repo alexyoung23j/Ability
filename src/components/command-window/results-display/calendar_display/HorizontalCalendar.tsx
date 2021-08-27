@@ -213,22 +213,6 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
 
 // -------------------------- IMMUTABLE COMPONENTS -------------------------- //
 
-function SelectedDayHighlight() {
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        width: '500px',
-        height: '20px',
-        borderWidth: '2px',
-        borderColor: 'blue',
-        backgroundColor: 'blue',
-        zIndex: -1,
-      }}
-    ></div>
-  );
-}
-
 // Shows the current time if in fact today is the day
 function TodayTimeMarker() {
   const initialTime = DateTime.now();

@@ -19,6 +19,12 @@ interface CalendarBody {
   modifyExistingEvent: any;
   selectedDayIdx: number;
   setSelectedDayIdx: any;
+  selectedEventIdxInSelectedDay: number;
+  setSelectedEventIdxInSelectedDay: any;
+  modalShow: boolean;
+  setModalShow: any;
+  setModalShowsNewEvent: any;
+  modalShowsNewEvent: boolean;
 }
 
 // State needs to contain the folllwing information about the event that is currently selected (or none is selected):
@@ -34,15 +40,18 @@ export default function CalendarBody(props: CalendarBody) {
     modifyExistingEvent,
     selectedDayIdx,
     setSelectedDayIdx,
+    selectedEventIdxInSelectedDay,
+    setSelectedEventIdxInSelectedDay,
+    modalShow,
+    setModalShow,
+    modalShowsNewEvent,
+    setModalShowsNewEvent,
   } = props;
 
   const bodyRef = useRef(null);
 
   // State
-  const [modalShow, setModalShow] = useState(false);
-  const [modalEventDayIdx, setModalEventDayIdx] = useState(0);
-  const [modalEventIdxInDay, setModalEventIdxInDay] = useState(0);
-  const [modalShowsNewEvent, setModalShowsNewEvent] = useState(false);
+
   const [modalEventStart, setModalEventStart] = useState(
     DateTime.fromISO('2021-06-09T16:10:00-07:00')
   );
@@ -128,8 +137,8 @@ export default function CalendarBody(props: CalendarBody) {
             event_overlap_depth={data.event_overlap_depth}
             selectedDayIdx={selectedDayIdx}
             setModalShow={setModalShow}
-            setModalEventDayIdx={setModalEventDayIdx}
-            setModalEventIdxInDay={setModalEventIdxInDay}
+            setModalEventDayIdx={setSelectedDayIdx}
+            setModalEventIdxInDay={setSelectedEventIdxInSelectedDay}
             setShowsNewEvent={setModalShowsNewEvent}
             setModalEventEnd={setModalEventEnd}
             setModalEventStart={setModalEventStart}
@@ -144,7 +153,7 @@ export default function CalendarBody(props: CalendarBody) {
       <div style={{ height: '20px' }}></div>
       {modalShow && (
         <EventModal
-          dayIdx={modalEventDayIdx}
+          dayIdx={selectedDayIdx}
           isNewEvent={modalShowsNewEvent}
           eventStart={modalEventStart}
           eventEnd={modalEventEnd}
@@ -152,7 +161,7 @@ export default function CalendarBody(props: CalendarBody) {
           eventLocation={modalEventLocation}
           eventCalendar={modalEventCalendar}
           eventDescription={modalEventDescription}
-          modalEventIdxInDay={modalEventIdxInDay}
+          modalEventIdxInDay={selectedEventIdxInSelectedDay}
           setIsOpen={setModalShow}
           setShowsNewEvent={setModalShowsNewEvent}
           setEventStart={setModalEventStart}

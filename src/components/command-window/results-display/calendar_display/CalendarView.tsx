@@ -37,6 +37,10 @@ export default function CalendarView(props: CalendarView) {
 
   const [calendarPickerLaunched, setCalendarPickerLaunched] = useState(false);
   const [selectedDayIdx, setSelectedDayIdx] = useState(0); // TODO: initialize to the current date if present
+  const [selectedEventIdxInSelectedDay, setSelectedEventIdxInSelectedDay] =
+    useState(0); // TODO: initialize to something smarter? maybe?
+  const [modalShow, setModalShow] = useState(false);
+  const [modalShowsNewEvent, setModalShowsNewEvent] = useState(false);
 
   return (
     <div>
@@ -64,11 +68,21 @@ export default function CalendarView(props: CalendarView) {
           modifyExistingEvent={modifyExistingEvent}
           selectedDayIdx={selectedDayIdx}
           setSelectedDayIdx={setSelectedDayIdx}
+          selectedEventIdxInSelectedDay={selectedEventIdxInSelectedDay}
+          setSelectedEventIdxInSelectedDay={setSelectedEventIdxInSelectedDay}
+          modalShow={modalShow}
+          setModalShow={setModalShow}
+          modalShowsNewEvent={modalShowsNewEvent}
+          setModalShowsNewEvent={setModalShowsNewEvent}
         />
         {!textEngineLaunched && (
           <DailyCalendarView
             calendar_data={filteredCalendarData}
             selected_day_idx={selectedDayIdx}
+            selectedEventIdxInSelectedDay={selectedEventIdxInSelectedDay}
+            setSelectedEventIdxInSelectedDay={setSelectedEventIdxInSelectedDay}
+            setModalShow={setModalShow}
+            setModalShowsNewEvent={setModalShowsNewEvent}
           />
         )}
       </div>
