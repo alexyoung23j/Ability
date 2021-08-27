@@ -13,7 +13,7 @@ var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 interface CalendarPickerProps {
-  eventCalendar: { name: string; color: string };
+  eventCalendar: Calendar;
   setEventCalendar: any;
 }
 export default function CalendarPickerComponent(props: CalendarPickerProps) {

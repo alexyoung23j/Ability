@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DateTime } from 'luxon';
+import { Calendar } from '../../types';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -7,33 +8,78 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 interface DailyCalendarViewProps {
   calendar_data: any;
   selected_day_idx: number;
+  setSelectedDayIdx: any;
   selectedEventIdxInSelectedDay: number;
   setSelectedEventIdxInSelectedDay: any;
   setModalShow: any;
   setModalShowsNewEvent: any;
+  modalEventStart: DateTime;
+  setModalEventStart: any;
+  modalEventEnd: DateTime;
+  setModalEventEnd: any;
+  modalEventTitle: string;
+  setModalEventTitle: any;
+  modalEventLocation: string;
+  setModalEventLocation: any;
+  modalEventCalendar: Calendar;
+  setModalEventCalendar: any;
+  modalEventDescription: string;
+  setModalEventDescription: any;
 }
 
 export default function DailyCalendarView(props: DailyCalendarViewProps) {
   const {
     calendar_data,
     selected_day_idx,
+    setSelectedDayIdx,
     selectedEventIdxInSelectedDay,
     setSelectedEventIdxInSelectedDay,
     setModalShow,
     setModalShowsNewEvent,
+    modalEventStart,
+    setModalEventStart,
+    modalEventEnd,
+    setModalEventEnd,
+    modalEventTitle,
+    setModalEventTitle,
+    modalEventLocation,
+    setModalEventLocation,
+    modalEventCalendar,
+    setModalEventCalendar,
+    modalEventDescription,
+    setModalEventDescription,
   } = props;
 
+  function LaunchModal(index_in_day: number) {
+    const selectedEvent =
+      calendar_data.days[selected_day_idx].events[index_in_day];
+    setModalShow(true);
+    setModalShowsNewEvent(false);
+    setSelectedEventIdxInSelectedDay(index_in_day);
+    setModalEventStart(DateTime.fromISO(selectedEvent.start_time));
+    setModalEventEnd(DateTime.fromISO(selectedEvent.end_time));
+    setModalEventTitle(selectedEvent.title);
+    setModalEventCalendar(selectedEvent.calendar);
+    setModalEventLocation(''); // TODO: Add location info to the event object
+    setModalEventDescription('Agenda TBD'); // TODO: Set description on the event object
+  }
+
   return (
-    <div style={{ marginLeft: '20px', marginRight: '20px', marginTop: '10px' }}>
+    <div
+      style={{
+        marginLeft: '20px',
+        marginRight: '20px',
+        marginTop: '10px',
+        maxHeight: '190px',
+        overflow: 'overlay',
+      }}
+    >
       {calendar_data.days[selected_day_idx].events.map((event, idx) => (
         <div key={idx}>
           <HorizontalEvent
             event={event}
-            selectedEventIdxInSelectedDay={selectedEventIdxInSelectedDay}
-            setSelectedEventIdxInSelectedDay={setSelectedEventIdxInSelectedDay}
             index={idx}
-            setModalShow={setModalShow}
-            setModalShowsNewEvent={setModalShowsNewEvent}
+            launchModal={LaunchModal}
           />
         </div>
       ))}
@@ -43,21 +89,11 @@ export default function DailyCalendarView(props: DailyCalendarViewProps) {
 
 interface HorizontalEventProps {
   event: any;
-  setSelectedEventIdxInSelectedDay: any;
-  selectedEventIdxInSelectedDay: number;
   index: number;
-  setModalShow: any;
-  setModalShowsNewEvent: any;
+  launchModal: any;
 }
 function HorizontalEvent(props: HorizontalEventProps) {
-  const {
-    event,
-    setSelectedEventIdxInSelectedDay,
-    selectedEventIdxInSelectedDay,
-    index,
-    setModalShow,
-    setModalShowsNewEvent,
-  } = props;
+  const { event, index, launchModal } = props;
 
   const [highlightColor, setHighlightColor] = useState('rgba(0,0,0,0)');
 
@@ -79,19 +115,19 @@ function HorizontalEvent(props: HorizontalEventProps) {
       onMouseEnter={() => setHighlightColor('#E9E9E9')}
       onMouseLeave={() => setHighlightColor('rgba(0,0,0,0)')}
       onClick={() => {
-        setSelectedEventIdxInSelectedDay(index);
-        setModalShowsNewEvent(false);
-        setModalShow(true);
+        launchModal(index);
       }}
     >
       <div
         style={{
           display: 'flex',
           justifyContent: 'flex-start',
-          width: '100px',
+          width: '80px',
         }}
       >
-        <div>{_createTimeString(event.start_time)}</div>
+        <div className="dailyCalendarViewTime">
+          {_createTimeString(event.start_time)}
+        </div>
       </div>
 
       <div
@@ -111,12 +147,14 @@ function HorizontalEvent(props: HorizontalEventProps) {
           width: '250px',
         }}
       >
-        <div>{event.title}</div>
+        <div className="dailyCalendarViewTitle">{event.title}</div>
       </div>
       <div
         style={{ display: 'flex', justifyContent: 'flex-end', width: '100px' }}
       >
-        <div>{_createDurationString(event.start_time, event.end_time)}</div>
+        <div className="dailyCalendarViewDuration">
+          {_createDurationString(event.start_time, event.end_time)}
+        </div>
       </div>
     </div>
   );

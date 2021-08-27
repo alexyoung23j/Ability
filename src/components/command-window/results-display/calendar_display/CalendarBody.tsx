@@ -2,8 +2,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import CSS from 'csstype';
 import HorizontalCalendar from './HorizontalCalendar';
 import EventModal from './EventModal';
-import { RegisteredAccount } from '../../types';
-const { DateTime } = require('luxon');
+import { RegisteredAccount, Calendar } from '../../types';
+import { DateTime } from 'luxon';
 import { BAR_WIDTH } from '../../../util/CalendarViewUtil';
 
 var nodeConsole = require('console');
@@ -25,6 +25,18 @@ interface CalendarBody {
   setModalShow: any;
   setModalShowsNewEvent: any;
   modalShowsNewEvent: boolean;
+  modalEventStart: DateTime;
+  setModalEventStart: any;
+  modalEventEnd: DateTime;
+  setModalEventEnd: any;
+  modalEventTitle: string;
+  setModalEventTitle: any;
+  modalEventLocation: string;
+  setModalEventLocation: any;
+  modalEventCalendar: Calendar;
+  setModalEventCalendar: any;
+  modalEventDescription: string;
+  setModalEventDescription: any;
 }
 
 // State needs to contain the folllwing information about the event that is currently selected (or none is selected):
@@ -46,25 +58,23 @@ export default function CalendarBody(props: CalendarBody) {
     setModalShow,
     modalShowsNewEvent,
     setModalShowsNewEvent,
+    modalEventStart,
+    setModalEventStart,
+    modalEventEnd,
+    setModalEventEnd,
+    modalEventTitle,
+    setModalEventTitle,
+    modalEventLocation,
+    setModalEventLocation,
+    modalEventCalendar,
+    setModalEventCalendar,
+    modalEventDescription,
+    setModalEventDescription,
   } = props;
 
   const bodyRef = useRef(null);
 
   // State
-
-  const [modalEventStart, setModalEventStart] = useState(
-    DateTime.fromISO('2021-06-09T16:10:00-07:00')
-  );
-  const [modalEventEnd, setModalEventEnd] = useState(
-    DateTime.fromISO('2021-06-09T17:10:00-07:00')
-  );
-  const [modalEventTitle, setModalEventTitle] = useState('');
-  const [modalEventLocation, setModalEventLocation] = useState('');
-  const [modalEventCalendar, setModalEventCalendar] = useState({
-    name: "Alex's Calendar",
-    color: 'blue',
-  }); // TODO: Fetch from context
-  const [modalEventDescription, setModalEventDescription] = useState('');
 
   const initial_scroll_amount = calculateScroll(
     calendar_data.days[0].free_blocks
