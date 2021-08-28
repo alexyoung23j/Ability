@@ -12,6 +12,9 @@ import { ContentState } from 'draft-js';
 import { DateTime } from 'luxon';
 const { zones } = require('tzdata');
 import { TimeZoneData } from '../command-window/results-display/TextEngine';
+import { CITIES_TO_FIND_ZONES_FOR } from '../command-window/TextEngineFixtures';
+import { getTimeZones, rawTimeZones, timeZonesNames } from '@vvo/tzdb';
+import { couldStartTrivia } from 'typescript';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -398,6 +401,51 @@ export function createSnippetPayload(
   return snippets;
 }
 
-export function createDefaultTimeZoneData() {
-  console.log(DateTime.now().setZone('UTC-8').offsetNameLong);
+export function createDefaultTimeZoneData(timeZoneList: Array<any>) {
+  let currentZoneOffset = DateTime.now().offset;
+
+  for (const timeZoneObj of timeZoneList) {
+    if (currentZoneOffset === timeZoneObj.offset_in_minutes) {
+      return timeZoneObj;
+    }
+  }
+
+  return {};
+}
+
+// The problem is there are a variety of timezones with no clear list of which ones should be included
+// also certain time zones change name during daylight savings time i.e. PDT -> PST
+// we definitely want all the major time zones
+
+export function generateTimeZoneObjects() {
+  let timeZones = getTimeZones();
+
+  let timeZoneObjects: Array<TimeZoneData> = [
+    {
+      name: 'GMT',
+      utc_offset: 'UTC-0',
+      offset_in_minutes: 0,
+      timezone_enabled: false,
+      cities: [],
+    },
+  ];
+
+  for (const timeZone of timeZones) {
+    for (const city of CITIES_TO_FIND_ZONES_FOR) {
+      if (timeZone.mainCities.includes(city)) {
+        let timeZoneObject = {
+          name: timeZone.abbreviation,
+          utc_offset:
+            'UTC' + timeZone.currentTimeFormat.split(' ')[0].slice(0, 3),
+          offset_in_minutes: timeZone.currentTimeOffsetInMinutes,
+          timezone_enabled: false,
+          cities: timeZone.mainCities,
+        };
+
+        timeZoneObjects.push(timeZoneObject);
+      }
+    }
+  }
+
+  return timeZoneObjects;
 }

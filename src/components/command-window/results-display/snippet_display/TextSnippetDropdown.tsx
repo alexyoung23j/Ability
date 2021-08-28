@@ -17,10 +17,16 @@ interface TextSnippetDisplay {
   snippetPayload: TextSnippet[];
   selectedTimeZone: any;
   setSelectedTimeZone: any;
+  timeZoneObjectList: Array<TimeZoneData>;
 }
 
 export default function TextSnippetDropdown(props: TextSnippetDisplay) {
-  const { snippetPayload, selectedTimeZone, setSelectedTimeZone } = props;
+  const {
+    snippetPayload,
+    selectedTimeZone,
+    setSelectedTimeZone,
+    timeZoneObjectList,
+  } = props;
 
   const [wasCopied, setWasCopied] = useState(false);
   const [copyButtonOpacity, setCopyButtonOpacity] = useState('100%');
@@ -56,6 +62,7 @@ export default function TextSnippetDropdown(props: TextSnippetDisplay) {
         <TimeZoneComponent
           selectedTimeZone={selectedTimeZone}
           setSelectedTimeZone={setSelectedTimeZone}
+          timeZoneObjectList={timeZoneObjectList}
         />
       </div>
       <ClipboardCopiedMessage wasCopied={wasCopied} />
@@ -118,8 +125,9 @@ function CopyMessageComponent(props: {
 function TimeZoneComponent(props: {
   selectedTimeZone: TimeZoneData;
   setSelectedTimeZone: any;
+  timeZoneObjectList: Array<TimeZoneData>;
 }) {
-  const { selectedTimeZone, setSelectedTimeZone } = props;
+  const { selectedTimeZone, setSelectedTimeZone, timeZoneObjectList } = props;
   const [checked, setChecked] = useState(false);
 
   const CheckToggled = () => {
@@ -159,6 +167,8 @@ function TimeZoneComponent(props: {
     }
   `;
 
+  const scrollRef = useRef(null);
+
   return (
     <div>
       <div>
@@ -167,9 +177,22 @@ function TimeZoneComponent(props: {
           onChange={CheckToggled}
           className={checkboxStyle}
         />
+        <div style={pickerAreaStyles}>
+          <div style={pickerStyle} ref={scrollRef}>
+            {timeZoneObjectList.map((zoneObj, idx) => (
+              <div key={idx}>
+                <TimeZoneOption />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
+}
+
+function TimeZoneOption() {
+  return <div style={{ height: '15px' }}>hllo</div>;
 }
 
 function ClipboardCopiedMessage(props: { wasCopied }) {
@@ -215,4 +238,31 @@ const SnippetDisplayStyles: CSS.Properties = {
 const bottomBarStyle: CSS.Properties = {
   display: 'flex',
   marginTop: '20px',
+};
+
+const pickerStyle: CSS.Properties = {
+  position: 'relative',
+  boxShadow: '0 0 100px rgba(0,0,0, 0.1)',
+  borderRadius: '4px',
+  maxWidth: '100px',
+  maxHeight: '250px',
+
+  backgroundColor: '#FFFFFF',
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'flex-start',
+  flexDirection: 'column',
+  overflowX: 'auto',
+};
+
+const pickerAreaStyles: CSS.Properties = {
+  position: 'absolute',
+  width: '420px',
+
+  minHeight: '430px',
+  backgroundColor: 'rgba(211,211,123,0.0)',
+  zIndex: 100,
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
 };

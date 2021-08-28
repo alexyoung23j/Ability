@@ -6,6 +6,7 @@ import {
   _extractTimeSlots,
   createSnippetPayload,
   createDefaultTimeZoneData,
+  generateTimeZoneObjects,
 } from '../../util/TextEngineUtil';
 
 var nodeConsole = require('console');
@@ -14,7 +15,9 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 export interface TimeZoneData {
   name: string;
   utc_offset: string;
+  offset_in_minutes: number;
   timezone_enabled: boolean;
+  cities: Array<String>;
 }
 
 const dummy_packages: Array<TextSnippetPackage> = [
@@ -59,21 +62,18 @@ const dummy_packages: Array<TextSnippetPackage> = [
 interface TextEngineProps {
   calendar_data: CalendarResultData;
   ignoredSlots: Array<Array<number>>;
+  timeZoneObjectList: Array<TimeZoneData>;
 }
 
 export default function TextEngine(props: TextEngineProps) {
-  const { calendar_data, ignoredSlots } = props;
+  const { calendar_data, ignoredSlots, timeZoneObjectList } = props;
 
-  const [selectedTimeZone, setSelectedTimeZone] = useState<TimeZoneData>({
-    name: 'PST',
-    utc_offset: 'UTC-7',
-    timezone_enabled: false,
-  });
+  const [selectedTimeZone, setSelectedTimeZone] = useState<TimeZoneData>(
+    createDefaultTimeZoneData(timeZoneObjectList)
+  );
 
   // Should be fetching this from context
   const TextSnippetPackages = dummy_packages;
-
-  createDefaultTimeZoneData();
 
   // Grab the chosen slots
   const timeSlots = _extractTimeSlots(
@@ -94,6 +94,7 @@ export default function TextEngine(props: TextEngineProps) {
       snippetPayload={payload}
       selectedTimeZone={selectedTimeZone}
       setSelectedTimeZone={setSelectedTimeZone}
+      timeZoneObjectList={timeZoneObjectList}
     />
   );
 }
