@@ -2,12 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { EditorState, SelectionState } from 'draft-js';
 import CSS from 'csstype';
 import { motion, useAnimation } from 'framer-motion';
-import { Checkbox } from 'reakit/Checkbox';
-import { css } from '@emotion/css';
 
 import TextField from './TextField';
 import { TextSnippet } from '../../types';
 import { TimeZoneData } from '../TextEngine';
+import TimeZoneComponent from './TimeZoneComponent';
 
 const { ipcRenderer } = require('electron');
 var nodeConsole = require('console');
@@ -55,15 +54,17 @@ export default function TextSnippetDropdown(props: TextSnippetDisplay) {
             wasCopied={wasCopied}
           />
         </div>
-        <CopyMessageComponent
-          handleCopyClick={handleCopyClick}
-          copyButtonOpacity={copyButtonOpacity}
-        />
-        <TimeZoneComponent
-          selectedTimeZone={selectedTimeZone}
-          setSelectedTimeZone={setSelectedTimeZone}
-          timeZoneObjectList={timeZoneObjectList}
-        />
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <CopyMessageComponent
+            handleCopyClick={handleCopyClick}
+            copyButtonOpacity={copyButtonOpacity}
+          />
+          <TimeZoneComponent
+            selectedTimeZone={selectedTimeZone}
+            setSelectedTimeZone={setSelectedTimeZone}
+            timeZoneObjectList={timeZoneObjectList}
+          />
+        </div>
       </div>
       <ClipboardCopiedMessage wasCopied={wasCopied} />
     </div>
@@ -122,79 +123,6 @@ function CopyMessageComponent(props: {
   );
 }
 
-function TimeZoneComponent(props: {
-  selectedTimeZone: TimeZoneData;
-  setSelectedTimeZone: any;
-  timeZoneObjectList: Array<TimeZoneData>;
-}) {
-  const { selectedTimeZone, setSelectedTimeZone, timeZoneObjectList } = props;
-  const [checked, setChecked] = useState(false);
-
-  const CheckToggled = () => {
-    if (checked) {
-      setSelectedTimeZone({ ...selectedTimeZone, timezone_enabled: false });
-      setChecked(false);
-    } else {
-      setSelectedTimeZone({ ...selectedTimeZone, timezone_enabled: true });
-      setChecked(true);
-    }
-  };
-
-  const checkboxStyle = css`
-    appearance: none;
-    border: 1px solid blue;
-    border-radius: 4px;
-    outline: none;
-    cursor: pointer;
-    width: 12px;
-    height: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: 5px;
-    &:after {
-      content: '✔';
-      display: none;
-      color: white;
-      font-size: 60%;
-    }
-    &:checked {
-      background-color: blue;
-      border: 2px solid blue;
-      &:after {
-        display: block;
-      }
-    }
-  `;
-
-  const scrollRef = useRef(null);
-
-  return (
-    <div>
-      <div>
-        <Checkbox
-          checked={checked}
-          onChange={CheckToggled}
-          className={checkboxStyle}
-        />
-        <div style={pickerAreaStyles}>
-          <div style={pickerStyle} ref={scrollRef}>
-            {timeZoneObjectList.map((zoneObj, idx) => (
-              <div key={idx}>
-                <TimeZoneOption />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TimeZoneOption() {
-  return <div style={{ height: '15px' }}>hllo</div>;
-}
-
 function ClipboardCopiedMessage(props: { wasCopied }) {
   const { wasCopied } = props;
 
@@ -238,31 +166,4 @@ const SnippetDisplayStyles: CSS.Properties = {
 const bottomBarStyle: CSS.Properties = {
   display: 'flex',
   marginTop: '20px',
-};
-
-const pickerStyle: CSS.Properties = {
-  position: 'relative',
-  boxShadow: '0 0 100px rgba(0,0,0, 0.1)',
-  borderRadius: '4px',
-  maxWidth: '100px',
-  maxHeight: '250px',
-
-  backgroundColor: '#FFFFFF',
-  display: 'flex',
-  justifyContent: 'flex-start',
-  alignItems: 'flex-start',
-  flexDirection: 'column',
-  overflowX: 'auto',
-};
-
-const pickerAreaStyles: CSS.Properties = {
-  position: 'absolute',
-  width: '420px',
-
-  minHeight: '430px',
-  backgroundColor: 'rgba(211,211,123,0.0)',
-  zIndex: 100,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
 };

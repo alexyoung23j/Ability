@@ -420,15 +420,7 @@ export function createDefaultTimeZoneData(timeZoneList: Array<any>) {
 export function generateTimeZoneObjects() {
   let timeZones = getTimeZones();
 
-  let timeZoneObjects: Array<TimeZoneData> = [
-    {
-      name: 'GMT',
-      utc_offset: 'UTC-0',
-      offset_in_minutes: 0,
-      timezone_enabled: false,
-      cities: [],
-    },
-  ];
+  let timeZoneObjects: Array<TimeZoneData> = [];
 
   for (const timeZone of timeZones) {
     for (const city of CITIES_TO_FIND_ZONES_FOR) {

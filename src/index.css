@@ -274,6 +274,20 @@
   margin-right: 6px;
 }
 
+.timeZonePickerCities {
+  font-family: 'Montserrat';
+  font-weight: lighter;
+  color: #7d7d7d;
+  font-size: 12px;
+  height: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
 .eventModalTimePlainString {
   font-family: 'Montserrat';
   font-weight: lighter;
