@@ -10,6 +10,7 @@ import { demo1ArrayOfSnippets } from '../constants';
 import { Calendar, RegisteredAccount } from '../types';
 import CalendarView from './calendar_display/CalendarView';
 import TextEngine from './TextEngine';
+import { generateTimeZoneObjects } from '../../util/TextEngineUtil';
 const { DateTime } = require('luxon');
 
 const dropdownArrowNormal = require('/src/content/svg/DropdownArrowNormal.svg');
@@ -508,6 +509,7 @@ export default function ResultEngine(props: ResultEngineProps) {
           <TextEngine
             ignoredSlots={ignoreSlots}
             calendar_data={filteredCalendarData}
+            timeZoneObjectList={generateTimeZoneObjects()}
           />
         )}
       </div>

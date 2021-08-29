@@ -104,10 +104,7 @@ export interface TextSnippetPackage {
   id: string;
 }
 
-export type TextObject =
-  | DateTextObject
-  | DurationTextObject
-  | TimeZoneTextObject;
+export type TextObject = DateTextObject | DurationTextObject;
 
 export interface DateTextObject {
   settings: {
@@ -133,18 +130,6 @@ export function isDurationTextObject(
   snippetPiece: TextObject
 ): snippetPiece is DurationTextObject {
   return 'abbreviate' in snippetPiece.settings;
-}
-
-export interface TimeZoneTextObject {
-  settings: {
-    timeZone: number;
-  };
-}
-
-export function isTimeZoneTextObject(
-  snippetPiece: TextObject
-): snippetPiece is TimeZoneTextObject {
-  return 'timeZone' in snippetPiece.settings;
 }
 
 export interface TextSnippet {
