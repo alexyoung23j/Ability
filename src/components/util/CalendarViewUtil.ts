@@ -389,7 +389,7 @@ export function CalculateFreeBlocks(
     'minutes'
   );
 
-  if (blockSizeInMinutes >= min_duration) {
+  if (blockSizeInMinutes.minutes >= min_duration) {
     // Round down the hard end
     let finalEndTime = roundToNearestInterval(
       DateTime.fromISO(hard_stop),
