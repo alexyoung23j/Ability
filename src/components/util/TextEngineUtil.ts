@@ -194,8 +194,6 @@ function _cleanedTimeString(
       firstTime = firstTime.slice(1, firstTime.length);
     }
 
-    firstTime = firstTime.slice(0, firstTime.length - 3);
-
     let secondTime = slot.end_time.toLocaleString({
       hour: '2-digit',
       minute: '2-digit',
@@ -206,7 +204,16 @@ function _cleanedTimeString(
     }
 
     if (!includePeriod) {
+      firstTime = firstTime.slice(0, firstTime.length - 3);
       secondTime = secondTime.slice(secondTime.length - 3);
+    } else {
+      // Check if the two times are in the same period
+      if (
+        firstTime.slice(firstTime.length - 3, firstTime.length) ===
+        secondTime.slice(secondTime.length - 3, secondTime.length)
+      ) {
+        firstTime = firstTime.slice(0, firstTime.length - 3);
+      }
     }
 
     resultString += firstTime + '-' + secondTime;
