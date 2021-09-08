@@ -12,6 +12,7 @@ export enum QueryPieceType {
 export interface Piece {
   value: string;
   type: QueryPieceType;
+  priority?: number;
 }
 
 export interface QueryFragment {

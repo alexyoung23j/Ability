@@ -188,6 +188,7 @@ function createFilter(queryPieces: Array<Piece>): CalendarIndexFilter {
   return filter;
 }
 function _hydrateNullFields(filter: CalendarIndexFilter): CalendarIndexFilter {
+  console.log(filter);
   return {
     duration: filter.duration ?? USER_SETTINGS_DEFAULT_FILTERS.duration,
     startTime: filter.startTime ?? USER_SETTINGS_DEFAULT_FILTERS.startTime,
