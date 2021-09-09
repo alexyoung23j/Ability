@@ -82,6 +82,8 @@ function _insertNumbers(
             (completion.value[i - 1] === ':' || completion.value[i - 1] === '/')
           ) {
             hydratedValue.push('01');
+          } else {
+            hydratedValue.push('1');
           }
         } else {
           hydratedValue.push(char);
@@ -97,9 +99,20 @@ function _insertNumbers(
     }
   }
 
-  //myConsole.log(hydratedCompletions)
+  // Sort by length of autocompletion value
+  return _sortAutocompletions(hydratedCompletions);
+}
 
-  return hydratedCompletions;
+function _sortAutocompletions(completions: Array<Piece>): Array<Piece> {
+  return completions.sort((a, b) =>
+    a.priority > b.priority
+      ? 1
+      : a.priority === b.priority
+      ? a.value.length > b.value.length
+        ? 1
+        : -1
+      : -1
+  );
 }
 
 export default function Parser(props: ParserProps) {

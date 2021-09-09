@@ -36,7 +36,20 @@ import {
 12. third -> Date Modifier
 13. fourth -> Date Modifier
 
+
  */
+
+// Defines the priority of which results to show first (lower number means it takes precedence)
+const PRIORITY_MAP = {
+  DURATION_PRIMARY: 1,
+  DURATION_SECONDARY: 2,
+  TIME_PRIMARY: 3,
+  TIME_SECONDARY: 4,
+  DATE_PRIMARY: 5,
+  DATE_SECONDARY: 6,
+  RANGE_PRIMARY: 7,
+  RANGE_SECONDARY: 8,
+};
 
 export const DURATION_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   '_ hour',
@@ -44,6 +57,16 @@ export const DURATION_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   '_ mins',
   '_ minutes',
   '_ min',
+  '_._ hour',
+  '_._ hours',
+].map((value) => ({
+  value,
+  category: ModifierCategory.DURATION,
+  type: QueryPieceType.MODIFIER,
+  priority: PRIORITY_MAP.DURATION_PRIMARY,
+}));
+
+export const DURATION_MODIFIER_FIXTURES_SECONDARY: Array<ModifierPiece> = [
   '_minute',
   '_hour',
   '_hours',
@@ -51,8 +74,6 @@ export const DURATION_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   '_minutes',
   '_min',
   '_minute',
-  '_._ hour',
-  '_._ hours',
   '_._hour',
   '_._hours',
   // uppercases
@@ -61,6 +82,8 @@ export const DURATION_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   '_ Mins',
   '_ Minutes',
   '_ Min',
+  '_._ Hour',
+  '_._ Hours',
   '_Minute',
   '_Hour',
   '_Hours',
@@ -68,14 +91,13 @@ export const DURATION_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   '_Minutes',
   '_Min',
   '_Minute',
-  '_._ Hour',
-  '_._ Hours',
   '_._Hour',
   '_._Hours',
 ].map((value) => ({
   value,
   category: ModifierCategory.DURATION,
   type: QueryPieceType.MODIFIER,
+  priority: PRIORITY_MAP.DURATION_SECONDARY,
 }));
 
 export const TIME_MODIFIER_FIXTURES: Array<ModifierPiece> = [
@@ -88,6 +110,14 @@ export const TIME_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   '_:_ am',
   '_ pm',
   '_ am',
+].map((value) => ({
+  value,
+  category: ModifierCategory.TIME,
+  type: QueryPieceType.MODIFIER,
+  priority: PRIORITY_MAP.TIME_PRIMARY,
+}));
+
+export const TIME_MODIFIER_FIXTURES_SECONDARY: Array<ModifierPiece> = [
   '_pm',
   '_am',
   // uppercases
@@ -106,6 +136,7 @@ export const TIME_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   value,
   category: ModifierCategory.TIME,
   type: QueryPieceType.MODIFIER,
+  priority: PRIORITY_MAP.TIME_SECONDARY,
 }));
 
 export const DATE_MODIFIER_FIXTURES: Array<ModifierPiece> = [
@@ -148,6 +179,16 @@ export const DATE_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   'october _',
   'november _',
   'december _',
+
+  // TODO: add with year? "january 1, 2021" or something
+].map((value) => ({
+  value,
+  category: ModifierCategory.DATE,
+  type: QueryPieceType.MODIFIER,
+  priority: PRIORITY_MAP.DATE_PRIMARY,
+}));
+
+export const DATE_MODIFIER_FIXTURES_SECONDARY: Array<ModifierPiece> = [
   // uppercases
   'Monday',
   'Tuesday',
@@ -190,6 +231,7 @@ export const DATE_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   value,
   category: ModifierCategory.DATE,
   type: QueryPieceType.MODIFIER,
+  priority: PRIORITY_MAP.DATE_SECONDARY,
 }));
 
 export const RANGE_MODIFIER_FIXTURES: Array<ModifierPiece> = [
@@ -229,6 +271,14 @@ export const RANGE_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   'october',
   'november',
   'december',
+].map((value) => ({
+  value,
+  category: ModifierCategory.RANGE,
+  type: QueryPieceType.MODIFIER,
+  priority: PRIORITY_MAP.RANGE_PRIMARY,
+}));
+
+export const RANGE_MODIFIER_FIXTURES_SECONDARY: Array<ModifierPiece> = [
   // uppercases
   'Week',
   'Month',
@@ -270,13 +320,18 @@ export const RANGE_MODIFIER_FIXTURES: Array<ModifierPiece> = [
   value,
   category: ModifierCategory.RANGE,
   type: QueryPieceType.MODIFIER,
+  priority: PRIORITY_MAP.RANGE_SECONDARY,
 }));
 
 export const MODIFIER_FIXTURES = [
   ...DURATION_MODIFIER_FIXTURES,
+  ...DURATION_MODIFIER_FIXTURES_SECONDARY,
   ...TIME_MODIFIER_FIXTURES,
+  ...TIME_MODIFIER_FIXTURES_SECONDARY,
   ...DATE_MODIFIER_FIXTURES,
+  ...DATE_MODIFIER_FIXTURES_SECONDARY,
   ...RANGE_MODIFIER_FIXTURES,
+  ...RANGE_MODIFIER_FIXTURES_SECONDARY,
 ];
 
 export const PREPOSITION_FIXTURES: Array<PrepositionPiece> = [
@@ -293,7 +348,7 @@ export const PREPOSITION_FIXTURES: Array<PrepositionPiece> = [
   {
     value: 'after',
     type: QueryPieceType.PREPOSITION,
-    allowedModifierCategories: [ModifierCategory.TIME, ModifierCategory.DATE],
+    allowedModifierCategories: [ModifierCategory.TIME],
   },
   {
     value: 'before',

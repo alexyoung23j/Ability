@@ -329,6 +329,7 @@ export function applyPrepositionActionToFilter(
               startTime: filter.endTime,
               endTime: DateTime.fromISO(user_settings.day_hard_stop),
             };
+
             break;
           }
         case 'before':
