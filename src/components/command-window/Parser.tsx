@@ -100,7 +100,6 @@ function _insertNumbers(
   }
 
   // Sort by length of autocompletion value
-  console.log(hydratedCompletions);
   return _sortAutocompletions(hydratedCompletions);
 }
 

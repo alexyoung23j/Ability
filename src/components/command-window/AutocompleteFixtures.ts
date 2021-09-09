@@ -39,15 +39,16 @@ import {
 
  */
 
+// Defines the priority of which results to show first (lower number means it takes precedence)
 const PRIORITY_MAP = {
   DURATION_PRIMARY: 1,
   DURATION_SECONDARY: 2,
   TIME_PRIMARY: 3,
   TIME_SECONDARY: 4,
-  DATE_PRIMARY: 7,
-  DATE_SECONDARY: 8,
-  RANGE_PRIMARY: 5,
-  RANGE_SECONDARY: 6,
+  DATE_PRIMARY: 5,
+  DATE_SECONDARY: 6,
+  RANGE_PRIMARY: 7,
+  RANGE_SECONDARY: 8,
 };
 
 export const DURATION_MODIFIER_FIXTURES: Array<ModifierPiece> = [
