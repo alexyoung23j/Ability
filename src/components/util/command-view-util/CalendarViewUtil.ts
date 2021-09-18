@@ -274,6 +274,7 @@ export function CalculateFreeBlocks(
   }>
 ) {
   let blocks = [];
+  console.log(hard_stop);
 
   if (events.length < 1) {
     const newBlock = {
@@ -337,7 +338,10 @@ export function CalculateFreeBlocks(
 
   let latestEndSoFar = eventEnd;
 
-  while (eventIdx < events.length) {
+  while (
+    eventIdx < events.length &&
+    currentBlockStartTime < DateTime.fromISO(hard_stop)
+  ) {
     // Find start of event, round down to nearest interval
     let eventStart = DateTime.fromISO(events[eventIdx].start_time);
     eventStart = roundToNearestInterval(eventStart, interval_size, false);
@@ -365,13 +369,17 @@ export function CalculateFreeBlocks(
       continue;
     }
 
+    // The time the block should end, either at the beginning of the next event or at the hard stop
+    let blockEndTime =
+      eventStart < DateTime.fromISO(hard_stop) ? eventStart.toISO() : hard_stop;
+
     // Create a block, fill it up with free slots, moving the currentSlotEnd forward
     const newBlock = {
       start_time: currentBlockStartTime.toISO(),
-      end_time: eventStart.toISO(),
+      end_time: blockEndTime,
       free_slots: generateIntervals(
         currentBlockStartTime,
-        eventStart,
+        DateTime.fromISO(blockEndTime),
         interval_size,
         slot_size,
         true
