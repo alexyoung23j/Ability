@@ -49,6 +49,7 @@ const PRIORITY_MAP = {
   DATE_SECONDARY: 6,
   RANGE_PRIMARY: 7,
   RANGE_SECONDARY: 8,
+  PREPOSITION: 0,
 };
 
 export const DURATION_MODIFIER_FIXTURES: Array<ModifierPiece> = [
@@ -338,26 +339,31 @@ export const PREPOSITION_FIXTURES: Array<PrepositionPiece> = [
   {
     value: 'for',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DURATION],
   },
   {
     value: 'at',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.TIME],
   },
   {
     value: 'after',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.TIME],
   },
   {
     value: 'before',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.TIME, ModifierCategory.DATE],
   },
   {
     value: 'this',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [
       ModifierCategory.TIME,
       ModifierCategory.DATE,
@@ -367,66 +373,79 @@ export const PREPOSITION_FIXTURES: Array<PrepositionPiece> = [
   {
     value: 'on',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DATE],
   },
   {
     value: 'next',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.RANGE, ModifierCategory.DATE],
   },
   {
     value: 'in',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.RANGE],
   },
   {
     value: 'week of',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DATE],
   },
   {
     value: 'first',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DATE],
   },
   {
     value: 'second',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DATE],
   },
   {
     value: 'third',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DATE],
   },
   {
     value: 'fourth',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DATE],
   },
   {
     value: 'For',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DURATION],
   },
   {
     value: 'At',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.TIME],
   },
   {
     value: 'After',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.TIME, ModifierCategory.DATE],
   },
   {
     value: 'Before',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.TIME, ModifierCategory.DATE],
   },
   {
     value: 'This',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [
       ModifierCategory.TIME,
       ModifierCategory.DATE,
@@ -436,41 +455,49 @@ export const PREPOSITION_FIXTURES: Array<PrepositionPiece> = [
   {
     value: 'On',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DATE],
   },
   {
     value: 'Next',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.RANGE, ModifierCategory.DATE],
   },
   {
     value: 'In',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.RANGE],
   },
   {
     value: 'Week of',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DATE],
   },
   {
     value: 'First',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DATE],
   },
   {
     value: 'Second',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DATE],
   },
   {
     value: 'Third',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DATE],
   },
   {
     value: 'Fourth',
     type: QueryPieceType.PREPOSITION,
+    priority: PRIORITY_MAP.PREPOSITION,
     allowedModifierCategories: [ModifierCategory.DATE],
   },
 ];

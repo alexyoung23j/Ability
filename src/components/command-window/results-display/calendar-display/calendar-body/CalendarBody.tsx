@@ -1,10 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import CSS from 'csstype';
-import HorizontalCalendar from './HorizontalCalendar';
-import EventModal from './EventModal';
-import { RegisteredAccount, Calendar } from '../../types';
+import HorizontalCalendar from '../horizontal-cal-components/HorizontalCalendar';
+import EventModal from './event-modal/EventModal';
+import { RegisteredAccount, Calendar } from '../../../../../constants/types';
 import { DateTime } from 'luxon';
-import { BAR_WIDTH } from '../../../util/CalendarViewUtil';
+import { BAR_WIDTH } from '../../../../util/command-view-util/CalendarViewUtil';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);

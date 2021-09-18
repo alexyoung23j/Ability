@@ -4,8 +4,8 @@ import CSS from 'csstype';
 import { motion, useAnimation } from 'framer-motion';
 
 import TextField from './TextField';
-import { TextSnippet } from '../../types';
-import { TimeZoneData } from '../TextEngine';
+import { TextSnippet } from '../../../../constants/types';
+import { TimeZoneData } from '../engines/TextEngine';
 import TimeZoneComponent from './TimeZoneComponent';
 
 const { ipcRenderer } = require('electron');

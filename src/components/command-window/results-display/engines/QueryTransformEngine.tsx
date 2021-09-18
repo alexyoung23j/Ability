@@ -1,15 +1,15 @@
 import { DateTime } from 'luxon';
 import React, { useContext, useState } from 'react';
-import { CalendarContext } from '../../../App';
-import { assert } from '../../../assert';
+import { CalendarContext } from '../../../../App';
+import { assert } from '../../../util/test-util/assert';
 import {
   applyPrepositionActionToFilter,
   extractModifierGroups,
   generateDefaultFilterForModifier,
   USER_SETTINGS_DATE_TIME_CONFIG,
   USER_SETTINGS_DEFAULT_FILTERS,
-} from '../../util/QueryTransformUtil';
-import { DEFAULT_PREPOSITION_LIBRARY } from '../TransformFixtures';
+} from '../../../util/command-view-util/QueryTransformUtil';
+import { DEFAULT_PREPOSITION_LIBRARY } from '../../../../constants/TransformConstants';
 import {
   CalendarIndexFilter,
   ModifierCategory,
@@ -19,14 +19,14 @@ import {
   QueryTransformEngineProps,
   Piece,
   QueryPieceType,
-} from '../types';
+} from '../../../../constants/types';
 import ResultEngine, {
   CalendarResultData,
   CalendarResultEvent,
 } from './ResultEngine';
-import * as CalendarIndexUtil from '../../util/CalendarIndexUtil';
+import * as CalendarIndexUtil from '../../../util/command-view-util/CalendarIndexUtil';
 import _ from 'underscore';
-import ErrorResult from './ErrorResult';
+import ErrorResult from '../error-handling/ErrorResult';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);

@@ -1,8 +1,8 @@
 import { calendar_v3 } from 'googleapis';
 import { DateTime } from 'luxon';
-import { CalendarIndex } from '../../App';
+import { CalendarIndex } from '../../../App';
 
-import { assert } from '../../assert';
+import { assert } from '../test-util/assert';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);

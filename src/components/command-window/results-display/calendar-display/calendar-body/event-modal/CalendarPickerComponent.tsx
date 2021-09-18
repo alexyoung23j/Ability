@@ -7,7 +7,7 @@ import { Overrides } from '@material-ui/core/styles/overrides';
 import { MuiPickersOverrides } from '@material-ui/pickers/typings/overrides';
 import { Multiselect } from 'multiselect-react-dropdown';
 import CalendarPickerPopup from './CalendarPickerPopup';
-import { Calendar } from '../../types';
+import { Calendar } from '../../../../../../constants/types';
 const miniCalendar = require('/src/content/svg/MiniCalendarIcon.svg');
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);

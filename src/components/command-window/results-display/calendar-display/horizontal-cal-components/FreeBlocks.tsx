@@ -3,7 +3,7 @@ import CSS from 'csstype';
 import useDragScroll from 'use-drag-scroll';
 import ReactDOM from 'react-dom';
 import ReactTooltip from 'react-tooltip';
-import { datetimeToOffset } from '../../../../util/CalendarViewUtil';
+import { datetimeToOffset } from '../../../../util/command-view-util/CalendarViewUtil';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);

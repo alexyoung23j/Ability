@@ -6,7 +6,7 @@ import {
   QueryPieceType,
 } from './types';
 
-import { PREPOSITION_FIXTURES } from './AutocompleteFixtures';
+import { PREPOSITION_FIXTURES } from './AutocompleteConstants';
 import { DateTime } from 'luxon';
 
 export const DEFAULT_PREPOSITION_LIBRARY = {

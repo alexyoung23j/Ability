@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { DateTime } from 'luxon';
 
-import { chooseYearForDateFilter } from '../../../util/QueryTransformUtil';
+import { chooseYearForDateFilter } from '../../../util/command-view-util/QueryTransformUtil';
 
 // TODO kedar: mock out svg imports to export null for mocha
 describe('QueryTransformUtil', () => {

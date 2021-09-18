@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import ReactTooltip from 'react-tooltip';
-import { datetimeToRangeString } from '../../../../util/CalendarViewUtil';
+import { datetimeToRangeString } from '../../../../util/command-view-util/CalendarViewUtil';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);

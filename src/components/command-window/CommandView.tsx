@@ -6,11 +6,11 @@ import {
   QueryPieceType,
   ModifierCategory,
   ModifierPiece,
-} from './types';
+} from '../../constants/types';
 import CommandLine from './command-line/CommandLine';
-import Parser from './Parser';
-import ResultEngine from './results-display/ResultEngine';
-import { QueryTransformEngine } from './results-display/QueryTransformEngine';
+import AutocompleteParser from './autocomplete/AutocompleteParser';
+import ResultEngine from './results-display/engines/ResultEngine';
+import { QueryTransformEngine } from './results-display/engines/QueryTransformEngine';
 
 const { ipcRenderer } = require('electron');
 
@@ -221,7 +221,7 @@ export default function CommandView() {
         {(finalQueryLaunched && (
           <QueryTransformEngine queryPieces={queryPieces} />
         )) || (
-          <Parser
+          <AutocompleteParser
             updateRoot={setValidAutocompletes}
             validAutocompletes={validAutocompletes}
             highlightedIdx={currentAutocompleteIdx}

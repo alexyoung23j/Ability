@@ -1,11 +1,11 @@
 import CSS from 'csstype';
 import React, { useState, useEffect } from 'react';
-import CalendarHeader from './CalendarHeader';
+import CalendarHeader from '../calendar-header/CalendarHeader';
 import CalendarBody from './CalendarBody';
-import { Calendar, RegisteredAccount } from '../../types';
+import { Calendar, RegisteredAccount } from '../../../../../constants/types';
 import { useImmer } from 'use-immer';
-import { CalendarPickerModal } from './CalendarPickerModal';
-import DailyCalendarView from './DailyCalendarView';
+import { CalendarPickerModal } from '../calendar-header/CalendarPickerModal';
+import DailyCalendarView from '../daily-calendar/DailyCalendarView';
 const { DateTime } = require('luxon');
 
 var nodeConsole = require('console');

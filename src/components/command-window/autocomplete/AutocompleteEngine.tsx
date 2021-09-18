@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import AutocompleteBar, { AutocompleteBarProps } from './AutocompleteBar';
-import { buildModifierTrie, buildPrepositionTrie, TreeNode } from '../TreeNode';
+import AutocompleteBar, {
+  AutocompleteBarProps,
+} from './autocomplete-display/AutocompleteBar';
+import { buildModifierTrie, buildPrepositionTrie, TreeNode } from './TreeNode';
 import {
   isModifierPiece,
   isPrepositionPiece,
@@ -12,7 +14,7 @@ import {
   PrepositionQueryFragment,
   QueryFragment,
   ALL_MODIFIER_CATEGORIES,
-} from '../types';
+} from '../../../constants/types';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);

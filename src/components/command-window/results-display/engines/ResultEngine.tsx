@@ -5,12 +5,12 @@ import { useImmer } from 'use-immer';
 import {
   CalculateFreeBlocks,
   HydrateOverlapEvents,
-} from '../../util/CalendarViewUtil';
-import { demo1ArrayOfSnippets } from '../constants';
-import { Calendar, RegisteredAccount } from '../types';
-import CalendarView from './calendar_display/CalendarView';
+} from '../../../util/command-view-util/CalendarViewUtil';
+import { demo1ArrayOfSnippets } from '../../../../constants/old-constants';
+import { Calendar, RegisteredAccount } from '../../../../constants/types';
+import CalendarView from '../calendar-display/calendar-body/CalendarView';
 import TextEngine from './TextEngine';
-import { generateTimeZoneObjects } from '../../util/TextEngineUtil';
+import { generateTimeZoneObjects } from '../../../util/command-view-util/TextEngineUtil';
 const { DateTime } = require('luxon');
 
 const dropdownArrowNormal = require('/src/content/svg/DropdownArrowNormal.svg');

@@ -1,4 +1,4 @@
-import { CalendarResultData } from '../command-window/results-display/ResultEngine';
+import { CalendarResultData } from '../../command-window/results-display/engines/ResultEngine';
 import {
   TextSnippetPackage,
   TextSnippet,
@@ -7,12 +7,12 @@ import {
   isDateTextObject,
   isDurationTextObject,
   DurationTextObject,
-} from '../command-window/types';
+} from '../../../constants/types';
 import { ContentState } from 'draft-js';
 import { DateTime } from 'luxon';
 const { zones } = require('tzdata');
-import { TimeZoneData } from '../command-window/results-display/TextEngine';
-import { CITIES_TO_FIND_ZONES_FOR } from '../command-window/TextEngineFixtures';
+import { TimeZoneData } from '../../command-window/results-display/engines/TextEngine';
+import { CITIES_TO_FIND_ZONES_FOR } from '../../../constants/TextEngineConstants';
 import { getTimeZones, rawTimeZones, timeZonesNames } from '@vvo/tzdb';
 import { couldStartTrivia } from 'typescript';
 

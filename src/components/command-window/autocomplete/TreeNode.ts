@@ -1,8 +1,8 @@
 import {
   PREPOSITION_FIXTURES,
   MODIFIER_FIXTURES,
-} from './AutocompleteFixtures';
-import { assert } from '../../assert';
+} from '../../../constants/AutocompleteConstants';
+import { assert } from '../../util/test-util/assert';
 import {
   Piece,
   QueryFragment,
@@ -12,7 +12,7 @@ import {
   ModifierQueryFragment,
   PrepositionPiece,
   PrepositionQueryFragment,
-} from './types';
+} from '../../../constants/types';
 
 export class TreeNode<
   TPiece extends Piece,

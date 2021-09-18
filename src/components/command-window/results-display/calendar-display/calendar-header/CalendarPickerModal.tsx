@@ -1,8 +1,8 @@
 import CSS from 'csstype';
 import React, { useState } from 'react';
 import CalendarHeader from './CalendarHeader';
-import CalendarBody from './CalendarBody';
-import { Calendar, RegisteredAccount } from '../../types';
+import CalendarBody from '../calendar-body/CalendarBody';
+import { Calendar, RegisteredAccount } from '../../../../../constants/types';
 import { useImmer } from 'use-immer';
 import { Checkbox } from 'reakit/Checkbox';
 import { css } from '@emotion/css';

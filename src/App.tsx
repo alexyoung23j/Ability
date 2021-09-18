@@ -4,10 +4,10 @@ import CommandView from './components/command-window/CommandView';
 import { CALENDAR_INDEX_1, EVENTS } from './tests/EventsFixtures';
 import SettingsView from './components/settings-window/SettingsView';
 const { ipcRenderer } = require('electron');
-const css = require('./index.css');
+const css = require('./styles/index.css');
 
 import { config } from 'dotenv';
-import { CalendarIndexDay } from './components/util/CalendarIndexUtil';
+import { CalendarIndexDay } from './components/util/command-view-util/CalendarIndexUtil';
 config();
 
 ipcRenderer.setMaxListeners(Infinity);

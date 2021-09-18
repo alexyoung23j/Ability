@@ -2,8 +2,8 @@ import React, { useRef, useEffect, useState, Fragment } from 'react';
 import CSS from 'csstype';
 import { AnimationType } from 'framer-motion/types/render/utils/types';
 const { DateTime } = require('luxon');
-import { generatePickerTimeOptions } from '../../../util/CalendarViewUtil';
-import { Calendar } from '../../types';
+import { generatePickerTimeOptions } from '../../../../../util/command-view-util/CalendarViewUtil';
+import { Calendar } from '../../../../../../constants/types';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);

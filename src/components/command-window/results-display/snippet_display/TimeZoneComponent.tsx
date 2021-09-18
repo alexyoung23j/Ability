@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import CSS from 'csstype';
-import { TimeZoneData } from '../TextEngine';
+import { TimeZoneData } from '../engines/TextEngine';
 import { css } from '@emotion/css';
 import { Checkbox } from 'reakit/Checkbox';
 

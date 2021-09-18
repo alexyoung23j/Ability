@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DateTime } from 'luxon';
-import { Calendar } from '../../types';
+import { Calendar } from '../../../../../constants/types';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);

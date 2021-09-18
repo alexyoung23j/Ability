@@ -5,13 +5,13 @@ import ReactDOM from 'react-dom';
 import {
   datetimeToOffset,
   datetimeToRangeString,
-} from '../../../util/CalendarViewUtil';
-import { BAR_WIDTH } from '../../../util/CalendarViewUtil';
-import FreeSlots from './horizontal-cal-components/FreeSlots';
-import FreeBlocks from './horizontal-cal-components/FreeBlocks';
-import CalendarEvents from './horizontal-cal-components/CalendarEvents';
+} from '../../../../util/command-view-util/CalendarViewUtil';
+import { BAR_WIDTH } from '../../../../util/command-view-util/CalendarViewUtil';
+import FreeSlots from './FreeSlots';
+import FreeBlocks from './FreeBlocks';
+import CalendarEvents from './CalendarEvents';
 import ReactTooltip from 'react-tooltip';
-import EventTooltip from './horizontal-cal-components/EventTooltip';
+import EventTooltip from './EventTooltip';
 import { current } from 'immer';
 import { NumberLiteralType } from 'typescript';
 const { DateTime } = require('luxon');

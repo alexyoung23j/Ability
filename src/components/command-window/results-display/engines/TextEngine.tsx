@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { TextSnippet, TextSnippetPackage } from '../types';
-import TextSnippetDropdown from './snippet_display/TextSnippetDropdown';
+import { TextSnippet, TextSnippetPackage } from '../../../../constants/types';
+import TextSnippetDropdown from '../snippet_display/TextSnippetDropdown';
 import { CalendarResultData } from './ResultEngine';
 import {
   _extractTimeSlots,
   createSnippetPayload,
   createDefaultTimeZoneData,
   generateTimeZoneObjects,
-} from '../../util/TextEngineUtil';
+} from '../../../util/command-view-util/TextEngineUtil';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);

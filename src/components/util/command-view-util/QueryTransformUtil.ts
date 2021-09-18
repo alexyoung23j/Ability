@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { assert } from '../../assert';
+import { assert } from '../test-util/assert';
 import {
   isModifierPiece,
   isPrepositionPiece,
@@ -10,14 +10,14 @@ import {
   ModifierGroup,
   CalendarIndexFilter,
   QueryTransformEngineProps,
-} from '../command-window/types';
+} from '../../../constants/types';
 import {
   DEFAULT_PREPOSITION_LIBRARY,
   DurationModifiersDurationMap,
   MonthToMonthIndexMap,
   TimeModifierStartAndEndMap,
   modifierStringToRangeGeneratorMap,
-} from '../command-window/TransformFixtures';
+} from '../../../constants/TransformConstants';
 
 const TODAY = DateTime.now().startOf('day');
 

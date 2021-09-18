@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import AutocompleteEngine, {
   BaseAutocompleteEngineProps,
-} from './autocomplete/AutocompleteEngine';
-import { Piece, QueryFragment } from './types';
+} from './AutocompleteEngine';
+import { Piece, QueryFragment } from '../../../constants/types';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -115,7 +115,7 @@ function _sortAutocompletions(completions: Array<Piece>): Array<Piece> {
   );
 }
 
-export default function Parser(props: ParserProps) {
+export default function AutocompleteParser(props: ParserProps) {
   const { queryFragment } = props;
   const { value } = queryFragment;
 

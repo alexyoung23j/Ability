@@ -1,7 +1,7 @@
 import CSS from 'csstype';
 import React from 'react';
 import AutocompleteItem from './AutocompleteItem';
-import { Piece } from '../types';
+import { Piece } from '../../../../constants/types';
 
 export interface AutocompleteBarProps {
   validAutocompletes: Array<Piece>;

@@ -15,7 +15,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Piece, QueryPieceType, ModifierCategory } from '../types';
+import {
+  Piece,
+  QueryPieceType,
+  ModifierCategory,
+} from '../../../constants/types';
 const { ipcRenderer } = require('electron');
 
 const enterIcon = require('/src/content/svg/enterIcon.svg');
