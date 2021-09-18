@@ -1,7 +1,7 @@
 import { calendar_v3 } from 'googleapis';
 import _ from 'underscore';
 
-import { assert } from '../assert';
+import { assert } from '../components/util/test-util/assert';
 
 // TODO kedar: move these to react_env files and don't store in commit!!!!
 const CALENDAR_ID = 'abilityapptester01@gmail.com';

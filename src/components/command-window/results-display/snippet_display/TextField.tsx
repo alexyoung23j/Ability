@@ -3,7 +3,7 @@ import { EditorState, SelectionState, ContentState } from 'draft-js';
 import CSS from 'csstype';
 
 import TextEditWindow from './TextEditWindow';
-import { TextSnippet } from '../../types';
+import { TextSnippet } from '../../../../constants/types';
 import Tab from './Tab';
 
 const { ipcRenderer } = require('electron');
