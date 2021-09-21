@@ -11,6 +11,7 @@ interface AllContextProviderProps {
 }
 
 export type CalendarIndex = Array<CalendarIndexDay>;
+
 export const CalendarContext =
   React.createContext<CalendarIndex | null>(CALENDAR_INDEX_1);
 
