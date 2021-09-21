@@ -8,6 +8,7 @@ const css = require('./styles/index.css');
 
 import { config } from 'dotenv';
 import { CalendarIndexDay } from './components/util/command-view-util/CalendarIndexUtil';
+import AllContextProvider from './components/AllContextProvider';
 config();
 
 ipcRenderer.setMaxListeners(Infinity);
@@ -40,15 +41,10 @@ function parseCSS(css: any): String {
   return cssString;
 }
 
-export type CalendarIndex = Array<CalendarIndexDay>;
-export const CalendarContext =
-  React.createContext<CalendarIndex | null>(CALENDAR_INDEX_1);
-
+// App will handle the interactions with Electron. All context and component logic starts inside AllContextProvider
 function App() {
   // State
   const [showCommand, setShowCommand] = useState(true);
-  const [calendarIndex, setCalendarIndex] =
-    useState<CalendarIndex | null>(CALENDAR_INDEX_1);
 
   /// ---------------- IPC HANDLERS -------------- ///
 
@@ -68,14 +64,10 @@ function App() {
   });
 
   return (
-    <CalendarContext.Provider value={calendarIndex}>
-      {/* <Auth /> */}
-      <div>
-        {(showCommand && <CommandView />) || (
-          <SettingsView toggleWindowHandler={toggleBetweenWindows} />
-        )}
-      </div>
-    </CalendarContext.Provider>
+    <AllContextProvider
+      showCommand={showCommand}
+      toggleBetweenWindows={toggleBetweenWindows}
+    />
   );
 }
 

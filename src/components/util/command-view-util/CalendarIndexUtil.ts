@@ -1,6 +1,6 @@
 import { calendar_v3 } from 'googleapis';
 import { DateTime } from 'luxon';
-import { CalendarIndex } from '../../../App';
+import { CalendarIndex } from '../../../components/AllContextProvider';
 
 import { assert } from '../test-util/assert';
 

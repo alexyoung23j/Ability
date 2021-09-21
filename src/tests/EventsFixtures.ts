@@ -2,7 +2,7 @@ import { calendar_v3 } from '@googleapis/calendar';
 import { DateTime } from 'luxon';
 
 import * as CalendarIndexUtil from '../components/util/command-view-util/CalendarIndexUtil';
-import { CalendarIndex } from '../App';
+import { CalendarIndex } from '../components/AllContextProvider';
 
 export function buildEventFixture(start): calendar_v3.Schema$Event {
   return {
