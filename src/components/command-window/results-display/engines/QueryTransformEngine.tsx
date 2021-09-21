@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import React, { useContext, useState } from 'react';
-import { CalendarContext } from '../../../../App';
+import { CalendarContext } from '../../../../components/AllContextProvider';
 import { assert } from '../../../util/test-util/assert';
 import {
   applyPrepositionActionToFilter,
