@@ -15,6 +15,7 @@ import {
 const { ipcMain } = require('electron');
 import path from 'path';
 import os from 'os';
+import fs from 'fs';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
 
@@ -109,10 +110,15 @@ const createTray = () => {
 
 // Setup when app launches
 // TODO: set to only run this on DEBUG mode
-const reactDevToolsPath = path.join(
+const reactDevToolsFolderPath = path.join(
   os.homedir(),
-  '/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.13.5_0'
+  '/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/'
 );
+const reactDevToolsPath = `${reactDevToolsFolderPath}${
+  fs.readdirSync(reactDevToolsFolderPath)[0]
+}`;
+
+console.log(reactDevToolsPath);
 app
   .whenReady()
   // .then(() => {
@@ -128,9 +134,10 @@ app
       keyboardShortcutHandler();
     });
   })
-  // .then(async () => {
-  //   await session.defaultSession.loadExtension(reactDevToolsPath);
-  // })
+  // Uncomment this out to add React Dev Tools       <---------------------------------------------------- React Dev Tools ---------------------------------------------------->
+  .then(async () => {
+    await session.defaultSession.loadExtension(reactDevToolsPath);
+  })
   .then(createSentinelWindow);
 
 // Quit when all windows are closed, except on macOS. There, it's common
