@@ -31,6 +31,16 @@ import ErrorResult from '../error-handling/ErrorResult';
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
+export enum FilterErrorType {
+  OUT_OF_RANGE = 'OUT_OF_RANGE',
+  ILLOGICAL_QUERY = 'ILLOGICAL_QUERY',
+}
+
+interface FilterError {
+  errorStatus: boolean;
+  errorType: FilterErrorType;
+}
+
 // Renders ResultEngine
 export function QueryTransformEngine(
   props: QueryTransformEngineProps
@@ -38,7 +48,14 @@ export function QueryTransformEngine(
   const calendarIndex = useContext(CalendarContext);
   const [lastSelectedIndex, setLastSelectedIndex] = useState(null); // Keeps track of the last index we displayed
 
-  let filter = createFilter(props.queryPieces);
+  var queryError: FilterError = { errorStatus: false, errorType: null };
+
+  let { filter, filterError } = createFilter(props.queryPieces);
+
+  // if the filter has an error when it gets created, set queryError so we display the error message instead
+  if (filterError && filterError.errorStatus) {
+    queryError = filterError;
+  }
 
   // so we're going to convert the filter --> calendar result data here right?
   // Step 1: Convert range to indices
@@ -51,10 +68,13 @@ export function QueryTransformEngine(
   );
 
   let calendarResultData: CalendarResultData = null;
-  let showError = false;
+  //let showError = false;
 
   if (indices.includes(-1)) {
-    showError = true;
+    queryError = {
+      errorStatus: true,
+      errorType: FilterErrorType.OUT_OF_RANGE,
+    };
   } else {
     // Step 2: Use other parts of filter and build result data for each index in the calendar index (lol)
     const daysFromCalendarIndex = indices.map((index) =>
@@ -67,9 +87,9 @@ export function QueryTransformEngine(
   return (
     // TODO: Add handling for different error messages
     <div>
-      {(!showError && (
+      {(!queryError.errorStatus && (
         <ResultEngine calendarResultData={calendarResultData} />
-      )) || <ErrorResult errorType="out-of-range" />}
+      )) || <ErrorResult errorType={queryError.errorType} />}
     </div>
   );
 }
@@ -77,13 +97,16 @@ export function QueryTransformEngine(
 function intersectFilters(
   filter1: CalendarIndexFilter,
   filter2: CalendarIndexFilter
-): CalendarIndexFilter {
+): { filter: CalendarIndexFilter; filterError: FilterError | null } {
   if (filter1.range == null || filter2.range == null) {
     return {
-      range: filter1.range ?? filter2.range,
-      duration: filter1.duration ?? filter2.duration,
-      startTime: filter1.startTime ?? filter2.startTime,
-      endTime: filter1.endTime ?? filter2.endTime,
+      filter: {
+        range: filter1.range ?? filter2.range,
+        duration: filter1.duration ?? filter2.duration,
+        startTime: filter1.startTime ?? filter2.startTime,
+        endTime: filter1.endTime ?? filter2.endTime,
+      },
+      filterError: null,
     };
   }
 
@@ -106,12 +129,31 @@ function intersectFilters(
       .filter((x) => set2.has(x))
       .map((isoString: string) => DateTime.fromISO(isoString).startOf('day')),
   ];
-  return {
-    range: intersection,
-    duration: filter1.duration ?? filter2.duration,
-    startTime: filter1.startTime ?? filter2.startTime,
-    endTime: filter1.endTime ?? filter2.endTime,
-  };
+
+  if (intersection[0].length === 0) {
+    return {
+      filter: {
+        range: intersection,
+        duration: filter1.duration ?? filter2.duration,
+        startTime: filter1.startTime ?? filter2.startTime,
+        endTime: filter1.endTime ?? filter2.endTime,
+      },
+      filterError: {
+        errorStatus: true,
+        errorType: FilterErrorType.ILLOGICAL_QUERY,
+      },
+    };
+  } else {
+    return {
+      filter: {
+        range: intersection,
+        duration: filter1.duration ?? filter2.duration,
+        startTime: filter1.startTime ?? filter2.startTime,
+        endTime: filter1.endTime ?? filter2.endTime,
+      },
+      filterError: null,
+    };
+  }
 }
 
 // Edge case: In the case that a Date Modifier does not have a preposition AND a range is provided. (e.g. Monday in April)
@@ -128,12 +170,17 @@ function shouldApplyPreposition(
   );
 }
 
-function createFilter(queryPieces: Array<Piece>): CalendarIndexFilter {
+// Returns an array where index 0 is the filter and index 1 is either null or a FilterError if one emerges
+function createFilter(queryPieces: Array<Piece>): {
+  filter: CalendarIndexFilter;
+  filterError: FilterError | null;
+} {
   let modifierGroups: Array<ModifierGroup>;
 
   modifierGroups = extractModifierGroups(queryPieces);
 
   let filter: CalendarIndexFilter | null = null;
+  let filterError: FilterError | null = null;
 
   const rangeModifierExists =
     modifierGroups.findIndex(
@@ -172,12 +219,11 @@ function createFilter(queryPieces: Array<Piece>): CalendarIndexFilter {
     if (filter == null) {
       filter = currentFilter;
     } else {
-      try {
-        filter = intersectFilters(filter, currentFilter);
-      } catch (exception) {
-        // if (isInvalidQueryException(exception)) {
-        //  alert to user that they fukekd up
-        // }
+      let intersectResult = intersectFilters(filter, currentFilter);
+      filter = intersectResult.filter;
+
+      if (intersectResult.filterError != null) {
+        filterError = intersectResult.filterError;
       }
     }
   }
@@ -185,10 +231,9 @@ function createFilter(queryPieces: Array<Piece>): CalendarIndexFilter {
   // Replace null values with defaults
   filter = _hydrateNullFields(filter);
 
-  return filter;
+  return { filter: filter, filterError: filterError };
 }
 function _hydrateNullFields(filter: CalendarIndexFilter): CalendarIndexFilter {
-  console.log(filter);
   return {
     duration: filter.duration ?? USER_SETTINGS_DEFAULT_FILTERS.duration,
     startTime: filter.startTime ?? USER_SETTINGS_DEFAULT_FILTERS.startTime,
