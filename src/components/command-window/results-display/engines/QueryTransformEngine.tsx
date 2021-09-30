@@ -48,14 +48,13 @@ export function QueryTransformEngine(
   const calendarIndex = useContext(CalendarContext);
   const [lastSelectedIndex, setLastSelectedIndex] = useState(null); // Keeps track of the last index we displayed
 
-  var queryError: FilterError = { errorStatus: false, errorType: null };
-
   let { filter, filterError } = createFilter(props.queryPieces);
 
   // if the filter has an error when it gets created, set queryError so we display the error message instead
-  if (filterError && filterError.errorStatus) {
-    queryError = filterError;
-  }
+  let queryError: FilterError =
+    filterError?.errorStatus != null
+      ? filterError
+      : { errorStatus: false, errorType: null };
 
   // so we're going to convert the filter --> calendar result data here right?
   // Step 1: Convert range to indices
@@ -130,30 +129,21 @@ function intersectFilters(
       .map((isoString: string) => DateTime.fromISO(isoString).startOf('day')),
   ];
 
-  if (intersection[0].length === 0) {
-    return {
-      filter: {
-        range: intersection,
-        duration: filter1.duration ?? filter2.duration,
-        startTime: filter1.startTime ?? filter2.startTime,
-        endTime: filter1.endTime ?? filter2.endTime,
-      },
-      filterError: {
-        errorStatus: true,
-        errorType: FilterErrorType.ILLOGICAL_QUERY,
-      },
-    };
-  } else {
-    return {
-      filter: {
-        range: intersection,
-        duration: filter1.duration ?? filter2.duration,
-        startTime: filter1.startTime ?? filter2.startTime,
-        endTime: filter1.endTime ?? filter2.endTime,
-      },
-      filterError: null,
-    };
-  }
+  return {
+    filter: {
+      range: intersection,
+      duration: filter1.duration ?? filter2.duration,
+      startTime: filter1.startTime ?? filter2.startTime,
+      endTime: filter1.endTime ?? filter2.endTime,
+    },
+    filterError:
+      intersection[0].length === 0
+        ? {
+            errorStatus: true,
+            errorType: FilterErrorType.ILLOGICAL_QUERY,
+          }
+        : null,
+  };
 }
 
 // Edge case: In the case that a Date Modifier does not have a preposition AND a range is provided. (e.g. Monday in April)
@@ -170,7 +160,6 @@ function shouldApplyPreposition(
   );
 }
 
-// Returns an array where index 0 is the filter and index 1 is either null or a FilterError if one emerges
 function createFilter(queryPieces: Array<Piece>): {
   filter: CalendarIndexFilter;
   filterError: FilterError | null;
