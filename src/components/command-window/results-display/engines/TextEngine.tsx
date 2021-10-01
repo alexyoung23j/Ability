@@ -82,6 +82,9 @@ export default function TextEngine(props: TextEngineProps) {
     selectedTimeZone
   );
 
+  // Have we selected any time slots at all; used to display correct message
+  const selectedAnyTimeSlots = timeSlots.length > 0;
+
   const payload = createSnippetPayload(
     timeSlots,
     TextSnippetPackages,
@@ -92,6 +95,7 @@ export default function TextEngine(props: TextEngineProps) {
   return (
     <TextSnippetDropdown
       snippetPayload={payload}
+      selectedAnyTimeSlots={selectedAnyTimeSlots}
       selectedTimeZone={selectedTimeZone}
       setSelectedTimeZone={setSelectedTimeZone}
       timeZoneObjectList={timeZoneObjectList}

@@ -12,18 +12,28 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 interface TextField {
   snippetPayload: TextSnippet[];
+  selectedAnyTimeSlots: boolean;
   setWasCopied: any;
   wasCopied: boolean;
 }
 
+const NoTimeSlotsSelectedMessage = ContentState.createFromText(
+  'Select a time slot to get started! 😊'
+);
+
 export default function TextField(props: TextField) {
   // props
-  const { snippetPayload, setWasCopied, wasCopied } = props;
+  const { snippetPayload, selectedAnyTimeSlots, setWasCopied, wasCopied } =
+    props;
 
   // State
   const [curDisplayIdx, setCurDisplayIdx] = useState(0);
 
   const border = wasCopied == true ? '1px solid rgba(135,189,220,0.5)' : '';
+
+  const editorContent = selectedAnyTimeSlots
+    ? snippetPayload[curDisplayIdx].content
+    : NoTimeSlotsSelectedMessage;
 
   return (
     <div style={textFieldStyle}>
@@ -55,7 +65,7 @@ export default function TextField(props: TextField) {
           }}
         >
           <TextEditWindow
-            defaultContent={snippetPayload[curDisplayIdx].content}
+            defaultContent={editorContent}
             containsStyles={false}
             wasCopied={wasCopied}
           />
