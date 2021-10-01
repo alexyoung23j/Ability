@@ -172,6 +172,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
         <LimitBars hard_start={hard_start} hard_end={hard_end} />
         <CalendarEvents
           events={events}
+          textSnippetOpen={textSnippetOpen}
           setCurrentlyHoveredEventIdx={setCurrentlyHoveredEventIdx}
           setCurrentlySelectedEventIdx={setCurrentlySelectedEventIdx}
           eventTooltipId={eventTooltipId}

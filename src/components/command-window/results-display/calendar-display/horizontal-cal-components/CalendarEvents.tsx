@@ -10,6 +10,7 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 interface CalendarEventsProps {
   events: Array<any>;
+  textSnippetOpen: boolean;
   setCurrentlyHoveredEventIdx: any;
   setCurrentlySelectedEventIdx: any;
   eventTooltipId: string;
@@ -21,6 +22,7 @@ interface CalendarEventsProps {
 export default function CalendarEvents(props: CalendarEventsProps) {
   const {
     events,
+    textSnippetOpen,
     setCurrentlyHoveredEventIdx,
     setCurrentlySelectedEventIdx,
     eventTooltipId,
@@ -50,6 +52,7 @@ export default function CalendarEvents(props: CalendarEventsProps) {
           <CalendarEvent
             event={event}
             event_idx={idx}
+            textSnippetOpen={textSnippetOpen}
             setCurrentlyHoveredEventIdx={setCurrentlyHoveredEventIdx}
             setCurrentlySelectedEventIdx={setCurrentlySelectedEventIdx}
             eventTooltipId={eventTooltipId}
@@ -65,6 +68,7 @@ export default function CalendarEvents(props: CalendarEventsProps) {
 interface CalendarEventProps {
   event: any;
   event_idx: number;
+  textSnippetOpen: boolean;
   setCurrentlyHoveredEventIdx: any;
   setCurrentlySelectedEventIdx: any;
   eventTooltipId: string;
@@ -77,6 +81,7 @@ function CalendarEvent(props: CalendarEventProps) {
   const {
     event,
     event_idx,
+    textSnippetOpen,
     setCurrentlyHoveredEventIdx,
     setCurrentlySelectedEventIdx,
     eventTooltipId,
@@ -102,21 +107,27 @@ function CalendarEvent(props: CalendarEventProps) {
 
   function HandleMouseClick() {
     // Open up the event url
-    launchModalFromExistingEvent(event_idx);
+    if (!textSnippetOpen) {
+      launchModalFromExistingEvent(event_idx);
+    }
   }
 
   function HandleMouseEnter() {
-    setColor('#8E8E8E');
-    setDepth(10);
-    setCurrentlyHoveredEventIdx(event_idx);
-    setCurrentlySelectedEventIdx(event_idx);
-    ReactTooltip.rebuild();
+    if (!textSnippetOpen) {
+      setColor('#8E8E8E');
+      setDepth(10);
+      setCurrentlyHoveredEventIdx(event_idx);
+      setCurrentlySelectedEventIdx(event_idx);
+      ReactTooltip.rebuild();
+    }
   }
 
   function HandleMouseLeave() {
-    setColor('#A7A7A7');
-    setDepth(start_depth);
-    setCurrentlySelectedEventIdx(-1);
+    if (!textSnippetOpen) {
+      setColor('#A7A7A7');
+      setDepth(start_depth);
+      setCurrentlySelectedEventIdx(-1);
+    }
   }
 
   return (

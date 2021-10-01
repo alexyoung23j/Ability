@@ -14,6 +14,7 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 interface TextSnippetDisplay {
   snippetPayload: TextSnippet[];
+  selectedAnyTimeSlots: boolean;
   selectedTimeZone: any;
   setSelectedTimeZone: any;
   timeZoneObjectList: Array<TimeZoneData>;
@@ -22,6 +23,7 @@ interface TextSnippetDisplay {
 export default function TextSnippetDropdown(props: TextSnippetDisplay) {
   const {
     snippetPayload,
+    selectedAnyTimeSlots,
     selectedTimeZone,
     setSelectedTimeZone,
     timeZoneObjectList,
@@ -50,6 +52,7 @@ export default function TextSnippetDropdown(props: TextSnippetDisplay) {
         <div style={SnippetDisplayStyles}>
           <TextField
             snippetPayload={snippetPayload}
+            selectedAnyTimeSlots={selectedAnyTimeSlots}
             setWasCopied={setWasCopied}
             wasCopied={wasCopied}
           />
