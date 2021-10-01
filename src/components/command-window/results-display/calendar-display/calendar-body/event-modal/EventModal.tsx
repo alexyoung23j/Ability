@@ -28,6 +28,7 @@ interface EventModalProps {
 
   scheduleNewEvent: any;
   modifyExistingEvent: any;
+  deleteEvent: any;
 }
 
 var nodeConsole = require('console');
@@ -54,6 +55,7 @@ export default function EventModal(props: EventModalProps) {
     setEventDescription,
     scheduleNewEvent,
     modifyExistingEvent,
+    deleteEvent,
   } = props;
 
   const [changeMade, setChangeMade] = useState(false); // Tracks whether we actually changed anything
@@ -112,6 +114,23 @@ export default function EventModal(props: EventModalProps) {
     setEventLocation('');
     setEventCalendar(null);
     setEventDescription('');
+    setIsOpen(false);
+  }
+
+  function handleDelete() {
+    // TODO: Revamp this with the new UI + extra modal might be needed for confirmation
+    deleteEvent(
+      eventStart.toISO(), // Some of this data might be extraneous, will need to use calendar api to find out
+      eventEnd.toISO(),
+      eventTitle,
+      'fake_url',
+      eventCalendar.color,
+      eventCalendar.name,
+      eventCalendar.color,
+      dayIdx,
+      modalEventIdxInDay
+    );
+    //handleCancel();
     setIsOpen(false);
   }
 
@@ -226,6 +245,17 @@ export default function EventModal(props: EventModalProps) {
             onClick={() => handleCancel()}
           >
             cancel
+          </div>
+          <div
+            className="eventModalCancelButtonText"
+            style={{
+              marginLeft: '-170px',
+              position: 'absolute',
+              cursor: 'pointer',
+            }}
+            onClick={() => handleDelete()}
+          >
+            delete
           </div>
         </div>
       </div>
