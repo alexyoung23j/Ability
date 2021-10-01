@@ -247,6 +247,50 @@ export default function ResultEngine(props: ResultEngineProps) {
     return newTime.ordinal == oldTime.ordinal && newTime.year == oldTime.year;
   }
 
+  const deleteEvent = (
+    start_time: string,
+    end_time: string,
+    title: string,
+    url: string,
+    color: string,
+    calendar_name: string,
+    calendar_color: string,
+    day_idx: number,
+    orig_event_idx: number
+  ) => {
+    // TODO: Delete Event Instance with Calendar API
+
+    let event_idx = _findIdxInUnfilteredData(day_idx, orig_event_idx);
+
+    // Save a copy of the original events (from which this event originated)
+    const origDayIdx = day_idx;
+    let origEvents = JSON.parse(
+      JSON.stringify(calendarResultData.days[origDayIdx].events)
+    );
+
+    // Remove the event from our list of events
+    origEvents.splice(event_idx, 1);
+
+    // Recalculate the Overlaps
+    origEvents = HydrateOverlapEvents(origEvents);
+
+    // Update local calendar data
+    setCalendarResultData((draft) => {
+      draft.days[origDayIdx].events = origEvents;
+    });
+
+    setCalendarResultData((draft) => {
+      draft.days[origDayIdx].free_blocks = CalculateFreeBlocks(
+        draft.days[origDayIdx].hard_start,
+        draft.days[origDayIdx].hard_end,
+        60,
+        60,
+        30,
+        origEvents
+      );
+    });
+  };
+
   // Handles new events, makes API call to create them in the calendar, and updates local results to change ui
   const scheduleNewEvent = (
     start_time: string,
@@ -494,6 +538,7 @@ export default function ResultEngine(props: ResultEngineProps) {
           textEngineLaunched={textEngineLaunched}
           scheduleNewEvent={scheduleNewEvent}
           modifyExistingEvent={modifyExistingEvent}
+          deleteEvent={deleteEvent}
           filteredCalendarData={filteredCalendarData}
           calendarAccounts={calendarAccounts}
           setCalendarAccounts={setCalendarAccounts}

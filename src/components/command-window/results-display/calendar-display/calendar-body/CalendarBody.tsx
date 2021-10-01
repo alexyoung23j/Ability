@@ -17,6 +17,7 @@ interface CalendarBody {
   textEngineLaunched: boolean;
   scheduleNewEvent: any;
   modifyExistingEvent: any;
+  deleteEvent: any;
   selectedDayIdx: number;
   setSelectedDayIdx: any;
   selectedEventIdxInSelectedDay: number;
@@ -50,6 +51,7 @@ export default function CalendarBody(props: CalendarBody) {
     textEngineLaunched,
     scheduleNewEvent,
     modifyExistingEvent,
+    deleteEvent,
     selectedDayIdx,
     setSelectedDayIdx,
     selectedEventIdxInSelectedDay,
@@ -182,6 +184,7 @@ export default function CalendarBody(props: CalendarBody) {
           setEventDescription={setModalEventDescription}
           scheduleNewEvent={scheduleNewEvent}
           modifyExistingEvent={modifyExistingEvent}
+          deleteEvent={deleteEvent}
         />
       )}
     </div>

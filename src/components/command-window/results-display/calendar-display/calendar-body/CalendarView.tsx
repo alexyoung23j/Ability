@@ -18,6 +18,7 @@ interface CalendarView {
   textEngineLaunched: boolean;
   scheduleNewEvent: any;
   modifyExistingEvent: any;
+  deleteEvent: any;
   filteredCalendarData: any;
   calendarAccounts: Array<RegisteredAccount>;
   setCalendarAccounts: any;
@@ -31,6 +32,7 @@ export default function CalendarView(props: CalendarView) {
     textEngineLaunched,
     scheduleNewEvent,
     modifyExistingEvent,
+    deleteEvent,
     filteredCalendarData,
     calendarAccounts,
     setCalendarAccounts,
@@ -81,6 +83,7 @@ export default function CalendarView(props: CalendarView) {
           textEngineLaunched={textEngineLaunched}
           scheduleNewEvent={scheduleNewEvent}
           modifyExistingEvent={modifyExistingEvent}
+          deleteEvent={deleteEvent}
           selectedDayIdx={selectedDayIdx}
           setSelectedDayIdx={setSelectedDayIdx}
           selectedEventIdxInSelectedDay={selectedEventIdxInSelectedDay}
