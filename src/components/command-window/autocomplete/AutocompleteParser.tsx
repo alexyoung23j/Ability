@@ -45,8 +45,18 @@ function _insertNumbers(
         const char = completion.value[i];
         if (char === NUMERIC_WILDCARD && numIdx <= numerics.length - 1) {
           // This cleans out any leading 0's
-          const cleanedNumeric = parseFloat(numerics[numIdx]).toString();
-          hydratedValue.push(cleanedNumeric);
+          if (
+            parseFloat(numerics[numIdx]) < 10 &&
+            (completion.value[i - 1] === ':' || completion.value[i - 1] === '/')
+          ) {
+            const cleanedNumeric =
+              '0' + parseFloat(numerics[numIdx]).toString();
+            hydratedValue.push(cleanedNumeric);
+          } else {
+            const cleanedNumeric = parseFloat(numerics[numIdx]).toString();
+            hydratedValue.push(cleanedNumeric);
+          }
+
           numIdx += 1;
         } else {
           if (char === NUMERIC_WILDCARD) {
