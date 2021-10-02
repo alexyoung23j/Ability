@@ -9,6 +9,7 @@ const css = require('./styles/index.css');
 import { config } from 'dotenv';
 import { CalendarIndexDay } from './components/util/command-view-util/CalendarIndexUtil';
 import AllContextProvider from './components/AllContextProvider';
+import SignIn from './components/auth/SignIn';
 config();
 
 ipcRenderer.setMaxListeners(Infinity);
@@ -44,6 +45,7 @@ function parseCSS(css: any): String {
 // App will handle the interactions with Electron. All context and component logic starts inside AllContextProvider
 function App() {
   // State
+  const [isSignedIn, setSignedIn] = useState<boolean>(false);
   const [showCommand, setShowCommand] = useState(true);
 
   /// ---------------- IPC HANDLERS -------------- ///
@@ -64,10 +66,12 @@ function App() {
   });
 
   return (
-    <AllContextProvider
-      showCommand={showCommand}
-      toggleBetweenWindows={toggleBetweenWindows}
-    />
+    (!isSignedIn && <SignIn />) || (
+      <AllContextProvider
+        showCommand={showCommand}
+        toggleBetweenWindows={toggleBetweenWindows}
+      />
+    )
   );
 }
 

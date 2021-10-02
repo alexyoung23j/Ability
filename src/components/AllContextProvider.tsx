@@ -4,6 +4,7 @@ import CommandView from './/command-window/CommandView';
 import { CALENDAR_INDEX_1, EVENTS } from '../tests/EventsFixtures';
 import SettingsView from './/settings-window/SettingsView';
 import { CalendarIndexDay } from './util/command-view-util/CalendarIndexUtil';
+import SignIn from './auth/SignIn';
 
 interface AllContextProviderProps {
   showCommand: boolean;
