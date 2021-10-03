@@ -10,6 +10,7 @@ import { config } from 'dotenv';
 import { CalendarIndexDay } from './components/util/command-view-util/CalendarIndexUtil';
 import AllContextProvider from './components/AllContextProvider';
 import SignIn from './components/auth/SignIn';
+import { subscribe } from './firebase/db';
 config();
 
 ipcRenderer.setMaxListeners(Infinity);
@@ -42,10 +43,17 @@ function parseCSS(css: any): String {
   return cssString;
 }
 
+export function useFirebaseSignIn() {
+  const [isSignedInToFirebase, setSignedInToFirebase] =
+    useState<boolean>(false);
+
+  return { isSignedInToFirebase, setSignedInToFirebase };
+}
+
 // App will handle the interactions with Electron. All context and component logic starts inside AllContextProvider
 function App() {
   // State
-  const [isSignedIn, setSignedIn] = useState<boolean>(false);
+  const { isSignedInToFirebase } = useFirebaseSignIn();
   const [showCommand, setShowCommand] = useState(true);
 
   /// ---------------- IPC HANDLERS -------------- ///
@@ -66,7 +74,7 @@ function App() {
   });
 
   return (
-    (!isSignedIn && <SignIn />) || (
+    (!isSignedInToFirebase && <SignIn />) || (
       <AllContextProvider
         showCommand={showCommand}
         toggleBetweenWindows={toggleBetweenWindows}
