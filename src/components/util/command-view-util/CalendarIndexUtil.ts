@@ -2,7 +2,7 @@ import { calendar_v3 } from 'googleapis';
 import { DateTime } from 'luxon';
 import { CalendarIndex } from '../../../components/AllContextProvider';
 
-import { assert } from '../test-util/assert';
+import { assert } from '../assert';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);

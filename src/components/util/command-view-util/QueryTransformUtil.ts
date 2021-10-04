@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { assert } from '../test-util/assert';
+import { assert } from '../assert';
 import {
   isModifierPiece,
   isPrepositionPiece,
