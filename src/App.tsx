@@ -66,15 +66,15 @@ function App() {
     setShowCommand(false);
     ipcRenderer.send('settings-showing');
   });
-
-  return (
-    (!isSignedInToFirebase && <SignIn />) || (
-      <AllContextProvider
-        showCommand={showCommand}
-        toggleBetweenWindows={toggleBetweenWindows}
-      />
-    )
-  );
+  return <Auth />;
+  // return (
+  //   (!isSignedInToFirebase && <SignIn />) || (
+  //     <AllContextProvider
+  //       showCommand={showCommand}
+  //       toggleBetweenWindows={toggleBetweenWindows}
+  //     />
+  //   )
+  // );
 }
 
 export default App;
