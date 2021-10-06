@@ -26,6 +26,7 @@ function loadGoogleAuthAPI(
     gapi.load('auth2', async function () {
       try {
         await loadGapiAuth();
+        loadCalendarApi();
         onInit(gapi.auth2.getAuthInstance());
       } catch (e) {
         console.log('Failed to import Gapi auth');
