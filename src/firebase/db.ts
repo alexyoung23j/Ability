@@ -1,46 +1,49 @@
 import firebase from './config';
+import 'firebase/firestore';
 
-export async function write<V>(key: string, value: V): Promise<void> {
-  const database = firebase.database();
+export const db = firebase.firestore();
+
+interface GetOptions {
+  readonly source?: 'default' | 'server' | 'cache';
+}
+
+export const DOES_NOT_EXIST = 'Does not exist';
+
+export async function readOnce(
+  path: string,
+  documentId: string,
+  field?: string,
+  options: GetOptions = {}
+): Promise<
+  | firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>
+  | typeof DOES_NOT_EXIST
+> {
+  // TODO: What type does this return? Promise<V> not working
+  const doc = db.collection(path).doc(documentId);
+
+  return (await doc.get(options)) ?? DOES_NOT_EXIST;
+}
+
+export async function write<V>(
+  path: string,
+  documentId: string,
+  payload: V
+): Promise<void> {
   try {
-    await database.ref(key).set(value);
+    const doc = db.collection(path).doc(documentId);
+    await doc.set(payload);
   } catch (e) {
-    console.log(`Error writing to database: ${key}: ${value}`);
+    console.log(e);
     throw e;
   }
 }
 
-export async function readOnce(key: string): Promise<any | 'Does not exist'> {
-  const database = firebase.database();
-
-  const snapshot = await database.ref(key).get();
-  try {
-    if (snapshot.exists()) {
-      return snapshot.val();
-    } else {
-      return 'Does not exist.';
-    }
-  } catch (e) {
-    console.log(`Failed to fetch ${key}`);
-    throw e;
+export async function writeIfDoesNotExist<V>(
+  collectionPath: string,
+  documentId: string,
+  payload: V
+): Promise<void> {
+  if ((await readOnce(collectionPath, documentId)) === DOES_NOT_EXIST) {
+    write<V>(collectionPath, documentId, payload);
   }
-}
-
-/**
- * Sets up subscription to a key in firebase.
- * Triggers callback on value change.
- *
- * Returns value at time of subscription.
- */
-export function subscribe<V>(
-  key: string,
-  callback: (newValue: V) => void
-  // TODO: think about unsubscribing
-  // TODO: think about what happens when the key gets deleted from the db completely
-): void {
-  const ref = firebase.database().ref(key);
-
-  ref.on('value', (snapshot: firebase.database.DataSnapshot) => {
-    callback(snapshot.val());
-  });
 }
