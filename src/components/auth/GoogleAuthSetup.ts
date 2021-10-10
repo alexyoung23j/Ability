@@ -42,7 +42,6 @@ function loadGoogleAuthAPI(
  * @returns
  */
 export function useInitializedGoogleAuthClient() {
-  debugger;
   const [authInstance, setAuthInstance] =
     useState<gapi.auth2.GoogleAuth | null>(null);
 
