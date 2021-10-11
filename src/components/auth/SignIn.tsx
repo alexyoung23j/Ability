@@ -3,7 +3,7 @@ import React, { useContext, useState } from 'react';
 
 import useSession from '../../hooks/auth/useSession';
 import { SIGN_IN_URL } from '../../constants/EnvConstants';
-import { SessionContext, useFirebaseSignIn } from '../../App';
+import { SessionContext, useFirebaseSignIn } from '../AllContextProvider';
 import { IdTokenResult } from '@firebase/auth';
 import firebase from '../../firebase/config';
 

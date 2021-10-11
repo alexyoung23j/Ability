@@ -10,7 +10,6 @@ import useSession from './hooks/auth/useSession';
 import { ELECTRON_SESSION_IDS_TO_USER_IDS_COLLECTION } from './components/auth/AuthDAO';
 import CommandView from './components/command-window/CommandView';
 import SettingsView from './components/settings-window/SettingsView';
-import { v4 as uuidv4 } from 'uuid';
 import { shell } from 'electron';
 import { ADD_CALENDAR_URL } from './constants/EnvConstants';
 config();
@@ -45,37 +44,15 @@ function parseCSS(css: any): String {
   return cssString;
 }
 
-export function useFirebaseSignIn() {
-  const [isSignedInToFirebase, setSignedInToFirebase] =
-    useState<boolean>(false);
-
-  return { isSignedInToFirebase, setSignedInToFirebase };
-}
-
-const sessionId = uuidv4();
-export const SessionContext = React.createContext<string>(sessionId);
-
-export function useGapiSignIn() {
-  const [isSignedInWithGapi, setIsSignedInWithGapi] = useState<boolean>(false);
-
-  db.collection(ELECTRON_SESSION_IDS_TO_USER_IDS_COLLECTION)
-    .doc(sessionId)
-    .onSnapshot((doc) => {
-      console.log('session id:', sessionId);
-      console.log(doc.data());
-      if (doc.data() != null) {
-        setIsSignedInWithGapi(true);
-      }
-    });
-
-  return { isSignedInWithGapi, setIsSignedInWithGapi };
-}
-
-// App will handle the interactions with Electron. All context and component logic starts inside AllContextProvider
+/**
+ * App is responsible for the following:
+ * 1. Render all components
+ * 2. Handle all interactions with the main electron process (main.ts)
+ * 3. Handle all window switching functionality
+ */
 function App() {
   // State
   // const { isSignedInToFirebase } = useFirebaseSignIn();
-  const { isSignedInWithGapi: isSignedIn } = useGapiSignIn();
   const [showCommand, setShowCommand] = useState(true);
 
   /// ---------------- IPC HANDLERS -------------- ///
@@ -94,23 +71,12 @@ function App() {
     setShowCommand(false);
     ipcRenderer.send('settings-showing');
   });
-  // return <Auth />;
+
   return (
-    <SessionContext.Provider value={sessionId}>
-      {(!isSignedIn && <SignIn />) || (
-        <button
-          onClick={() => {
-            shell.openExternal(`${ADD_CALENDAR_URL}/${sessionId}`);
-          }}
-        >
-          Add Calendar
-        </button>
-        // <AllContextProvider
-        //   showCommand={showCommand}
-        //   toggleBetweenWindows={toggleBetweenWindows}
-        // />
-      )}
-    </SessionContext.Provider>
+    <AllContextProvider
+      showCommand={showCommand}
+      toggleBetweenWindows={toggleBetweenWindows}
+    />
   );
 }
 
