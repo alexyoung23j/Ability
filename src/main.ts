@@ -63,7 +63,7 @@ const createSentinelWindow = (): void => {
   sentinelWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
-  //sentinelWindow.webContents.openDevTools();
+  sentinelWindow.webContents.openDevTools();
 
   //sentinelWindow.webContents.session.clearCache(() => {});
 

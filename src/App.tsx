@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { Auth } from './components/auth/auth';
-import CommandView from './components/command-window/CommandView';
-import { CALENDAR_INDEX_1, EVENTS } from './tests/EventsFixtures';
-import SettingsView from './components/settings-window/SettingsView';
 const { ipcRenderer } = require('electron');
 const css = require('./styles/index.css');
 
 import { config } from 'dotenv';
-import { CalendarIndexDay } from './components/util/command-view-util/CalendarIndexUtil';
 import AllContextProvider from './components/AllContextProvider';
 import SignIn from './components/auth/SignIn';
+import { db } from './firebase/db';
+import useSession from './hooks/auth/useSession';
+import { ELECTRON_SESSION_IDS_TO_USER_IDS_COLLECTION } from './components/auth/AuthDAO';
+import CommandView from './components/command-window/CommandView';
+import SettingsView from './components/settings-window/SettingsView';
+import { shell } from 'electron';
+import { ADD_CALENDAR_URL } from './constants/EnvConstants';
 config();
 
 ipcRenderer.setMaxListeners(Infinity);
@@ -42,10 +44,15 @@ function parseCSS(css: any): String {
   return cssString;
 }
 
-// App will handle the interactions with Electron. All context and component logic starts inside AllContextProvider
+/**
+ * App is responsible for the following:
+ * 1. Render all components
+ * 2. Handle all interactions with the main electron process (main.ts)
+ * 3. Handle all window switching functionality
+ */
 function App() {
   // State
-  const [isSignedIn, setSignedIn] = useState<boolean>(false);
+  // const { isSignedInToFirebase } = useFirebaseSignIn();
   const [showCommand, setShowCommand] = useState(true);
 
   /// ---------------- IPC HANDLERS -------------- ///
@@ -66,12 +73,10 @@ function App() {
   });
 
   return (
-    (!isSignedIn && <SignIn />) || (
-      <AllContextProvider
-        showCommand={showCommand}
-        toggleBetweenWindows={toggleBetweenWindows}
-      />
-    )
+    <AllContextProvider
+      showCommand={showCommand}
+      toggleBetweenWindows={toggleBetweenWindows}
+    />
   );
 }
 

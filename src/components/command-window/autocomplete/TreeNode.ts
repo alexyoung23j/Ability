@@ -2,7 +2,7 @@ import {
   PREPOSITION_FIXTURES,
   MODIFIER_FIXTURES,
 } from '../../../constants/AutocompleteConstants';
-import { assert } from '../../util/test-util/assert';
+import { assert } from '../../util/assert';
 import {
   Piece,
   QueryFragment,
