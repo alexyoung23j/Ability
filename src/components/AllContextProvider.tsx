@@ -42,8 +42,8 @@ export function useGapiSignIn() {
   db.collection(ELECTRON_SESSION_IDS_TO_USER_IDS_COLLECTION)
     .doc(generatedElectronSessionId)
     .onSnapshot((doc) => {
-      console.log('session id:', generatedElectronSessionId);
-      console.log(doc.data());
+      // console.log('session id:', generatedElectronSessionId);
+      // console.log(doc.data());
       if (doc.data() != null) {
         setIsSignedInWithGapi(true);
       }
@@ -74,7 +74,7 @@ export default function AllContextProvider(props: AllContextProviderProps) {
   return (
     <CalendarContext.Provider value={calendarIndex}>
       <SessionContext.Provider value={electronSessionId}>
-        {(!isSignedIn && <SignIn />) || (
+        {/*  {(!isSignedIn && <SignIn />) || (
           <button
             onClick={() => {
               shell.openExternal(`${ADD_CALENDAR_URL}/${electronSessionId}`);
@@ -82,13 +82,13 @@ export default function AllContextProvider(props: AllContextProviderProps) {
           >
             Add Calendar
           </button>
-        )}
+        )} */}
         {/* <Auth /> */}
-        {/*  <div>
+        <div>
           {(showCommand && <CommandView />) || (
             <SettingsView toggleWindowHandler={toggleBetweenWindows} />
           )}
-        </div> */}
+        </div>
       </SessionContext.Provider>
     </CalendarContext.Provider>
   );

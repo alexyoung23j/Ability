@@ -11,6 +11,10 @@ import CommandLine from './command-line/CommandLine';
 import AutocompleteParser from './autocomplete/AutocompleteParser';
 import ResultEngine from './results-display/engines/ResultEngine';
 import { QueryTransformEngine } from './results-display/engines/QueryTransformEngine';
+import { ScheduledSingledInstanceJob } from '../../cron/InternalTimeEngine';
+const { DateTime } = require('luxon');
+
+const { scheduleSingleInstanceJob } = require('../../cron/InternalTimeEngine');
 
 const { ipcRenderer } = require('electron');
 
@@ -192,6 +196,27 @@ export default function CommandView() {
       setCurrentClearing(false);
     }
   }, [alertCommandLineToClear]);
+
+  useEffect(() => {
+    if (currentQueryFragment.length === 1) {
+      const boundJob: ScheduledSingledInstanceJob = {
+        scheduledExecutionTime: DateTime.now() + 5000,
+        callback: () => {
+          console.log('bound: ', currentQueryFragment);
+        },
+        extendBeyondActiveSession: false,
+      };
+
+      const nonBound: ScheduledSingledInstanceJob = {
+        scheduledExecutionTime: DateTime.now() + 5000,
+        callback: () => console.log('free: ', currentQueryFragment),
+        extendBeyondActiveSession: false,
+      };
+
+      scheduleSingleInstanceJob(boundJob);
+      scheduleSingleInstanceJob(nonBound);
+    }
+  }, [currentQueryFragment]);
 
   return (
     <div style={commandAreaStyle} onClick={() => triggerBrowserWindowBlur()}>
