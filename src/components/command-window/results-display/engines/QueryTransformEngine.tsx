@@ -1,13 +1,14 @@
 import { DateTime } from 'luxon';
 import React, { useContext, useState } from 'react';
-import { CalendarContext } from '../../../../components/AllContextProvider';
+import {
+  CalendarContext,
+  GlobalSettingsContext,
+} from '../../../../components/AllContextProvider';
 import { assert } from '../../../util/assert';
 import {
   applyPrepositionActionToFilter,
   extractModifierGroups,
   generateDefaultFilterForModifier,
-  USER_SETTINGS_DATE_TIME_CONFIG,
-  USER_SETTINGS_DEFAULT_FILTERS,
 } from '../../../util/command-view-util/QueryTransformUtil';
 import { DEFAULT_PREPOSITION_LIBRARY } from '../../../../constants/TransformConstants';
 import {
@@ -19,6 +20,7 @@ import {
   QueryTransformEngineProps,
   Piece,
   QueryPieceType,
+  GlobalUserSettings,
 } from '../../../../constants/types';
 import ResultEngine, {
   CalendarResultData,
@@ -45,10 +47,17 @@ interface FilterError {
 export function QueryTransformEngine(
   props: QueryTransformEngineProps
 ): JSX.Element | null {
-  const calendarIndex = useContext(CalendarContext);
+  const { calendarIndex, setCalendarIndex } = useContext(CalendarContext);
+  const { globalUserSettings, setGlobalUserSettings } = useContext(
+    GlobalSettingsContext
+  );
+
   const [lastSelectedIndex, setLastSelectedIndex] = useState(null); // Keeps track of the last index we displayed
 
-  let { filter, filterError } = createFilter(props.queryPieces);
+  let { filter, filterError } = createFilter(
+    props.queryPieces,
+    globalUserSettings
+  );
 
   // if the filter has an error when it gets created, set queryError so we display the error message instead
   let queryError: FilterError =
@@ -80,7 +89,11 @@ export function QueryTransformEngine(
       CalendarIndexUtil.getDayAtIndex(calendarIndex, index)
     );
 
-    calendarResultData = transformToResultData(daysFromCalendarIndex, filter);
+    calendarResultData = transformToResultData(
+      daysFromCalendarIndex,
+      filter,
+      globalUserSettings
+    );
   }
 
   return (
@@ -160,7 +173,10 @@ function shouldApplyPreposition(
   );
 }
 
-function createFilter(queryPieces: Array<Piece>): {
+function createFilter(
+  queryPieces: Array<Piece>,
+  globalUserSettings: GlobalUserSettings
+): {
   filter: CalendarIndexFilter;
   filterError: FilterError | null;
 } {
@@ -179,8 +195,10 @@ function createFilter(queryPieces: Array<Piece>): {
 
   for (let { modifierPiece, prepositionPiece } of modifierGroups) {
     // Convert range to be array of calendar index indices later
-    let currentFilter: CalendarIndexFilter =
-      generateDefaultFilterForModifier(modifierPiece);
+    let currentFilter: CalendarIndexFilter = generateDefaultFilterForModifier(
+      modifierPiece,
+      globalUserSettings
+    );
 
     assert(
       Object.values(currentFilter).filter((value) => value != null).length !==
@@ -200,7 +218,8 @@ function createFilter(queryPieces: Array<Piece>): {
         // Use default preposition if preposition is null
         prepositionPiece ?? DEFAULT_PREPOSITION_LIBRARY[modifierPiece.category],
         modifierPiece,
-        currentFilter
+        currentFilter,
+        globalUserSettings
       );
     }
 
@@ -218,32 +237,46 @@ function createFilter(queryPieces: Array<Piece>): {
   }
 
   // Replace null values with defaults
-  filter = _hydrateNullFields(filter);
+  filter = _hydrateNullFields(filter, globalUserSettings);
 
   return { filter: filter, filterError: filterError };
 }
-function _hydrateNullFields(filter: CalendarIndexFilter): CalendarIndexFilter {
+function _hydrateNullFields(
+  filter: CalendarIndexFilter,
+  globalUserSettings: GlobalUserSettings
+): CalendarIndexFilter {
   return {
-    duration: filter.duration ?? USER_SETTINGS_DEFAULT_FILTERS.duration,
-    startTime: filter.startTime ?? USER_SETTINGS_DEFAULT_FILTERS.startTime,
-    endTime: filter.endTime ?? USER_SETTINGS_DEFAULT_FILTERS.endTime,
-    range: filter.range ?? USER_SETTINGS_DEFAULT_FILTERS.range,
+    duration:
+      filter.duration ??
+      globalUserSettings.profileSettings.defaults.blockDuration,
+    startTime:
+      filter.startTime ??
+      DateTime.now()
+        .startOf('day')
+        .plus(globalUserSettings.profileSettings.defaults.dayHardStart),
+    endTime:
+      filter.endTime ??
+      DateTime.now()
+        .startOf('day')
+        .plus(globalUserSettings.profileSettings.defaults.dayHardStop),
+    range: filter.range ?? [[DateTime.now().startOf('day')]],
   };
 }
 
 function transformToResultData(
   daysFromCalendarIndex: Array<CalendarIndexUtil.CalendarIndexDay>,
-  filter: CalendarIndexFilter
+  filter: CalendarIndexFilter,
+  globalUserSettings: GlobalUserSettings
 ): CalendarResultData {
   return {
     minDuration: filter.duration,
     days: daysFromCalendarIndex.map((calendarIndexDay) => {
       const hard_start_hour =
         filter.startTime?.hour ??
-        USER_SETTINGS_DATE_TIME_CONFIG.hard_start_hours.hour;
+        globalUserSettings.profileSettings.defaults.dayHardStart.hours;
       const hard_stop_hour =
         filter.endTime?.hour ??
-        USER_SETTINGS_DATE_TIME_CONFIG.hard_stop_hours.hour;
+        globalUserSettings.profileSettings.defaults.dayHardStop.hours;
 
       const { day, month, year } = calendarIndexDay.date;
 

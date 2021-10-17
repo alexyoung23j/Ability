@@ -10,6 +10,8 @@ import { db } from '../firebase/db';
 import { ELECTRON_SESSION_IDS_TO_USER_IDS_COLLECTION } from './auth/AuthDAO';
 import { ADD_CALENDAR_URL } from '../constants/EnvConstants';
 import { shell } from 'electron';
+import { GlobalUserSettings } from '../constants/types';
+import { loadGlobalSettings } from './util/global-util/GlobalSettingsUtil';
 
 interface AllContextProviderProps {
   showCommand: boolean;
@@ -19,14 +21,18 @@ interface AllContextProviderProps {
 export type CalendarIndex = Array<CalendarIndexDay>;
 
 // -------------------- Context Initializations ----------------- //
-export const CalendarContext =
-  React.createContext<CalendarIndex | null>(CALENDAR_INDEX_1);
 
+// Context that doesn't require setters
 const generatedElectronSessionId = uuidv4();
 
 export const SessionContext = React.createContext<string>(
   generatedElectronSessionId
 );
+
+// Context that requires setters
+export const CalendarContext = React.createContext(null);
+
+export const GlobalSettingsContext = React.createContext(null);
 
 // ---------------- Methods that should be elsewhere/are temp -------- //
 export function useFirebaseSignIn() {
@@ -71,10 +77,16 @@ export default function AllContextProvider(props: AllContextProviderProps) {
     generatedElectronSessionId
   );
 
+  const [globalUserSettings, setGlobalUserSettings] =
+    useState<GlobalUserSettings>(loadGlobalSettings());
+
   return (
-    <CalendarContext.Provider value={calendarIndex}>
-      <SessionContext.Provider value={electronSessionId}>
-        {/*  {(!isSignedIn && <SignIn />) || (
+    <GlobalSettingsContext.Provider
+      value={{ globalUserSettings, setGlobalUserSettings }}
+    >
+      <CalendarContext.Provider value={{ calendarIndex, setCalendarIndex }}>
+        <SessionContext.Provider value={electronSessionId}>
+          {/*  {(!isSignedIn && <SignIn />) || (
           <button
             onClick={() => {
               shell.openExternal(`${ADD_CALENDAR_URL}/${electronSessionId}`);
@@ -83,13 +95,14 @@ export default function AllContextProvider(props: AllContextProviderProps) {
             Add Calendar
           </button>
         )} */}
-        {/* <Auth /> */}
-        <div>
-          {(showCommand && <CommandView />) || (
-            <SettingsView toggleWindowHandler={toggleBetweenWindows} />
-          )}
-        </div>
-      </SessionContext.Provider>
-    </CalendarContext.Provider>
+          {/* <Auth /> */}
+          <div>
+            {(showCommand && <CommandView />) || (
+              <SettingsView toggleWindowHandler={toggleBetweenWindows} />
+            )}
+          </div>
+        </SessionContext.Provider>
+      </CalendarContext.Provider>
+    </GlobalSettingsContext.Provider>
   );
 }

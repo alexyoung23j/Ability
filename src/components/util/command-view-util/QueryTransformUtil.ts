@@ -10,6 +10,7 @@ import {
   ModifierGroup,
   CalendarIndexFilter,
   QueryTransformEngineProps,
+  GlobalUserSettings,
 } from '../../../constants/types';
 import {
   DEFAULT_PREPOSITION_LIBRARY,
@@ -23,28 +24,6 @@ const TODAY = DateTime.now().startOf('day');
 
 export const ONE_OR_MORE_NUMBERS = /\d+/g;
 
-// USER SETTINGS, SHOULD EVENTUALLY BE A CONTEXT OBJECT I GUESS
-// TODO: This should be in context, and also should be probably be imported from a functional component or passed as parameters to the function
-const user_settings = {
-  day_hard_start: '2021-01-01T08:00:00', // the date is arbitrary, this gets overwritten at some point
-  day_hard_stop: '2021-01-01T21:00:00', // the date is arbitrary, this gets overwritten at some point
-  default_block_duration: 60, // The number of minutes to find a block for a specific time, (i.e. "at 2:00 pm" will block out 2pm - 3pm)
-  time_zone_offset: -7, // Offset from UTC
-};
-
-// Object that contains configs to be passed to DateTime.fromObject()
-export const USER_SETTINGS_DATE_TIME_CONFIG = {
-  hard_start_hours: { hour: 8 },
-  hard_stop_hours: { hour: 21 },
-};
-
-export const USER_SETTINGS_DEFAULT_FILTERS = {
-  duration: 60,
-  startTime: DateTime.now().startOf('day').plus({ hours: 8 }),
-  endTime: DateTime.now().startOf('day').plus({ hours: 21 }),
-  range: [[DateTime.now().startOf('day')]], // TODO: This only shows today, maybe we should be showing the entire week?
-};
-
 export function chooseYearForDateFilter(day: number, month: number): number {
   const toCompareTo = DateTime.fromObject({ day, month });
   const now = DateTime.now().startOf('day');
@@ -56,14 +35,15 @@ export function chooseYearForDateFilter(day: number, month: number): number {
 // --------------- MODIFIER GROUP STUFF -------------- //
 // Handles base case for all modifiers
 export function generateDefaultFilterForModifier(
-  modifierPiece: ModifierPiece
+  modifierPiece: ModifierPiece,
+  globalUserSettings: GlobalUserSettings
 ): CalendarIndexFilter {
   switch (modifierPiece.category) {
     case ModifierCategory.DURATION:
       return durationFilter(modifierPiece);
 
     case ModifierCategory.TIME:
-      return timeFilter(modifierPiece);
+      return timeFilter(modifierPiece, globalUserSettings);
 
     case ModifierCategory.DATE:
       return dateFilter(modifierPiece);
@@ -137,7 +117,10 @@ export function durationFilter(
 }
 
 // Creates filter for duration modifiers
-export function timeFilter(modifierPiece: ModifierPiece): CalendarIndexFilter {
+export function timeFilter(
+  modifierPiece: ModifierPiece,
+  globalUserSettings: GlobalUserSettings
+): CalendarIndexFilter {
   const numbers: Array<string> = modifierPiece.value.match(ONE_OR_MORE_NUMBERS);
   const timeModifierString = modifierPiece.value
     .replace(ONE_OR_MORE_NUMBERS, '')
@@ -166,7 +149,9 @@ export function timeFilter(modifierPiece: ModifierPiece): CalendarIndexFilter {
 
   switch (extracted_start_time) {
     case 'HARD_START':
-      start_time = DateTime.fromISO(user_settings.day_hard_start);
+      start_time = DateTime.now()
+        .startOf('day')
+        .plus(globalUserSettings.profileSettings.defaults.dayHardStart);
       break;
 
     case 'PM':
@@ -195,7 +180,9 @@ export function timeFilter(modifierPiece: ModifierPiece): CalendarIndexFilter {
 
   switch (extracted_end_time) {
     case 'HARD_STOP':
-      end_time = DateTime.fromISO(user_settings.day_hard_stop);
+      end_time = DateTime.now()
+        .startOf('day')
+        .plus(globalUserSettings.profileSettings.defaults.dayHardStop);
       break;
 
     case 'IMPLIED':
@@ -301,7 +288,8 @@ export function rangeFilter(modifierPiece: ModifierPiece): CalendarIndexFilter {
 export function applyPrepositionActionToFilter(
   preposition: PrepositionPiece,
   modifier: ModifierPiece,
-  filter: CalendarIndexFilter
+  filter: CalendarIndexFilter,
+  globalUserSettings: GlobalUserSettings
 ): CalendarIndexFilter {
   let finalFilter: CalendarIndexFilter;
   switch (modifier.category) {
@@ -320,14 +308,18 @@ export function applyPrepositionActionToFilter(
           if (modifier.value.match(ONE_OR_MORE_NUMBERS)) {
             finalFilter = {
               ...filter,
-              endTime: DateTime.fromISO(user_settings.day_hard_stop),
+              endTime: DateTime.now()
+                .startOf('day')
+                .plus(globalUserSettings.profileSettings.defaults.dayHardStop),
             };
             break;
           } else {
             finalFilter = {
               ...filter,
               startTime: filter.endTime,
-              endTime: DateTime.fromISO(user_settings.day_hard_stop),
+              endTime: DateTime.now()
+                .startOf('day')
+                .plus(globalUserSettings.profileSettings.defaults.dayHardStop),
             };
 
             break;
@@ -335,7 +327,9 @@ export function applyPrepositionActionToFilter(
         case 'before':
           finalFilter = {
             ...filter,
-            startTime: DateTime.fromISO(user_settings.day_hard_start),
+            startTime: DateTime.now()
+              .startOf('day')
+              .plus(globalUserSettings.profileSettings.defaults.dayHardStart),
             endTime: filter.startTime,
           };
           break;

@@ -1,26 +1,17 @@
 //const schedule = require('node-schedule');
-import schedule from 'node-schedule';
+import schedule, { RecurrenceRule } from 'node-schedule';
 import { DateTime } from 'luxon';
 
 export interface ScheduledSingledInstanceJob {
   scheduledExecutionTime: DateTime;
-  callback: Function;
+  callback: () => void;
   extendBeyondActiveSession: boolean;
   dbScheduleInfo?: dbScheduleInfo;
 }
 
 interface ScheduledRecurringJob {
-  scheduledRecurringExecutionTime: {
-    second?: number; // unlike all other values whose default is null, this defaults to 0
-    minute?: number;
-    hour?: number;
-    date?: number;
-    month?: number;
-    year?: string;
-    dayOfWeek?: number;
-    tz?: number;
-  };
-  callback: Function;
+  scheduledRecurringExecutionTime: RecurrenceRule;
+  callback: () => void;
   extendBeyondActiveSession: boolean;
   dbScheduleInfo?: dbScheduleInfo;
 }
@@ -35,7 +26,10 @@ export function scheduleJob(executionTime: DateTime, callback: () => void) {
 }
 
 export function scheduleSingleInstanceJob(job: ScheduledSingledInstanceJob) {
-  schedule.scheduleJob(job.scheduledExecutionTime, job.callback);
+  const scheduledJob = schedule.scheduleJob(
+    job.scheduledExecutionTime,
+    job.callback
+  );
 }
 
 export function scheduleRecurringJob(job: ScheduledRecurringJob) {
