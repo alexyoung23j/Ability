@@ -12,6 +12,7 @@ import { ADD_CALENDAR_URL } from '../constants/EnvConstants';
 import { shell } from 'electron';
 import { GlobalUserSettings } from '../constants/types';
 import { loadGlobalSettings } from './util/global-util/GlobalSettingsUtil';
+import { useImmer } from 'use-immer';
 
 interface AllContextProviderProps {
   showCommand: boolean;
@@ -71,14 +72,16 @@ export default function AllContextProvider(props: AllContextProviderProps) {
 
   // Context State (needed so we can pass the setters to our children to modify context in the app)
   const [calendarIndex, setCalendarIndex] =
-    useState<CalendarIndex | null>(CALENDAR_INDEX_1);
+    useImmer<CalendarIndex | null>(CALENDAR_INDEX_1);
+
+  console.log(calendarIndex);
 
   const [electronSessionId, setElectronSessionId] = useState<string | null>(
     generatedElectronSessionId
   );
 
   const [globalUserSettings, setGlobalUserSettings] =
-    useState<GlobalUserSettings>(loadGlobalSettings());
+    useImmer<GlobalUserSettings>(loadGlobalSettings());
 
   return (
     <GlobalSettingsContext.Provider
