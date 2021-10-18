@@ -13,10 +13,12 @@ import { shell } from 'electron';
 import { GlobalUserSettings } from '../constants/types';
 import { loadGlobalSettings } from './util/global-util/GlobalSettingsUtil';
 import { useImmer } from 'use-immer';
+import InternalTimeEngine from './internal-time/InternalTimeEngine';
 
 interface AllContextProviderProps {
   showCommand: boolean;
   toggleBetweenWindows: any;
+  setTrayText: (payload: string) => void;
 }
 
 export type CalendarIndex = Array<CalendarIndexDay>;
@@ -66,15 +68,13 @@ export function useGapiSignIn() {
  * @param props
  */
 export default function AllContextProvider(props: AllContextProviderProps) {
-  const { showCommand, toggleBetweenWindows } = props;
+  const { showCommand, toggleBetweenWindows, setTrayText } = props;
 
   const { isSignedInWithGapi: isSignedIn } = useGapiSignIn();
 
   // Context State (needed so we can pass the setters to our children to modify context in the app)
   const [calendarIndex, setCalendarIndex] =
     useImmer<CalendarIndex | null>(CALENDAR_INDEX_1);
-
-  console.log(calendarIndex);
 
   const [electronSessionId, setElectronSessionId] = useState<string | null>(
     generatedElectronSessionId
@@ -99,11 +99,11 @@ export default function AllContextProvider(props: AllContextProviderProps) {
           </button>
         )} */}
           {/* <Auth /> */}
-          <div>
-            {(showCommand && <CommandView />) || (
-              <SettingsView toggleWindowHandler={toggleBetweenWindows} />
-            )}
-          </div>
+          <InternalTimeEngine
+            showCommand={showCommand}
+            toggleWindowHandler={toggleBetweenWindows}
+            setTrayText={setTrayText}
+          />
         </SessionContext.Provider>
       </CalendarContext.Provider>
     </GlobalSettingsContext.Provider>
