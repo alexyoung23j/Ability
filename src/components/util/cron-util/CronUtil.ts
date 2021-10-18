@@ -1,6 +1,7 @@
 //const schedule = require('node-schedule');
 import schedule, { RecurrenceRule, Job } from 'node-schedule';
 import { DateTime } from 'luxon';
+import { ipcRenderer } from 'electron';
 
 export interface ScheduledSingledInstanceJob {
   scheduledExecutionTime: DateTime;
@@ -27,7 +28,7 @@ export function scheduleSingleInstanceJob(
   job: ScheduledSingledInstanceJob
 ): Job {
   const scheduledJob = schedule.scheduleJob(
-    job.scheduledExecutionTime,
+    job.scheduledExecutionTime.toJSDate().valueOf(),
     job.callback
   );
 
@@ -42,7 +43,7 @@ export function scheduleRecurringJob(job: ScheduledRecurringJob) {
 
 // ---------------------- NOTIFICATIONS METHODS ------------------------ //
 
-function scheduleTrayNotification(
+export function scheduleEventNotificationStream(
   minutesBeforeDisplay: number,
   eventTitle: string,
   eventDuration: number,
@@ -51,21 +52,62 @@ function scheduleTrayNotification(
 ) {
   let jobQueue = [];
 
+  // Shorten Event
   const truncatedEventTitle =
     eventTitle.length < 10 ? eventTitle : eventTitle.slice(0, 8) + '..';
 
-  for (let i = 1; i < minutesBeforeDisplay; i++) {
+  // Minutes n...2
+  for (let i = minutesBeforeDisplay; i > 1; i--) {
     const executionTime = eventTime.minus({ minutes: i });
 
-    const trayText = i.toString() + ' mins:' + truncatedEventTitle;
+    const trayText = ' In ' + i.toString() + ' mins: ' + truncatedEventTitle;
+
     const job: ScheduledSingledInstanceJob = {
       scheduledExecutionTime: executionTime,
-      callback: trayTextSetter(trayText),
+      callback: () => trayTextSetter(trayText),
       extendBeyondActiveSession: false,
     };
 
-    jobQueue.push(job);
+    // Schedule and Save
+    const scheduledJob = scheduleSingleInstanceJob(job);
+    jobQueue.push(scheduledJob);
   }
 
-  const;
+  // -----------  1 Minute Away -----------
+  const minuteTrayText = ' In 1 min: ' + truncatedEventTitle;
+
+  const minuteJob: ScheduledSingledInstanceJob = {
+    scheduledExecutionTime: eventTime.minus({ minutes: 1 }),
+    callback: () => trayTextSetter(minuteTrayText),
+    extendBeyondActiveSession: false,
+  };
+
+  // Schedule and Save
+  const scheduledMinuteJob = scheduleSingleInstanceJob(minuteJob);
+  jobQueue.push(scheduledMinuteJob);
+
+  // ----------- During the Event -----------
+  const eventTrayText = ' Now: ' + truncatedEventTitle;
+
+  const eventJob: ScheduledSingledInstanceJob = {
+    scheduledExecutionTime: eventTime,
+    callback: () => trayTextSetter(eventTrayText),
+    extendBeyondActiveSession: false,
+  };
+
+  // Schedule and Save
+  const scheduledEventJob = scheduleSingleInstanceJob(eventJob);
+  jobQueue.push(scheduledEventJob);
+
+  // ----------- After the Event -----------
+
+  const endEventJob: ScheduledSingledInstanceJob = {
+    scheduledExecutionTime: eventTime.plus({ minutes: eventDuration }),
+    callback: () => trayTextSetter(''), // Nothing should be shown
+    extendBeyondActiveSession: false,
+  };
+
+  // Schedule and Save
+  const scheduledEndEventJob = scheduleSingleInstanceJob(endEventJob);
+  jobQueue.push(scheduledEndEventJob);
 }

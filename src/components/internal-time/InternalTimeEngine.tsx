@@ -1,6 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import CommandView from '../command-window/CommandView';
 import SettingsView from '../settings-window/SettingsView';
+const { DateTime } = require('luxon');
+import {
+  scheduleEventNotificationStream,
+  ScheduledSingledInstanceJob,
+  scheduleSingleInstanceJob,
+} from '../util/cron-util/CronUtil';
 
 interface InternalTimeEngineProps {
   showCommand: boolean;
@@ -16,7 +22,22 @@ interface InternalTimeEngineProps {
 export default function InternalTimeEngine(props: InternalTimeEngineProps) {
   const { showCommand, toggleWindowHandler, setTrayText } = props;
 
+  const [dailyJobsScheduled, setDailyJobsScheduled] = useState(false);
+
   // --------------------------- Notifications ------------------- //
+
+  useEffect(() => {
+    if (!dailyJobsScheduled) {
+      setDailyJobsScheduled(true);
+      scheduleEventNotificationStream(
+        2,
+        'Meeting',
+        1,
+        DateTime.now().minus({ minutes: 2, seconds: 4 }),
+        setTrayText
+      );
+    }
+  }, []);
 
   return (
     <div>
