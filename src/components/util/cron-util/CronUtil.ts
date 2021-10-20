@@ -10,9 +10,9 @@ export interface ScheduledSingledInstanceJob {
   dbScheduleInfo?: dbScheduleInfo;
 }
 
-interface ScheduledRecurringJob {
-  scheduledRecurringExecutionTime: RecurrenceRule;
-  callback: () => void;
+export interface ScheduledRecurringJob {
+  scheduledRecurrenceRule: RecurrenceRule | object;
+  callback: any;
   extendBeyondActiveSession: boolean;
   dbScheduleInfo?: dbScheduleInfo;
 }
@@ -36,7 +36,7 @@ export function scheduleSingleInstanceJob(
 }
 
 export function scheduleRecurringJob(job: ScheduledRecurringJob) {
-  const recurrence = job.scheduledRecurringExecutionTime;
+  const recurrence = job.scheduledRecurrenceRule;
 
   schedule.scheduleJob(recurrence, job.callback);
 }

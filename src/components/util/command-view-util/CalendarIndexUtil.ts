@@ -13,7 +13,7 @@ const enum Color {
   BLUE = 'BLUE',
 }
 
-interface CalendarIndexEvent {
+export interface CalendarIndexEvent {
   startTime: calendar_v3.Schema$EventDateTime;
   endTime: calendar_v3.Schema$EventDateTime;
   // map color Id --> unique color that hasn't been used yet
