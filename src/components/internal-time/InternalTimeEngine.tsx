@@ -3,7 +3,6 @@ import CommandView from '../command-window/CommandView';
 import SettingsView from '../settings-window/SettingsView';
 const { DateTime } = require('luxon');
 import {
-  scheduleEventNotificationStream,
   ScheduledSingledInstanceJob,
   scheduleSingleInstanceJob,
   ScheduledRecurringJob,
@@ -13,7 +12,12 @@ import { GlobalSettingsContext, CalendarContext } from '../AllContextProvider';
 import { useImmer } from 'use-immer';
 import { Job } from 'node-schedule';
 import { ToadScheduler, SimpleIntervalJob, Task } from 'toad-scheduler';
-import { NotificationJob } from '../util/global-util/NotificationsUtil';
+import {
+  NotificationJob,
+  NotificationTimeMap,
+  buildTimeMap,
+  runNotificationEngine,
+} from '../util/global-util/NotificationsUtil';
 
 interface InternalTimeEngineProps {
   showCommand: boolean;
@@ -37,13 +41,14 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
 
   const [dailyJobsScheduled, setDailyJobsScheduled] = useState(false);
 
-  // --------------------------- NOTIFICATIONS CODE ------------------- //
+  // --------------------------- START NOTIFICATIONS CODE ------------------- //
 
   // Notification State
-  const [notificationJobStack, setNotificationJobStack] = useImmer<
+  const [notificationJobStack, setNotificationJobStack] = useState<
     Array<NotificationJob>
   >([]);
-  const [notificationTimeMap, setNotificationTimeMap] = useImmer({});
+  const [notificationTimeMap, setNotificationTimeMap] =
+    useImmer<NotificationTimeMap>(buildTimeMap(calendarIndex));
   const [currentJobMetaScheduler, setCurrentJobMetaScheduler] =
     useState<Job>(null);
 
@@ -51,7 +56,14 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
   const masterJob: ScheduledRecurringJob = {
     scheduledRecurrenceRule: { second: 10 }, // TODO: this isn't quite right, its not logging eevery 10 secobds, fix this
     callback: () => {
-      console.log('hi');
+      runNotificationEngine(
+        notificationJobStack,
+        setNotificationJobStack,
+        notificationTimeMap,
+        setNotificationTimeMap,
+        currentJobMetaScheduler,
+        setCurrentJobMetaScheduler
+      );
     },
     extendBeyondActiveSession: false,
   };
