@@ -17,6 +17,7 @@ import {
   NotificationTimeMap,
   buildTimeMap,
   runNotificationEngine,
+  handleUpdatesToJobStack,
 } from '../util/global-util/NotificationsUtil';
 
 interface InternalTimeEngineProps {
@@ -48,13 +49,13 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
     Array<NotificationJob>
   >([]);
   const [notificationTimeMap, setNotificationTimeMap] =
-    useImmer<NotificationTimeMap>(buildTimeMap(calendarIndex));
+    useImmer<NotificationTimeMap>(buildTimeMap(calendarIndex, setTrayText));
   const [currentJobMetaScheduler, setCurrentJobMetaScheduler] =
     useState<Job>(null);
 
   // Schedule periodic query of the notificationTimeMap
   const masterJob: ScheduledRecurringJob = {
-    scheduledRecurrenceRule: { second: 10 }, // TODO: this isn't quite right, its not logging eevery 10 secobds, fix this
+    scheduledRecurrenceRule: { second: [0, 10, 20, 30, 40, 50, 60] }, // TODO: this isn't quite right, its not logging eevery 10 secobds, fix this
     callback: () => {
       runNotificationEngine(
         notificationJobStack,
@@ -77,7 +78,15 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
   useEffect(() => {}, [calendarIndex]);
 
   // Listen to updates to notificationJobStack
-  useEffect(() => {}, []);
+  useEffect(() => {
+    console.log('its working?');
+    handleUpdatesToJobStack(
+      notificationJobStack,
+      setNotificationJobStack,
+      currentJobMetaScheduler,
+      setCurrentJobMetaScheduler
+    );
+  }, [notificationJobStack]);
 
   /* useEffect(() => {
     if (!dailyJobsScheduled) {

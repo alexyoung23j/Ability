@@ -11,6 +11,7 @@ import { CalendarIndex } from '../../AllContextProvider';
 import { Job } from 'node-schedule';
 import { Updater } from 'use-immer';
 import { createNamedExports } from 'typescript';
+import { SetStateAction, Dispatch } from 'react';
 
 export interface NotificationJob {
   isQueued: boolean;
@@ -20,25 +21,61 @@ export interface NotificationJob {
 
 export interface ScheduledEventNotificationStream {
   jobs: Array<ScheduledSingledInstanceJob>;
-  correspondingEvent: CalendarIndexEvent;
+  correspondingEvent: CalendarIndexEvent | null; //Just for testing
   startTime: DateTime;
   endTime: DateTime;
 }
 
 // Keys in here will represent the minute in the day, i.e. 12:45 am -> Key is 45
 export interface NotificationTimeMap {
-  [key: number]: Array<NotificationJob>;
+  [key: number]: {
+    alreadyHandled: boolean;
+    jobs: Array<NotificationJob>;
+  };
 }
 
 export function buildTimeMap(
-  calendarIndex: CalendarIndex
+  calendarIndex: CalendarIndex,
+  setTrayText: (payload: string) => void
 ): NotificationTimeMap {
   const todayIdx = mapDateToIndex(DateTime.now(), calendarIndex[0].date);
   const todaysEvents = calendarIndex[0].events;
 
-  // TODO: Actually implement this
+  // TODO: Actually implement this to use real data instead of dummy data
 
-  return {};
+  // Dummy Data
+
+  let timeMap: NotificationTimeMap = {};
+
+  const currentMin = getCurrentMinute();
+
+  const nowStartMinute = DateTime.now().startOf('minute');
+
+  const jobStream1 = scheduleEventNotificationStream(
+    5,
+    'First Event',
+    10,
+    nowStartMinute.plus({ minutes: 5 }),
+    setTrayText
+  );
+
+  timeMap[currentMin] = {
+    alreadyHandled: false,
+    jobs: [
+      {
+        isQueued: false,
+        isExecuting: false,
+        jobStream: {
+          jobs: jobStream1,
+          correspondingEvent: null,
+          startTime: nowStartMinute,
+          endTime: nowStartMinute.plus({ minutes: 15 }),
+        },
+      },
+    ],
+  };
+
+  return timeMap;
 }
 
 export function runNotificationEngine(
@@ -49,15 +86,21 @@ export function runNotificationEngine(
   currentJobMetaJobScheduler: Job | null,
   setCurrentMetaJobScheduler: any
 ) {
-  const nextMin = getCurrentMinute() + 1;
+  const nextMin = getCurrentMinute();
 
-  if (!(nextMin in notificationTimeMap)) {
+  if (
+    !(nextMin in notificationTimeMap) ||
+    notificationTimeMap[nextMin].alreadyHandled
+  ) {
     return;
-  } else if (notificationTimeMap[nextMin].length == 1) {
-    const job = notificationTimeMap[nextMin][0];
+  } else if (notificationTimeMap[nextMin].jobs.length == 1) {
+    const job = notificationTimeMap[nextMin].jobs[0];
     if (notificationJobStack.length == 0) {
       // Just one job, add it to the stack
-      setNotificationJobStack([]);
+      if (!job.isQueued) {
+        job.isQueued = true;
+        setNotificationJobStack([...notificationJobStack, job]);
+      }
     } else {
       const newStack = performUnion([...notificationJobStack, job]);
     }
@@ -157,4 +200,68 @@ export function scheduleEventNotificationStream(
   jobQueue.push(endEventJob);
 
   return jobQueue;
+}
+
+export function handleUpdatesToJobStack(
+  notificationJobStack: Array<NotificationJob>,
+  setNotificationJobStack: Updater<NotificationJob[]>,
+  currentJobMetaJobScheduler: Job,
+  setCurrentMetaJobScheduler: Dispatch<SetStateAction<Job>>
+) {
+  if (notificationJobStack.length < 1) {
+    return;
+  }
+  const topJob = notificationJobStack[notificationJobStack.length - 1];
+
+  const newMetaJob = executeJobAndReturnMetaJob(
+    topJob,
+    notificationJobStack,
+    setNotificationJobStack
+  );
+
+  setCurrentMetaJobScheduler(newMetaJob);
+
+  for (let i = 0; i < notificationJobStack.length - 1; i++) {
+    const notificationJob = notificationJobStack[i];
+    cancelJob(notificationJob);
+  }
+}
+
+function executeJobAndReturnMetaJob(
+  jobToExecute: NotificationJob,
+  notificationJobStack: Array<NotificationJob>,
+  setNotificationJobStack: Updater<NotificationJob[]>
+): Job {
+  // Schedule all the jobs
+  for (const job of jobToExecute.jobStream.jobs) {
+    const scheduledStreamJob = scheduleSingleInstanceJob(job);
+  }
+
+  const metaJob: ScheduledSingledInstanceJob = {
+    scheduledExecutionTime: jobToExecute.jobStream.endTime,
+    callback: () =>
+      removeTopJobFromStack(notificationJobStack, setNotificationJobStack),
+    extendBeyondActiveSession: false,
+  };
+
+  const scheduledMetaJob = scheduleSingleInstanceJob(metaJob);
+  return scheduledMetaJob;
+}
+
+function removeTopJobFromStack(
+  notificationJobStack: Array<NotificationJob>,
+  setNotificationJobStack: Updater<NotificationJob[]>
+) {
+  if (notificationJobStack.length < 1) {
+    return;
+  }
+  const removedTop = notificationJobStack.slice(
+    0,
+    notificationJobStack.length - 1
+  );
+  setNotificationJobStack(removedTop);
+}
+
+function cancelJob(notificationJob: NotificationJob) {
+  return;
 }
