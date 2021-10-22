@@ -53,6 +53,8 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
   const [currentJobMetaScheduler, setCurrentJobMetaScheduler] =
     useState<Job>(null);
 
+  console.log('map: ', notificationTimeMap);
+
   // Schedule periodic query of the notificationTimeMap
   const masterJob: ScheduledRecurringJob = {
     scheduledRecurrenceRule: { second: [0, 10, 20, 30, 40, 50, 60] }, // TODO: this isn't quite right, its not logging eevery 10 secobds, fix this
@@ -79,7 +81,10 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
 
   // Listen to updates to notificationJobStack
   useEffect(() => {
-    console.log('its working?');
+    console.log(
+      'There was an update to the notifcationJobStack: ',
+      notificationJobStack
+    );
     handleUpdatesToJobStack(
       notificationJobStack,
       setNotificationJobStack,

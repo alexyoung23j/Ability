@@ -16,7 +16,8 @@ import { SetStateAction, Dispatch } from 'react';
 export interface NotificationJob {
   isQueued: boolean;
   isExecuting: boolean;
-  jobStream: ScheduledEventNotificationStream;
+  rawJobStream: ScheduledEventNotificationStream; // Corresponds to jobs that are not scheduled
+  scheduledJobStream: null | Array<Job>; // Jobs that have actually been scheduled by node-schedule
 }
 
 export interface ScheduledEventNotificationStream {
@@ -55,22 +56,48 @@ export function buildTimeMap(
     5,
     'First Event',
     10,
-    nowStartMinute.plus({ minutes: 5 }),
+    nowStartMinute.plus({ minutes: 6 }),
     setTrayText
   );
 
-  timeMap[currentMin] = {
+  timeMap[currentMin + 1] = {
     alreadyHandled: false,
     jobs: [
       {
         isQueued: false,
         isExecuting: false,
-        jobStream: {
+        rawJobStream: {
           jobs: jobStream1,
           correspondingEvent: null,
           startTime: nowStartMinute,
-          endTime: nowStartMinute.plus({ minutes: 15 }),
+          endTime: nowStartMinute.plus({ minutes: 16 }),
         },
+        scheduledJobStream: null,
+      },
+    ],
+  };
+
+  const jobStream2 = scheduleEventNotificationStream(
+    5,
+    'Second Event',
+    10,
+    nowStartMinute.plus({ minutes: 7 }),
+    setTrayText
+  );
+
+  timeMap[currentMin + 2] = {
+    alreadyHandled: false,
+    jobs: [
+      {
+        isQueued: false,
+        isExecuting: false,
+        rawJobStream: {
+          jobs: jobStream2,
+          correspondingEvent: null,
+          startTime: nowStartMinute.plus({ minutes: 2 }),
+          endTime: nowStartMinute.plus({ minutes: 17 }),
+        },
+        scheduledJobStream: null,
       },
     ],
   };
@@ -94,6 +121,7 @@ export function runNotificationEngine(
   ) {
     return;
   } else if (notificationTimeMap[nextMin].jobs.length == 1) {
+    console.log('At ', nextMin, ' we had a job');
     const job = notificationTimeMap[nextMin].jobs[0];
     if (notificationJobStack.length == 0) {
       // Just one job, add it to the stack
@@ -102,6 +130,11 @@ export function runNotificationEngine(
         setNotificationJobStack([...notificationJobStack, job]);
       }
     } else {
+      console.log(
+        'we had a job that already was going, so we added a new one or shouldve'
+      );
+      setNotificationJobStack([...notificationJobStack, job]); // temp
+
       const newStack = performUnion([...notificationJobStack, job]);
     }
   } else {
@@ -231,20 +264,25 @@ function executeJobAndReturnMetaJob(
   jobToExecute: NotificationJob,
   notificationJobStack: Array<NotificationJob>,
   setNotificationJobStack: Updater<NotificationJob[]>
-): Job {
+) {
   // Schedule all the jobs
-  for (const job of jobToExecute.jobStream.jobs) {
+  let scheduledJobs = [];
+  for (const job of jobToExecute.rawJobStream.jobs) {
     const scheduledStreamJob = scheduleSingleInstanceJob(job);
+    scheduledJobs.push(scheduledStreamJob);
   }
 
   const metaJob: ScheduledSingledInstanceJob = {
-    scheduledExecutionTime: jobToExecute.jobStream.endTime,
+    scheduledExecutionTime: jobToExecute.rawJobStream.endTime,
     callback: () =>
       removeTopJobFromStack(notificationJobStack, setNotificationJobStack),
     extendBeyondActiveSession: false,
   };
 
   const scheduledMetaJob = scheduleSingleInstanceJob(metaJob);
+
+  jobToExecute.scheduledJobStream = scheduledJobs;
+
   return scheduledMetaJob;
 }
 
@@ -263,5 +301,8 @@ function removeTopJobFromStack(
 }
 
 function cancelJob(notificationJob: NotificationJob) {
-  return;
+  for (const scheduledJob of notificationJob.scheduledJobStream) {
+    console.log('cancelling: ', scheduledJob);
+    scheduledJob.cancel();
+  }
 }
