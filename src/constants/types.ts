@@ -139,3 +139,28 @@ export interface TextSnippet {
   id: string;
   title: string;
 }
+
+// TODO: Write method to store this info in the db even though some of the types are not accepted as firestore types
+export interface GlobalUserSettings {
+  profileSettings: {
+    registeredAccounts: null | Array<RegisteredAccount>; // Here we have the data about which calendars are toggled stored in the Calendar Objects
+    defaults: {
+      dayHardStart: {
+        hours: number;
+        minutes?: number;
+      };
+      dayHardStop: {
+        hours: number;
+        minutes?: number;
+      };
+      blockDuration: number; // should allow a toggle between 30 min, 1 hr, 1.5 hr?
+    };
+  };
+  notificationSettings: {
+    notificationsEnabled: boolean;
+    minutesBeforeDisplay: number;
+  };
+  timeZoneOffset: number;
+  abilityKeyShortcut: string;
+  textSnippetPackages: null | Array<TextSnippetPackage>;
+}

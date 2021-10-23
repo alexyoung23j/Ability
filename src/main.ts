@@ -102,7 +102,6 @@ const createTray = () => {
       click: () => openCommandLine(),
     },
   ]);
-  tray.setToolTip('Ability');
   tray.setContextMenu(contextMenu);
 };
 
@@ -118,7 +117,6 @@ const reactDevToolsPath = `${reactDevToolsFolderPath}${
   fs.readdirSync(reactDevToolsFolderPath)[0]
 }`;
 
-console.log(reactDevToolsPath);
 app
   .whenReady()
   // .then(() => {
@@ -190,6 +188,10 @@ ipcMain.on('settings-showing', () => {
 
 ipcMain.on('open-settings', () => {
   openSettingsView();
+});
+
+ipcMain.on('set-tray-text', (event, message) => {
+  tray.setTitle(message[0]);
 });
 
 /// ----------------------------- OTHER METHODS ------------------- ///

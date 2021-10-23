@@ -10,23 +10,32 @@ import { db } from '../firebase/db';
 import { ELECTRON_SESSION_IDS_TO_USER_IDS_COLLECTION } from './auth/AuthDAO';
 import { ADD_CALENDAR_URL } from '../constants/EnvConstants';
 import { shell } from 'electron';
+import { GlobalUserSettings } from '../constants/types';
+import { loadGlobalSettings } from './util/global-util/GlobalSettingsUtil';
+import { useImmer } from 'use-immer';
+import InternalTimeEngine from './internal-time/InternalTimeEngine';
 
 interface AllContextProviderProps {
   showCommand: boolean;
   toggleBetweenWindows: any;
+  setTrayText: (payload: string) => void;
 }
 
 export type CalendarIndex = Array<CalendarIndexDay>;
 
 // -------------------- Context Initializations ----------------- //
-export const CalendarContext =
-  React.createContext<CalendarIndex | null>(CALENDAR_INDEX_1);
 
+// Context that doesn't require setters
 const generatedElectronSessionId = uuidv4();
 
 export const SessionContext = React.createContext<string>(
   generatedElectronSessionId
 );
+
+// Context that requires setters
+export const CalendarContext = React.createContext(null);
+
+export const GlobalSettingsContext = React.createContext(null);
 
 // ---------------- Methods that should be elsewhere/are temp -------- //
 export function useFirebaseSignIn() {
@@ -42,8 +51,8 @@ export function useGapiSignIn() {
   db.collection(ELECTRON_SESSION_IDS_TO_USER_IDS_COLLECTION)
     .doc(generatedElectronSessionId)
     .onSnapshot((doc) => {
-      console.log('session id:', generatedElectronSessionId);
-      console.log(doc.data());
+      // console.log('session id:', generatedElectronSessionId);
+      // console.log(doc.data());
       if (doc.data() != null) {
         setIsSignedInWithGapi(true);
       }
@@ -59,22 +68,28 @@ export function useGapiSignIn() {
  * @param props
  */
 export default function AllContextProvider(props: AllContextProviderProps) {
-  const { showCommand, toggleBetweenWindows } = props;
+  const { showCommand, toggleBetweenWindows, setTrayText } = props;
 
   const { isSignedInWithGapi: isSignedIn } = useGapiSignIn();
 
   // Context State (needed so we can pass the setters to our children to modify context in the app)
   const [calendarIndex, setCalendarIndex] =
-    useState<CalendarIndex | null>(CALENDAR_INDEX_1);
+    useImmer<CalendarIndex | null>(CALENDAR_INDEX_1);
 
   const [electronSessionId, setElectronSessionId] = useState<string | null>(
     generatedElectronSessionId
   );
 
+  const [globalUserSettings, setGlobalUserSettings] =
+    useImmer<GlobalUserSettings>(loadGlobalSettings());
+
   return (
-    <CalendarContext.Provider value={calendarIndex}>
-      <SessionContext.Provider value={electronSessionId}>
-        {(!isSignedIn && <SignIn />) || (
+    <GlobalSettingsContext.Provider
+      value={{ globalUserSettings, setGlobalUserSettings }}
+    >
+      <CalendarContext.Provider value={{ calendarIndex, setCalendarIndex }}>
+        <SessionContext.Provider value={electronSessionId}>
+          {/*  {(!isSignedIn && <SignIn />) || (
           <button
             onClick={() => {
               shell.openExternal(`${ADD_CALENDAR_URL}/${electronSessionId}`);
@@ -82,14 +97,15 @@ export default function AllContextProvider(props: AllContextProviderProps) {
           >
             Add Calendar
           </button>
-        )}
-        {/* <Auth /> */}
-        {/*  <div>
-          {(showCommand && <CommandView />) || (
-            <SettingsView toggleWindowHandler={toggleBetweenWindows} />
-          )}
-        </div> */}
-      </SessionContext.Provider>
-    </CalendarContext.Provider>
+        )} */}
+          {/* <Auth /> */}
+          <InternalTimeEngine
+            showCommand={showCommand}
+            toggleWindowHandler={toggleBetweenWindows}
+            setTrayText={setTrayText}
+          />
+        </SessionContext.Provider>
+      </CalendarContext.Provider>
+    </GlobalSettingsContext.Provider>
   );
 }

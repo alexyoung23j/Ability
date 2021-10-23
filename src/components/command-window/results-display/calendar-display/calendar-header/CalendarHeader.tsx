@@ -1,4 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import {
+  CalendarContext,
+  GlobalSettingsContext,
+} from '../../../../AllContextProvider';
 const leftArrow = require('/src/content/svg/LeftArrow.svg');
 const rightArrow = require('/src/content/svg/RightArrow.svg');
 const dropdownArrowNormal = require('/src/content/svg/DropdownArrowNormal.svg');

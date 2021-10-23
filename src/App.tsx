@@ -72,10 +72,15 @@ function App() {
     ipcRenderer.send('settings-showing');
   });
 
+  function setTrayText(payload: string) {
+    ipcRenderer.send('set-tray-text', [payload]);
+  }
+
   return (
     <AllContextProvider
       showCommand={showCommand}
       toggleBetweenWindows={toggleBetweenWindows}
+      setTrayText={setTrayText}
     />
   );
 }
