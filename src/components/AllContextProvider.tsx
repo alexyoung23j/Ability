@@ -39,10 +39,10 @@ export const GlobalSettingsContext = React.createContext(null);
 
 // ---------------- Methods that should be elsewhere/are temp -------- //
 export function useFirebaseSignIn() {
-  const [isSignedInToFirebase, setSignedInToFirebase] =
+  const [isSignedInToFirebase, setIsSignedInToFirebase] =
     useState<boolean>(false);
 
-  return { isSignedInToFirebase, setSignedInToFirebase };
+  return { isSignedInToFirebase, setIsSignedInToFirebase };
 }
 
 export function useGapiSignIn() {
@@ -89,15 +89,15 @@ export default function AllContextProvider(props: AllContextProviderProps) {
     >
       <CalendarContext.Provider value={{ calendarIndex, setCalendarIndex }}>
         <SessionContext.Provider value={electronSessionId}>
-          {/*  {(!isSignedIn && <SignIn />) || (
-          <button
-            onClick={() => {
-              shell.openExternal(`${ADD_CALENDAR_URL}/${electronSessionId}`);
-            }}
-          >
-            Add Calendar
-          </button>
-        )} */}
+          {/* {(!isSignedIn && <SignIn />) || (
+            <button
+              onClick={() => {
+                shell.openExternal(`${ADD_CALENDAR_URL}/${electronSessionId}`);
+              }}
+            >
+              Add Calendar
+            </button>
+          )} */}
           {/* <Auth /> */}
           <InternalTimeEngine
             showCommand={showCommand}
