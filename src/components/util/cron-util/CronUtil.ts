@@ -11,7 +11,7 @@ export interface ScheduledSingledInstanceJob {
 }
 
 export interface ScheduledRecurringJob {
-  scheduledRecurrenceRule: RecurrenceRule | object;
+  scheduledRecurrenceRule: string | RecurrenceRule | object;
   callback: any;
   extendBeyondActiveSession: boolean;
   dbScheduleInfo?: dbScheduleInfo;
