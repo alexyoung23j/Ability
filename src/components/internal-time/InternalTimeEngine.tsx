@@ -1,24 +1,19 @@
-import React, { useEffect, useContext } from 'react';
-import useState from 'react-usestateref';
+import { Job } from 'node-schedule';
+import React, { useContext, useEffect } from 'react';
+import useStateRef from 'react-usestateref';
+import { CalendarContext, GlobalSettingsContext } from '../AllContextProvider';
 import CommandView from '../command-window/CommandView';
 import SettingsView from '../settings-window/SettingsView';
-const { DateTime } = require('luxon');
 import {
-  ScheduledSingledInstanceJob,
-  scheduleSingleInstanceJob,
   ScheduledRecurringJob,
   scheduleRecurringJob,
 } from '../util/cron-util/CronUtil';
-import { GlobalSettingsContext, CalendarContext } from '../AllContextProvider';
-import { useImmer } from 'use-immer';
-import schedule, { Job } from 'node-schedule';
-import { ToadScheduler, SimpleIntervalJob, Task } from 'toad-scheduler';
 import {
+  buildTimeMap,
+  handleUpdatesToJobStack,
   NotificationJob,
   NotificationTimeMap,
-  buildTimeMap,
   runNotificationEngine,
-  handleUpdatesToJobStack,
   ScheduledNotificationJobBatch,
 } from '../util/global-util/NotificationsUtil';
 
@@ -42,7 +37,7 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
     GlobalSettingsContext
   );
 
-  const [dailyJobsScheduled, setDailyJobsScheduled] = useState(false);
+  const [dailyJobsScheduled, setDailyJobsScheduled] = useStateRef(false);
 
   // --------------------------- START NOTIFICATIONS CODE ------------------- //
 
@@ -51,19 +46,19 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
     notificationJobStack,
     setNotificationJobStack,
     notificationJobStackRef,
-  ] = useState<Array<NotificationJob>>([]);
+  ] = useStateRef<Array<NotificationJob>>([]);
   const [
     currentlyScheduledJobs,
     setCurrentlyScheduledJobs,
     currentScheduledJobsRef,
-  ] = useState<Array<ScheduledNotificationJobBatch>>([]);
+  ] = useStateRef<Array<ScheduledNotificationJobBatch>>([]);
   const [notificationTimeMap, setNotificationTimeMap, notificationTimeMapRef] =
-    useState<NotificationTimeMap>(buildTimeMap(calendarIndex, setTrayText));
+    useStateRef<NotificationTimeMap>(buildTimeMap(calendarIndex, setTrayText));
   const [
     currentJobMetaScheduler,
     setCurrentJobMetaScheduler,
     currentJobMetaSchedulerRef,
-  ] = useState<Job>(null);
+  ] = useStateRef<Job>(null);
 
   // Schedule periodic query of the notificationTimeMap
   const masterJob: ScheduledRecurringJob = {
@@ -102,19 +97,6 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
       setCurrentJobMetaScheduler
     );
   }, [notificationJobStack]);
-
-  /* useEffect(() => {
-    if (!dailyJobsScheduled) {
-      setDailyJobsScheduled(true);
-      scheduleEventNotificationStream(
-        2,
-        'Meeting',
-        1,
-        DateTime.now().minus({ minutes: 2, seconds: 4 }),
-        setTrayText
-      );
-    }
-  }, []); */
 
   // --------------------------- END NOTIFICATIONS CODE ------------------- //
 

@@ -10,7 +10,6 @@ import { DateTime } from 'luxon';
 import { CalendarIndex } from '../../AllContextProvider';
 import { Job } from 'node-schedule';
 import { Updater } from 'use-immer';
-import { createNamedExports } from 'typescript';
 import { SetStateAction, Dispatch } from 'react';
 
 export interface NotificationJob {
@@ -259,7 +258,7 @@ export function handleUpdatesToJobStack(
   );
 
   // Cancel current meta job and assign new one
-  currentJobMetaJobScheduler.cancel();
+  currentJobMetaJobScheduler?.cancel();
   setCurrentMetaJobScheduler(newMetaJob);
 
   for (let i = 0; i < notificationJobStack.length - 1; i++) {

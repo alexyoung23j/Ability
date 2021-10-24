@@ -1,3 +1,4 @@
+import firebase from '../firebase/config';
 import React, { useState } from 'react';
 import { useImmer } from 'use-immer';
 import { v4 as uuidv4 } from 'uuid';
@@ -87,11 +88,21 @@ export default function AllContextProvider(props: AllContextProviderProps) {
           {(!isSignedIn && (
             <SignIn onSignInComplete={() => setIsSignedIn(true)} />
           )) || (
-            <InternalTimeEngine
-              showCommand={showCommand}
-              toggleWindowHandler={toggleBetweenWindows}
-              setTrayText={setTrayText}
-            />
+            <>
+              {/* <InternalTimeEngine
+                showCommand={showCommand}
+                toggleWindowHandler={toggleBetweenWindows}
+                setTrayText={setTrayText}
+              /> */}
+              <button
+                onClick={async () => {
+                  await firebase.auth().signOut();
+                  setIsSignedIn(false);
+                }}
+              >
+                Sign out
+              </button>
+            </>
           )}
         </SessionContext.Provider>
       </CalendarContext.Provider>
