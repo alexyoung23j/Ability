@@ -1,10 +1,11 @@
 import { shell } from 'electron';
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 
 import { SIGN_IN_URL } from '../../constants/EnvConstants';
-import { SessionContext, useFirebaseSignIn } from '../AllContextProvider';
+import { SessionContext } from '../AllContextProvider';
 import firebase from '../../firebase/config';
 import { db } from '../../firebase/db';
+import { isUserSignedIn } from '../../firebase/util/FirebaseUtil';
 
 interface CalendarAccount {
   calendarId: string;
@@ -13,6 +14,7 @@ interface CalendarAccount {
     // id_token: string | null;   <-- Not needed for now
     // login_hint: string | null; <-- Not needed for now
   };
+  dateAdded: string;
 }
 
 export interface UserAuthInfo {
@@ -42,31 +44,21 @@ async function signInToFirebase(
   }
 }
 
-export default function SignIn(): JSX.Element {
-  const { isSignedInToFirebase, setIsSignedInToFirebase } = useFirebaseSignIn();
-  const sessionId = useContext(SessionContext);
+interface SignInProps {
+  onSignInComplete: () => void;
+}
 
-  const [userId, setUserId] = useState<null | string>(null);
+export default function SignIn({ onSignInComplete }: SignInProps): JSX.Element {
+  const sessionId = useContext(SessionContext);
 
   db.doc(`electronIdsToUserIds/${sessionId}`).onSnapshot(
     (doc: firebase.firestore.DocumentSnapshot<UserAuthInfo>) => {
       const userAuthInfo = doc.data() as UserAuthInfo | undefined;
-      if (!isSignedInToFirebase && userAuthInfo?.firebaseAuthToken != null) {
-        signInToFirebase(userAuthInfo, () => {
-          setIsSignedInToFirebase(true);
-        });
+      if (isUserSignedIn() && userAuthInfo?.firebaseAuthToken != null) {
+        signInToFirebase(userAuthInfo, onSignInComplete);
       }
     }
   );
-
-  // subscribe(
-  //   `electronIdsToUserIds/${electronSessionId}`,
-  //   async (userAuthInfo: UserAuthInfo) => {
-  //     // signInToFirebase(userAuthInfo, () => {
-  //     //   setSignedInToFirebase(true);
-  //     // });
-  //   }
-  // );
 
   return (
     <button
