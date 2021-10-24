@@ -1,11 +1,11 @@
 import { shell } from 'electron';
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 
-import useSession from '../../hooks/auth/useSession';
 import { SIGN_IN_URL } from '../../constants/EnvConstants';
-import { SessionContext, useFirebaseSignIn } from '../AllContextProvider';
-import { IdTokenResult } from '@firebase/auth';
+import { SessionContext } from '../AllContextProvider';
 import firebase from '../../firebase/config';
+import { db } from '../../firebase/db';
+import { isUserSignedIn } from '../../firebase/util/FirebaseUtil';
 
 interface CalendarAccount {
   calendarId: string;
@@ -14,6 +14,7 @@ interface CalendarAccount {
     // id_token: string | null;   <-- Not needed for now
     // login_hint: string | null; <-- Not needed for now
   };
+  dateAdded: string;
 }
 
 export interface UserAuthInfo {
@@ -25,17 +26,16 @@ export interface UserAuthInfo {
     //  This is the token from auth.IdTokenResult, but renamed for clarity
     firebaseToken: string;
   };
+  firebaseAuthToken?: string;
 }
 
 async function signInToFirebase(
-  userAuthInfo: UserAuthInfo,
+  { firebaseAuthToken }: UserAuthInfo,
   onSignIn: () => void
 ) {
-  if (userAuthInfo != null) {
-    const { firebaseToken } = userAuthInfo.idTokenResult;
+  if (firebaseAuthToken != null) {
     try {
-      // TODO(ABI-88): This doesn't work. We need to swap it out with a custom token through firebase-admin.
-      await firebase.auth().signInWithCustomToken(firebaseToken);
+      await firebase.auth().signInWithCustomToken(firebaseAuthToken);
       onSignIn();
     } catch (e) {
       console.log('Failed to sign in with custom token.');
@@ -44,20 +44,21 @@ async function signInToFirebase(
   }
 }
 
-export default function SignIn(): JSX.Element {
-  const { setSignedInToFirebase } = useFirebaseSignIn();
+interface SignInProps {
+  onSignInComplete: () => void;
+}
+
+export default function SignIn({ onSignInComplete }: SignInProps): JSX.Element {
   const sessionId = useContext(SessionContext);
 
-  const [userId, setUserId] = useState<null | string>(null);
-
-  // subscribe(
-  //   `electronIdsToUserIds/${electronSessionId}`,
-  //   async (userAuthInfo: UserAuthInfo) => {
-  //     // signInToFirebase(userAuthInfo, () => {
-  //     //   setSignedInToFirebase(true);
-  //     // });
-  //   }
-  // );
+  db.doc(`electronIdsToUserIds/${sessionId}`).onSnapshot(
+    (doc: firebase.firestore.DocumentSnapshot<UserAuthInfo>) => {
+      const userAuthInfo = doc.data() as UserAuthInfo | undefined;
+      if (isUserSignedIn() && userAuthInfo?.firebaseAuthToken != null) {
+        signInToFirebase(userAuthInfo, onSignInComplete);
+      }
+    }
+  );
 
   return (
     <button

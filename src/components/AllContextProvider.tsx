@@ -1,19 +1,15 @@
 import React, { useState } from 'react';
-import { Auth } from './/auth/auth';
-import CommandView from './/command-window/CommandView';
-import { CALENDAR_INDEX_1, EVENTS } from '../tests/EventsFixtures';
-import SettingsView from './/settings-window/SettingsView';
-import { CalendarIndexDay } from './util/command-view-util/CalendarIndexUtil';
-import SignIn from './auth/SignIn';
-import { v4 as uuidv4 } from 'uuid';
-import { db } from '../firebase/db';
-import { ELECTRON_SESSION_IDS_TO_USER_IDS_COLLECTION } from './auth/AuthDAO';
-import { ADD_CALENDAR_URL } from '../constants/EnvConstants';
-import { shell } from 'electron';
-import { GlobalUserSettings } from '../constants/types';
-import { loadGlobalSettings } from './util/global-util/GlobalSettingsUtil';
 import { useImmer } from 'use-immer';
+import { v4 as uuidv4 } from 'uuid';
+import { GlobalUserSettings } from '../constants/types';
+import { db } from '../firebase/db';
+import { isUserSignedIn } from '../firebase/util/FirebaseUtil';
+import { CALENDAR_INDEX_1 } from '../tests/EventsFixtures';
+import { ELECTRON_SESSION_IDS_TO_USER_IDS_COLLECTION } from './auth/AuthDAO';
+import SignIn from './auth/SignIn';
 import InternalTimeEngine from './internal-time/InternalTimeEngine';
+import { CalendarIndexDay } from './util/command-view-util/CalendarIndexUtil';
+import { loadGlobalSettings } from './util/global-util/GlobalSettingsUtil';
 
 interface AllContextProviderProps {
   showCommand: boolean;
@@ -39,10 +35,10 @@ export const GlobalSettingsContext = React.createContext(null);
 
 // ---------------- Methods that should be elsewhere/are temp -------- //
 export function useFirebaseSignIn() {
-  const [isSignedInToFirebase, setSignedInToFirebase] =
+  const [isSignedInToFirebase, setIsSignedInToFirebase] =
     useState<boolean>(false);
 
-  return { isSignedInToFirebase, setSignedInToFirebase };
+  return { isSignedInToFirebase, setIsSignedInToFirebase };
 }
 
 export function useGapiSignIn() {
@@ -68,15 +64,14 @@ export function useGapiSignIn() {
  * @param props
  */
 export default function AllContextProvider(props: AllContextProviderProps) {
+  const [isSignedIn, setIsSignedIn] = useState(isUserSignedIn());
   const { showCommand, toggleBetweenWindows, setTrayText } = props;
-
-  const { isSignedInWithGapi: isSignedIn } = useGapiSignIn();
 
   // Context State (needed so we can pass the setters to our children to modify context in the app)
   const [calendarIndex, setCalendarIndex] =
     useImmer<CalendarIndex | null>(CALENDAR_INDEX_1);
 
-  const [electronSessionId, setElectronSessionId] = useState<string | null>(
+  const [electronSessionId, _] = useState<string | null>(
     generatedElectronSessionId
   );
 
@@ -89,21 +84,15 @@ export default function AllContextProvider(props: AllContextProviderProps) {
     >
       <CalendarContext.Provider value={{ calendarIndex, setCalendarIndex }}>
         <SessionContext.Provider value={electronSessionId}>
-          {/*  {(!isSignedIn && <SignIn />) || (
-          <button
-            onClick={() => {
-              shell.openExternal(`${ADD_CALENDAR_URL}/${electronSessionId}`);
-            }}
-          >
-            Add Calendar
-          </button>
-        )} */}
-          {/* <Auth /> */}
-          <InternalTimeEngine
-            showCommand={showCommand}
-            toggleWindowHandler={toggleBetweenWindows}
-            setTrayText={setTrayText}
-          />
+          {(!isSignedIn && (
+            <SignIn onSignInComplete={() => setIsSignedIn(true)} />
+          )) || (
+            <InternalTimeEngine
+              showCommand={showCommand}
+              toggleWindowHandler={toggleBetweenWindows}
+              setTrayText={setTrayText}
+            />
+          )}
         </SessionContext.Provider>
       </CalendarContext.Provider>
     </GlobalSettingsContext.Provider>

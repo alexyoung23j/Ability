@@ -4,14 +4,6 @@ const css = require('./styles/index.css');
 
 import { config } from 'dotenv';
 import AllContextProvider from './components/AllContextProvider';
-import SignIn from './components/auth/SignIn';
-import { db } from './firebase/db';
-import useSession from './hooks/auth/useSession';
-import { ELECTRON_SESSION_IDS_TO_USER_IDS_COLLECTION } from './components/auth/AuthDAO';
-import CommandView from './components/command-window/CommandView';
-import SettingsView from './components/settings-window/SettingsView';
-import { shell } from 'electron';
-import { ADD_CALENDAR_URL } from './constants/EnvConstants';
 config();
 
 ipcRenderer.setMaxListeners(Infinity);

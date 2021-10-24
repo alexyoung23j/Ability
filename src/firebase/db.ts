@@ -38,12 +38,13 @@ export async function write<V>(
   }
 }
 
-export async function writeIfDoesNotExist<V>(
-  collectionPath: string,
-  documentId: string,
-  payload: V
-): Promise<void> {
-  if ((await readOnce(collectionPath, documentId)) === DOES_NOT_EXIST) {
-    write<V>(collectionPath, documentId, payload);
-  }
-}
+// TODO: verify we dont' need this
+// export async function writeIfDoesNotExist<V>(
+//   collectionPath: string,
+//   documentId: string,
+//   payload: V
+// ): Promise<void> {
+//   if ((await readOnce(collectionPath, documentId)) === DOES_NOT_EXIST) {
+//     write<V>(collectionPath, documentId, payload);
+//   }
+// }
