@@ -1,23 +1,20 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { Job } from 'node-schedule';
+import React, { useContext, useEffect } from 'react';
+import useStateRef from 'react-usestateref';
+import { CalendarContext, GlobalSettingsContext } from '../AllContextProvider';
 import CommandView from '../command-window/CommandView';
 import SettingsView from '../settings-window/SettingsView';
-const { DateTime } = require('luxon');
 import {
-  ScheduledSingledInstanceJob,
-  scheduleSingleInstanceJob,
   ScheduledRecurringJob,
   scheduleRecurringJob,
 } from '../util/cron-util/CronUtil';
-import { GlobalSettingsContext, CalendarContext } from '../AllContextProvider';
-import { useImmer } from 'use-immer';
-import { Job } from 'node-schedule';
-import { ToadScheduler, SimpleIntervalJob, Task } from 'toad-scheduler';
 import {
+  buildTimeMap,
+  handleUpdatesToJobStack,
   NotificationJob,
   NotificationTimeMap,
-  buildTimeMap,
   runNotificationEngine,
-  handleUpdatesToJobStack,
+  ScheduledNotificationJobBatch,
 } from '../util/global-util/NotificationsUtil';
 
 interface InternalTimeEngineProps {
@@ -40,38 +37,46 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
     GlobalSettingsContext
   );
 
-  const [dailyJobsScheduled, setDailyJobsScheduled] = useState(false);
+  const [dailyJobsScheduled, setDailyJobsScheduled] = useStateRef(false);
 
   // --------------------------- START NOTIFICATIONS CODE ------------------- //
 
   // Notification State
-  const [notificationJobStack, setNotificationJobStack] = useState<
-    Array<NotificationJob>
-  >([]);
-  const [notificationTimeMap, setNotificationTimeMap] =
-    useImmer<NotificationTimeMap>(buildTimeMap(calendarIndex, setTrayText));
-  const [currentJobMetaScheduler, setCurrentJobMetaScheduler] =
-    useState<Job>(null);
-
-  console.log('map: ', notificationTimeMap);
+  const [
+    notificationJobStack,
+    setNotificationJobStack,
+    notificationJobStackRef,
+  ] = useStateRef<Array<NotificationJob>>([]);
+  const [
+    currentlyScheduledJobs,
+    setCurrentlyScheduledJobs,
+    currentScheduledJobsRef,
+  ] = useStateRef<Array<ScheduledNotificationJobBatch>>([]);
+  const [notificationTimeMap, setNotificationTimeMap, notificationTimeMapRef] =
+    useStateRef<NotificationTimeMap>(buildTimeMap(calendarIndex, setTrayText));
+  const [
+    currentJobMetaScheduler,
+    setCurrentJobMetaScheduler,
+    currentJobMetaSchedulerRef,
+  ] = useStateRef<Job>(null);
 
   // Schedule periodic query of the notificationTimeMap
   const masterJob: ScheduledRecurringJob = {
     scheduledRecurrenceRule: { second: [0, 10, 20, 30, 40, 50, 60] }, // TODO: this isn't quite right, its not logging eevery 10 secobds, fix this
     callback: () => {
       runNotificationEngine(
-        notificationJobStack,
+        notificationJobStackRef.current,
         setNotificationJobStack,
-        notificationTimeMap,
+        notificationTimeMapRef.current,
         setNotificationTimeMap,
-        currentJobMetaScheduler,
+        currentJobMetaSchedulerRef.current,
         setCurrentJobMetaScheduler
       );
+      console.log('current Stack: ', notificationJobStackRef.current);
     },
     extendBeyondActiveSession: false,
   };
 
-  // Schedule the MasterJob once
   useEffect(() => {
     scheduleRecurringJob(masterJob);
   }, []);
@@ -86,25 +91,12 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
       notificationJobStack
     );
     handleUpdatesToJobStack(
-      notificationJobStack,
+      notificationJobStackRef.current,
       setNotificationJobStack,
-      currentJobMetaScheduler,
+      currentJobMetaSchedulerRef.current,
       setCurrentJobMetaScheduler
     );
   }, [notificationJobStack]);
-
-  /* useEffect(() => {
-    if (!dailyJobsScheduled) {
-      setDailyJobsScheduled(true);
-      scheduleEventNotificationStream(
-        2,
-        'Meeting',
-        1,
-        DateTime.now().minus({ minutes: 2, seconds: 4 }),
-        setTrayText
-      );
-    }
-  }, []); */
 
   // --------------------------- END NOTIFICATIONS CODE ------------------- //
 

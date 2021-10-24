@@ -54,7 +54,7 @@ export default function SignIn({ onSignInComplete }: SignInProps): JSX.Element {
   db.doc(`electronIdsToUserIds/${sessionId}`).onSnapshot(
     (doc: firebase.firestore.DocumentSnapshot<UserAuthInfo>) => {
       const userAuthInfo = doc.data() as UserAuthInfo | undefined;
-      if (isUserSignedIn() && userAuthInfo?.firebaseAuthToken != null) {
+      if (!isUserSignedIn() && userAuthInfo?.firebaseAuthToken != null) {
         signInToFirebase(userAuthInfo, onSignInComplete);
       }
     }

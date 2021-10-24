@@ -10,14 +10,13 @@ import { DateTime } from 'luxon';
 import { CalendarIndex } from '../../AllContextProvider';
 import { Job } from 'node-schedule';
 import { Updater } from 'use-immer';
-import { createNamedExports } from 'typescript';
 import { SetStateAction, Dispatch } from 'react';
 
 export interface NotificationJob {
   isQueued: boolean;
   isExecuting: boolean;
   rawJobStream: ScheduledEventNotificationStream; // Corresponds to jobs that are not scheduled
-  scheduledJobStream: null | Array<Job>; // Jobs that have actually been scheduled by node-schedule
+  scheduledJobStream: Array<Job>;
 }
 
 export interface ScheduledEventNotificationStream {
@@ -25,6 +24,11 @@ export interface ScheduledEventNotificationStream {
   correspondingEvent: CalendarIndexEvent | null; //Just for testing
   startTime: DateTime;
   endTime: DateTime;
+}
+
+export interface ScheduledNotificationJobBatch {
+  timeScheduled: DateTime;
+  jobBatch: Array<Job>;
 }
 
 // Keys in here will represent the minute in the day, i.e. 12:45 am -> Key is 45
@@ -56,11 +60,11 @@ export function buildTimeMap(
     5,
     'First Event',
     10,
-    nowStartMinute.plus({ minutes: 6 }),
+    nowStartMinute.plus({ minutes: 5 }),
     setTrayText
   );
 
-  timeMap[currentMin + 1] = {
+  timeMap[currentMin] = {
     alreadyHandled: false,
     jobs: [
       {
@@ -70,7 +74,7 @@ export function buildTimeMap(
           jobs: jobStream1,
           correspondingEvent: null,
           startTime: nowStartMinute,
-          endTime: nowStartMinute.plus({ minutes: 16 }),
+          endTime: nowStartMinute.plus({ minutes: 15 }),
         },
         scheduledJobStream: null,
       },
@@ -121,7 +125,6 @@ export function runNotificationEngine(
   ) {
     return;
   } else if (notificationTimeMap[nextMin].jobs.length == 1) {
-    console.log('At ', nextMin, ' we had a job');
     const job = notificationTimeMap[nextMin].jobs[0];
     if (notificationJobStack.length == 0) {
       // Just one job, add it to the stack
@@ -130,10 +133,10 @@ export function runNotificationEngine(
         setNotificationJobStack([...notificationJobStack, job]);
       }
     } else {
-      console.log(
-        'we had a job that already was going, so we added a new one or shouldve'
-      );
-      setNotificationJobStack([...notificationJobStack, job]); // temp
+      if (!job.isQueued) {
+        job.isQueued = true;
+        setNotificationJobStack([...notificationJobStack, job]); // temp
+      }
 
       const newStack = performUnion([...notificationJobStack, job]);
     }
@@ -244,6 +247,8 @@ export function handleUpdatesToJobStack(
   if (notificationJobStack.length < 1) {
     return;
   }
+
+  console.log('executing jobs');
   const topJob = notificationJobStack[notificationJobStack.length - 1];
 
   const newMetaJob = executeJobAndReturnMetaJob(
@@ -252,6 +257,8 @@ export function handleUpdatesToJobStack(
     setNotificationJobStack
   );
 
+  // Cancel current meta job and assign new one
+  currentJobMetaJobScheduler?.cancel();
   setCurrentMetaJobScheduler(newMetaJob);
 
   for (let i = 0; i < notificationJobStack.length - 1; i++) {
@@ -272,6 +279,9 @@ function executeJobAndReturnMetaJob(
     scheduledJobs.push(scheduledStreamJob);
   }
 
+  notificationJobStack[notificationJobStack.length - 1].scheduledJobStream =
+    scheduledJobs;
+
   const metaJob: ScheduledSingledInstanceJob = {
     scheduledExecutionTime: jobToExecute.rawJobStream.endTime,
     callback: () =>
@@ -280,8 +290,6 @@ function executeJobAndReturnMetaJob(
   };
 
   const scheduledMetaJob = scheduleSingleInstanceJob(metaJob);
-
-  jobToExecute.scheduledJobStream = scheduledJobs;
 
   return scheduledMetaJob;
 }
@@ -293,6 +301,8 @@ function removeTopJobFromStack(
   if (notificationJobStack.length < 1) {
     return;
   }
+  console.log('removing from stack');
+  // TODO: check if this is working right
   const removedTop = notificationJobStack.slice(
     0,
     notificationJobStack.length - 1
@@ -302,7 +312,9 @@ function removeTopJobFromStack(
 
 function cancelJob(notificationJob: NotificationJob) {
   for (const scheduledJob of notificationJob.scheduledJobStream) {
-    console.log('cancelling: ', scheduledJob);
-    scheduledJob.cancel();
+    if (scheduledJob != null) {
+      console.log('cancelling: ', scheduledJob);
+      scheduledJob.cancel();
+    }
   }
 }
