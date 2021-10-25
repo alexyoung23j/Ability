@@ -19,6 +19,8 @@ module.exports = {
     plugins: [new TsconfigPathsPlugin({ configFile: 'tsconfig.json' })],
   },
   externals: [
+    // Firebase, webpack, and TS don't go well together. This excludes it from being bundled.
+    // See https://github.com/firebase/firebase-js-sdk/issues/2215
     {
       firebase: 'commonjs firebase',
     },
