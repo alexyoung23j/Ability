@@ -47,11 +47,6 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
     setNotificationJobStack,
     notificationJobStackRef,
   ] = useStateRef<Array<NotificationJob>>([]);
-  const [
-    currentlyScheduledJobs,
-    setCurrentlyScheduledJobs,
-    currentScheduledJobsRef,
-  ] = useStateRef<Array<ScheduledNotificationJobBatch>>([]);
   const [notificationTimeMap, setNotificationTimeMap, notificationTimeMapRef] =
     useStateRef<NotificationTimeMap>(buildTimeMap(calendarIndex, setTrayText));
   const [
