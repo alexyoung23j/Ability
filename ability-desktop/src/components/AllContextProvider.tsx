@@ -69,8 +69,9 @@ export default function AllContextProvider(props: AllContextProviderProps) {
   const { showCommand, toggleBetweenWindows, setTrayText } = props;
 
   // Context State (needed so we can pass the setters to our children to modify context in the app)
-  const [calendarIndex, setCalendarIndex] =
-    useImmer<CalendarIndex | null>(CALENDAR_INDEX_1);
+  const [calendarIndex, setCalendarIndex] = useImmer<CalendarIndex | null>(
+    CALENDAR_INDEX_1
+  );
 
   const [electronSessionId, _] = useState<string | null>(
     generatedElectronSessionId
@@ -89,19 +90,19 @@ export default function AllContextProvider(props: AllContextProviderProps) {
             <SignIn onSignInComplete={() => setIsSignedIn(true)} />
           )) || (
             <>
-              {/* <InternalTimeEngine
+              <InternalTimeEngine
                 showCommand={showCommand}
                 toggleWindowHandler={toggleBetweenWindows}
                 setTrayText={setTrayText}
-              /> */}
-              <button
+              />
+              {/* <button
                 onClick={async () => {
                   await firebase.auth().signOut();
                   setIsSignedIn(false);
                 }}
               >
                 Sign out
-              </button>
+              </button> */}
             </>
           )}
         </SessionContext.Provider>
