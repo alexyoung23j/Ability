@@ -7,14 +7,14 @@
     "esModuleInterop": true,
     "noImplicitAny": false,
     "sourceMap": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "outDir": "dist",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "paths": {
-      "*": ["node_modules/*"]
+      "*": ["node_modules/*", "src/*"]
     },
-    "target": "ES6",
+    "target": "ES6"
   },
   "include": ["src/**/*"]
 }
