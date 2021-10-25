@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useImmer } from 'use-immer';
 import { v4 as uuidv4 } from 'uuid';
 import { GlobalUserSettings } from '../constants/types';
-import firebase from '../firebase/config';
 import { db } from '../firebase/db';
 import { isUserSignedIn } from '../firebase/util/FirebaseUtil';
 import { CALENDAR_INDEX_1 } from '../tests/EventsFixtures';
@@ -74,13 +73,6 @@ export default function AllContextProvider(props: AllContextProviderProps) {
   const [calendarIndex, setCalendarIndex] = useImmer<CalendarIndex | null>(
     CALENDAR_INDEX_1
   );
-
-  useEffect(() => {
-    if (isSignedIn) {
-      const currentUser = firebase.auth().currentUser;
-      assert(currentUser != null, 'Current user must exist to load calendar.');
-    }
-  }, [isSignedIn]);
 
   const [electronSessionId, _] = useState<string | null>(
     generatedElectronSessionId
