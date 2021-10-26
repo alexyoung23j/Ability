@@ -11,18 +11,27 @@ import { CalendarIndex } from '../../AllContextProvider';
 import { Job } from 'node-schedule';
 import { Updater } from 'use-immer';
 import { SetStateAction, Dispatch } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+
 
 export interface NotificationJob {
   isQueued: boolean;
   isExecuting: boolean;
-  rawJobStream: ScheduledEventNotificationStream; // Corresponds to jobs that are not scheduled
+  rawJobStream: ScheduledEventNotificationStream | null; // Corresponds to jobs that are not scheduled
   scheduledJobStream: Array<Job>;
+  isUnion: boolean,
+  jobID: string | null
+}
+
+interface UnionEvent {
+  eventsInUnion: Array<CalendarIndexEvent>
 }
 
 export interface ScheduledEventNotificationStream {
   jobs: Array<ScheduledSingledInstanceJob>;
-  correspondingEvent: CalendarIndexEvent | null; //Just for testing
+  correspondingEvent: CalendarIndexEvent | UnionEvent | null; // null just for testing
   startTime: DateTime;
+  eventStartTime: DateTime // This indicates when the event actually starts, excludes the prelude "in x minute" jobs
   endTime: DateTime;
 }
 
@@ -59,6 +68,7 @@ export function buildTimeMap(
   const jobStream1 = scheduleEventNotificationStream(
     2,
     'First Event',
+    'First Event',
     4,
     nowStartMinute.plus({ minutes: 3 }),
     setTrayText
@@ -74,15 +84,19 @@ export function buildTimeMap(
           jobs: jobStream1,
           correspondingEvent: null,
           startTime: nowStartMinute,
+          eventStartTime: nowStartMinute.plus({minutes: 3}),
           endTime: nowStartMinute.plus({ minutes: 7 }),
         },
         scheduledJobStream: null,
+        isUnion: false,
+        jobID: null
       },
     ],
   };
 
   const jobStream2 = scheduleEventNotificationStream(
     2,
+    'Second Event',
     'Second Event',
     1,
     nowStartMinute.plus({ minutes: 4 }),
@@ -99,9 +113,12 @@ export function buildTimeMap(
           jobs: jobStream2,
           correspondingEvent: null,
           startTime: nowStartMinute.plus({ minutes: 2 }),
+          eventStartTime: nowStartMinute.plus({minutes: 4}),
           endTime: nowStartMinute.plus({ minutes: 5 }),
         },
         scheduledJobStream: null,
+        isUnion: false,
+        jobID: null
       },
     ],
   };
@@ -135,10 +152,11 @@ export function runNotificationEngine(
     } else {
       if (!job.isQueued) {
         job.isQueued = true;
+        //const newStack = performUnion([...notificationJobStack, job]);
         setNotificationJobStack([...notificationJobStack, job]); // temp
       }
 
-      const newStack = performUnion([...notificationJobStack, job]);
+      
     }
   } else {
   }
@@ -159,7 +177,67 @@ function getCurrentMinute() {
 function performUnion(
   jobStack: Array<NotificationJob>
 ): Array<NotificationJob> {
-  return [];
+
+  // The Top job in the stack at this point is NOT a union job. This is because it was added from the time map
+  // If we already have a union job (lol), then it is guaranteed to the the second from the top 
+  // otherwise, we only have one job 
+
+  const newJob = jobStack[jobStack.length-1];
+
+
+  // Look at top job, identify when it starts, ends, and 
+  let unionStartTime: DateTime = newJob.rawJobStream.startTime;
+  let unionEventStartTime: DateTime = newJob.rawJobStream.eventStartTime;
+  let unionEndTime: DateTime = newJob.rawJobStream.endTime;
+  let minutesBeforeDisplay = 0;
+
+  
+
+  let numEventsStartAtSameTime = 1;
+
+  for (let i = jobStack.length-2; i > -1; i--) {
+    const notifJob = jobStack[i];
+
+    // Jobs start at the same time, meaning we should have some countdown to them 
+    if (notifJob.rawJobStream.eventStartTime.equals(newJob.rawJobStream.eventStartTime)) {
+      numEventsStartAtSameTime += 1;
+    }
+
+    // Check if Union job
+    if (notifJob.isUnion) {
+
+    } else {
+
+    }
+  }
+
+  if (numEventsStartAtSameTime > 1) {
+    minutesBeforeDisplay = newJob.rawJobStream.eventStartTime.minute - DateTime.now().minute
+  }
+
+
+
+  let newUnionStream: ScheduledEventNotificationStream = {
+    jobs: [],
+    correspondingEvent: null,
+    startTime: unionStartTime,
+    eventStartTime: unionEventStartTime,
+    endTime: unionEndTime
+
+  }
+
+  let newUnionJob: NotificationJob = {
+    isQueued: true,
+    isExecuting: false,
+    rawJobStream: newUnionStream,
+    scheduledJobStream: [],
+    isUnion: true,
+    jobID: null
+  }
+
+
+
+  return [...jobStack, newUnionJob];
 }
 
 
@@ -174,7 +252,6 @@ export function handleUpdatesToJobStack(
     return;
   }
 
-  console.log('executing jobs');
   const topJob = notificationJobStack[notificationJobStack.length - 1];
 
   const newMetaJob = executeJobAndReturnMetaJob(
@@ -212,28 +289,33 @@ function executeJobAndReturnMetaJob(
   let scheduledJobs = [];
   for (const job of jobToExecute.rawJobStream.jobs) {
     // schedule only the jobs that occur after or right now
-    console.log("now: ", DateTime.now().startOf("minute").toISO())
     if (job.scheduledExecutionTime > DateTime.now().startOf("minute")) {
-      console.log("This was After: ", job.scheduledExecutionTime.toISO())
       const scheduledStreamJob = scheduleSingleInstanceJob(job);
       scheduledJobs.push(scheduledStreamJob);
     } else if (job.scheduledExecutionTime >= DateTime.now().startOf("minute").minus({minutes:1})) {
-      console.log("this was now: ", job.scheduledExecutionTime.toISO())
       const modifiedJob = {...job, scheduledExecutionTime: DateTime.now().plus({seconds: 1})}
-      console.log("And the job associated with it: ", modifiedJob)
       const scheduledStreamJob = scheduleSingleInstanceJob(modifiedJob);
       scheduledJobs.push(scheduledStreamJob);
     }
     
   }
 
-  notificationJobStack[notificationJobStack.length - 1].scheduledJobStream =
+  // Create JobID for removal
+  const jobID = uuidv4()
+
+  // Assign jobs and jobID
+  jobToExecute.scheduledJobStream =
     scheduledJobs;
+  jobToExecute.jobID = jobID;
+  
+
+  // If the job is old, and it ended already, we should just immediately remove it
+  const metaJobExecutionTime = (jobToExecute.rawJobStream.endTime > DateTime.now()) ? jobToExecute.rawJobStream.endTime : DateTime.now().plus({seconds: 1})
 
   const metaJob: ScheduledSingledInstanceJob = {
-    scheduledExecutionTime: jobToExecute.rawJobStream.endTime,
+    scheduledExecutionTime: metaJobExecutionTime,
     callback: () =>
-      removeTopJobFromStack(notificationJobStack, setNotificationJobStack),
+      removeJobFromStack(notificationJobStack, setNotificationJobStack, jobID),
     extendBeyondActiveSession: false,
   };
 
@@ -242,20 +324,24 @@ function executeJobAndReturnMetaJob(
   return scheduledMetaJob;
 }
 
-function removeTopJobFromStack(
+function removeJobFromStack(
   notificationJobStack: Array<NotificationJob>,
-  setNotificationJobStack: Updater<NotificationJob[]>
+  setNotificationJobStack: Updater<NotificationJob[]>,
+  jobID: string
 ) {
   if (notificationJobStack.length < 1) {
     return;
   }
-  console.log('removing from stack');
-  // TODO: check if this is working right
-  const removedTop = notificationJobStack.slice(
-    0,
-    notificationJobStack.length - 1
-  );
-  setNotificationJobStack(removedTop);
+  for (let i = 0; i < notificationJobStack.length; i++) {
+
+    const job = notificationJobStack[i];
+
+    if (job.jobID === jobID) {
+      console.log("found: ", jobID, job, notificationJobStack.splice(i, 1))
+      setNotificationJobStack(notificationJobStack.splice(i, 1))
+      break
+    } 
+  }
 }
 
 function cancelOrRescheduleJob(notificationJob: NotificationJob, newMetaJob: Job) {
@@ -284,6 +370,7 @@ function clearEmptyJobs(notificationJobStack: Array<NotificationJob>,
  * Takes an event and creates an event job stream that handles the notifications for the entirety of the event.
  * The events are not actualyl scheduled. Scheduling the jobs is handled in InternalTimeEngine.
  * @param minutesBeforeDisplay
+ * @param eventLeadupTitle
  * @param eventTitle
  * @param eventDuration
  * @param eventTime
@@ -291,22 +378,23 @@ function clearEmptyJobs(notificationJobStack: Array<NotificationJob>,
  */
 export function scheduleEventNotificationStream(
   minutesBeforeDisplay: number,
-  eventTitle: string,
-  eventDuration: number,
+  eventLeadupTitle: string, // What gets displayed for "in x min: ____"
+  eventTitle: string, // What gets displayed for "now: ____"
+  eventDuration: number, // This is not a source of truth. If an event is added after it has started, then this will be inaccurate 
   eventTime: DateTime,
   trayTextSetter: (payload: string) => void
 ): Array<ScheduledSingledInstanceJob> {
   let jobQueue = [];
 
   // Shorten Event
-  const truncatedEventTitle =
-    eventTitle.length < 10 ? eventTitle : eventTitle.slice(0, 8) + '..';
+  const truncatedEventLeadupTitle =
+  eventLeadupTitle.length < 18 ? eventLeadupTitle : eventLeadupTitle.slice(0, 15) + '..';
 
   // Minutes n...2
   for (let i = minutesBeforeDisplay; i > 1; i--) {
     const executionTime = eventTime.minus({ minutes: i });
 
-    const trayText = ' In ' + i.toString() + ' mins: ' + truncatedEventTitle;
+    const trayText = ' In ' + i.toString() + ' mins: ' + truncatedEventLeadupTitle;
 
     const job: ScheduledSingledInstanceJob = {
       scheduledExecutionTime: executionTime,
@@ -319,7 +407,7 @@ export function scheduleEventNotificationStream(
   }
 
   // -----------  1 Minute Away -----------
-  const minuteTrayText = ' In 1 min: ' + truncatedEventTitle;
+  const minuteTrayText = ' In 1 min: ' + truncatedEventLeadupTitle;
 
   const minuteJob: ScheduledSingledInstanceJob = {
     scheduledExecutionTime: eventTime.minus({ minutes: 1 }),
@@ -331,7 +419,7 @@ export function scheduleEventNotificationStream(
   jobQueue.push(minuteJob);
 
   // ----------- During the Event -----------
-  const eventTrayText = ' Now: ' + truncatedEventTitle;
+  const eventTrayText = ' Now: ' + eventTitle;
 
   for (let i = 0; i < eventDuration; i++) {
     const eventJob: ScheduledSingledInstanceJob = {
