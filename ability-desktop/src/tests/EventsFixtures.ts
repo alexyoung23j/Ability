@@ -7997,9 +7997,6 @@ export const EVENTS = [
 ];
 
 export const CALENDAR_INDEX_1: CalendarIndex =
-  CalendarIndexUtil.parseCalendarApiResponse([
-    {
-      calendarId: 'something',
-      allEvents: EVENTS,
-    },
-  ]);
+  CalendarIndexUtil.parseCalendarApiResponse({
+    'something@gmail.com': EVENTS,
+  });

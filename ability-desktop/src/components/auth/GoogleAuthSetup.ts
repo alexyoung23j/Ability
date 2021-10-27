@@ -59,7 +59,7 @@ export function useInitializedGoogleAuthClient() {
   return { authInstance };
 }
 
-export function signInWithToken(token: string): void {
+export function setGapiClientToken(token: string): void {
   window.gapi.client.setToken({ access_token: token });
 }
 

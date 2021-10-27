@@ -9,7 +9,7 @@ import { writeJSONToFile } from './util';
 import { CalendarContext } from '../../App';
 import * as CalendarIndexUtil from '../util/command-view-util/CalendarIndexUtil';
 import {
-  signInWithToken,
+  setGapiClientToken,
   useInitializedGoogleAuthClient,
 } from './GoogleAuthSetup';
 import { RerenderButton } from '../../hooks/util/RerenderButton';
@@ -26,7 +26,7 @@ export function Auth() {
   const token =
     'ya29.a0ARrdaM_VIgutZphkEcJL5TaBUF45qYO6--AyGuc1BrJRvKxNsd3G6gz8dOn68d2gJeTQohw74f-qZ-09b7wndP7qId6ogjuhzLe7Ou9hXKDBANHZkQtsmLWGT8WM1q9LyxumOWHMLhnA3P7Uhvk4B1p24v_oCg';
   if (authInstance != null) {
-    signInWithToken(token);
+    setGapiClientToken(token);
   }
 
   return <RerenderButton />;

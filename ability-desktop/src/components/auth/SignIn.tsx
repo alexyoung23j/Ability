@@ -4,16 +4,17 @@ import React, { useContext } from 'react';
 import { SIGN_IN_URL } from '../../constants/EnvConstants';
 import { SessionContext } from '../AllContextProvider';
 import firebase from '../../firebase/config';
-import { db } from '../../firebase/db';
+import * as DatabaseUtil from 'firebase/DatabaseUtil';
 import { isUserSignedIn } from '../../firebase/util/FirebaseUtil';
 
-interface CalendarAccount {
+interface CalendarAccessInfo {
+  accessToken: string;
+  // id_token: string | null;   <-- Not needed for now
+  // login_hint: string | null; <-- Not needed for now
+}
+export interface CalendarInfo {
   calendarId: string;
-  calendarAccessInfo: {
-    access_token: string | null;
-    // id_token: string | null;   <-- Not needed for now
-    // login_hint: string | null; <-- Not needed for now
-  };
+  calendarAccessInfo: CalendarAccessInfo;
   dateAdded: string;
 }
 
@@ -51,14 +52,15 @@ interface SignInProps {
 export default function SignIn({ onSignInComplete }: SignInProps): JSX.Element {
   const sessionId = useContext(SessionContext);
 
-  db.doc(`electronIdsToUserIds/${sessionId}`).onSnapshot(
-    (doc: firebase.firestore.DocumentSnapshot<UserAuthInfo>) => {
+  DatabaseUtil.database
+    .doc(`electronIdsToUserIds/${sessionId}`)
+    .onSnapshot((doc: firebase.firestore.DocumentSnapshot<UserAuthInfo>) => {
       const userAuthInfo = doc.data() as UserAuthInfo | undefined;
       if (!isUserSignedIn() && userAuthInfo?.firebaseAuthToken != null) {
+        console.log('Signing Electron Ability into Firebase');
         signInToFirebase(userAuthInfo, onSignInComplete);
       }
-    }
-  );
+    });
 
   return (
     <button

@@ -14,7 +14,8 @@
     "paths": {
       "*": ["node_modules/*", "src/*"]
     },
-    "target": "ES6"
+    "target": "ES6",
+    "strictNullChecks": true
   },
   "include": ["src/**/*"]
 }

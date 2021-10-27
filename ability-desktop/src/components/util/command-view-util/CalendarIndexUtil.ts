@@ -1,4 +1,4 @@
-import { calendar_v3 } from 'googleapis';
+import { EventFromServer } from 'DAO/CalendarDAO';
 import { DateTime } from 'luxon';
 import { CalendarIndex } from '../../../components/AllContextProvider';
 
@@ -7,20 +7,21 @@ import { assert } from '../assert';
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
-const NUM_DAYS = 365;
+const NUM_DAYS = Math.ceil(365 / 2) + 365;
 
 const enum Color {
   BLUE = 'BLUE',
 }
 
 export interface CalendarIndexEvent {
-  startTime: calendar_v3.Schema$EventDateTime;
-  endTime: calendar_v3.Schema$EventDateTime;
+  startTime: gapi.client.calendar.EventDateTime;
+  endTime: gapi.client.calendar.EventDateTime;
   // map color Id --> unique color that hasn't been used yet
   color: Color;
   eventHtmlLink: string | null;
   calendarId: string;
   summary: string;
+  id: string;
 }
 
 // Organized by start time
@@ -56,7 +57,7 @@ export function mapDateToIndex(
 ): number {
   const normalizedDate = date.startOf('day');
   const normalizedStart = dateAtIndexZero.startOf('day');
-  const { days: diff } = normalizedDate.diff(normalizedStart, 'day').toObject();
+  const diff = normalizedDate.diff(normalizedStart, 'day').toObject().days!;
 
   if (diff < NUM_DAYS && diff >= 0) {
     return diff;
@@ -67,7 +68,7 @@ export function mapDateToIndex(
 
 function _getEventIndexInDay(
   eventsInDay: Array<CalendarIndexEvent>,
-  eventToAdd: calendar_v3.Schema$Event
+  eventToAdd: EventFromServer
 ) {
   for (const [idx, event] of eventsInDay.entries()) {
     assert(eventToAdd.start != null, "Calendar event doesn't have start");
@@ -93,16 +94,14 @@ function getEventsInRangeFromIndex(range: IndexRange): Array<CalendarIndexDay> {
 }
 
 export function splitMultiDayEvent(
-  event: calendar_v3.Schema$Event
-): Array<calendar_v3.Schema$Event> {
-  const splitEvents: Array<calendar_v3.Schema$Event> = [];
-  assert(event.start != null, 'Event from server start is null');
-  assert(event.end != null, 'Event from server end is null');
+  event: EventFromServer
+): Array<EventFromServer> {
+  const splitEvents: Array<EventFromServer> = [];
 
   let { start, end, ...eventInfo } = event;
 
-  let startDate = DateTime.fromISO(start.dateTime);
-  let endDate = DateTime.fromISO(end.dateTime);
+  let startDate = getEventDateTime(event, 'start');
+  let endDate = getEventDateTime(event, 'end');
 
   if (startDate.hasSame(endDate, 'day')) {
     return [event];
@@ -118,13 +117,20 @@ export function splitMultiDayEvent(
     },
   });
 
-  // Create dummy events that last all day for days between first and last day of the event
+  // Create 24-hr dummy events for days between first and last day of the event
   let previousDay = endOfDay;
   const dayBeforeLastDay = endDate.minus({ days: 1 });
+  console.log('first day:', startDate.toLocaleString());
+  console.log('day before last day:', dayBeforeLastDay.toLocaleString());
+  console.log('last day:', endDate.toLocaleString());
+  console.log('\n\n\n\n');
 
   while (!previousDay.hasSame(dayBeforeLastDay, 'day')) {
+    console.log('previous day:', previousDay.toLocaleString());
     // Create a new day after previousDay
     let today = previousDay.plus({ days: 1 });
+    console.log('"today":', today.toLocaleString());
+    console.log('\n\n\n\n');
     const startOfDay = today.startOf('day');
     const endOfDay = today.endOf('day');
 
@@ -156,6 +162,57 @@ export function splitMultiDayEvent(
   return splitEvents;
 }
 
+function getEventDateTime(
+  event: EventFromServer,
+  startOrEnd: 'start' | 'end'
+): DateTime {
+  const startOrEndObj = startOrEnd == 'start' ? event.start : event.end;
+  if (startOrEndObj.dateTime != null) {
+    return DateTime.fromISO(startOrEndObj.dateTime);
+  }
+  const { date } = startOrEndObj;
+  assert(
+    date != null,
+    `Found event with missing date and dateTime fields: ${event}`
+  );
+  return DateTime.fromISO(date);
+}
+
+function _getFirstDate(eventsByCalendar: {
+  [calendarId: string]: Array<EventFromServer>;
+}): DateTime {
+  const randomEvent = eventsByCalendar[Object.keys(eventsByCalendar)[0]][0];
+  let firstDate = getEventDateTime(randomEvent, 'start');
+  for (const calendarEvents of Object.values(eventsByCalendar)) {
+    for (const event of calendarEvents) {
+      const datetime = getEventDateTime(event, 'start');
+      if (datetime < firstDate) {
+        firstDate = datetime;
+      }
+    }
+  }
+
+  return firstDate;
+}
+
+function _initializeEmptyDaysArray(
+  firstDate: DateTime
+): Array<{ events: Array<CalendarIndexEvent>; date: DateTime }> {
+  const days: Array<CalendarIndexDay> = [
+    {
+      events: [],
+      date: firstDate,
+    },
+  ];
+  let previousDate = firstDate;
+  for (let i = 1; i < NUM_DAYS; i++) {
+    days.push({ events: [], date: previousDate.plus({ days: 1 }) });
+    previousDate = days[i].date;
+  }
+
+  return days;
+}
+
 /**
  * Takes in API response for all event instances (for all event types) combined.
  * Organizes them into an array, indexed by day, starting with Day 0 = today.
@@ -179,53 +236,43 @@ export function splitMultiDayEvent(
  *      ]
  * @returns
  */
-export function parseCalendarApiResponse(
-  calendarAndEvents: Array<{
-    calendarId: string;
-    allEvents: Array<calendar_v3.Schema$Event>;
-  }>
-): Array<CalendarIndexDay> {
-  // This is currently some fuckery to pull the first date of the first event in calendarAndEvents[0].allEvents
-  let firstDate = DateTime.fromISO(
-    calendarAndEvents[0].allEvents[0].start.dateTime
-  );
-  for (const event of calendarAndEvents[0].allEvents) {
-    const datetime = DateTime.fromISO(event.start.dateTime);
-    if (datetime < firstDate) {
-      firstDate = datetime;
-    }
-  }
-  // Initialize Days
-  const days: Array<CalendarIndexDay> = [
-    {
-      events: [],
-      date: firstDate,
-    },
-  ];
-  let previousDate = days[0].date;
-  for (let i = 1; i < NUM_DAYS; i++) {
-    days.push({ events: [], date: previousDate.plus({ days: 1 }) });
-    previousDate = days[i].date;
-  }
+export function parseCalendarApiResponse(eventsByCalendar: {
+  [calendarId: string]: Array<EventFromServer>;
+}): CalendarIndex {
+  const firstDate = _getFirstDate(eventsByCalendar);
+  const days = _initializeEmptyDaysArray(firstDate);
 
-  for (const { calendarId, allEvents } of calendarAndEvents) {
+  for (const [calendarId, allEvents] of Object.entries(eventsByCalendar)) {
+    console.log('parsing calendar:', calendarId);
     for (const eventFromServer of allEvents) {
       // Split multi-day events into individual events
       for (const singleDayEventFromServer of splitMultiDayEvent(
         eventFromServer
       )) {
-        const eventTime = DateTime.fromISO(
-          singleDayEventFromServer.start.dateTime
-        );
+        const eventTime = getEventDateTime(singleDayEventFromServer, 'start');
         const dayIndex = mapDateToIndex(eventTime, days[0].date);
 
+        // Event date is out of bounds for calendar index.
+        if (dayIndex == -1) {
+          continue;
+        }
+
+        const {
+          start: startTime,
+          end: endTime,
+          htmlLink: eventHtmlLink,
+          summary,
+          id,
+        } = singleDayEventFromServer;
+
         const event: CalendarIndexEvent = {
-          startTime: singleDayEventFromServer.start,
-          endTime: singleDayEventFromServer.end,
+          startTime,
+          endTime,
           color: Color.BLUE,
-          eventHtmlLink: singleDayEventFromServer.htmlLink,
+          eventHtmlLink,
           calendarId,
-          summary: singleDayEventFromServer.summary,
+          summary,
+          id: id!,
         };
 
         // Insert at index: _getIndexInDay()
@@ -252,9 +299,9 @@ export function _printCalendarIndex(days: Array<CalendarIndexDay>): void {
     for (const event of day.events) {
       console.log(
         `\t${event.summary}: ${DateTime.fromISO(
-          event.startTime.dateTime
+          event.startTime.dateTime!
         ).toLocaleString(DateTime.DATETIME_MED)}     -     ${DateTime.fromISO(
-          event.endTime.dateTime
+          event.endTime.dateTime!
         ).toLocaleString(DateTime.DATETIME_MED)}`
       );
     }
@@ -262,8 +309,8 @@ export function _printCalendarIndex(days: Array<CalendarIndexDay>): void {
 }
 
 export function _filterEventInstancesByName(
-  events: Array<calendar_v3.Schema$Event>,
+  events: Array<EventFromServer>,
   name: string
-): Array<calendar_v3.Schema$Event> {
+): Array<EventFromServer> {
   return events.filter((event) => event.summary === name);
 }
