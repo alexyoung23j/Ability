@@ -1,5 +1,4 @@
-import firebase from '../firebase/config';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useImmer } from 'use-immer';
 import { v4 as uuidv4 } from 'uuid';
 import { GlobalUserSettings } from '../constants/types';
@@ -9,8 +8,10 @@ import { CALENDAR_INDEX_1 } from '../tests/EventsFixtures';
 import { ELECTRON_SESSION_IDS_TO_USER_IDS_COLLECTION } from './auth/AuthDAO';
 import SignIn from './auth/SignIn';
 import InternalTimeEngine from './internal-time/InternalTimeEngine';
-import { CalendarIndexDay } from './util/command-view-util/CalendarIndexUtil';
-import { loadGlobalSettings } from './util/global-util/GlobalSettingsUtil';
+import { assert } from './util/assert';
+
+import { CalendarIndexDay } from 'components/util/command-view-util/CalendarIndexUtil';
+import { loadGlobalSettings } from 'components/util/global-util/GlobalSettingsUtil';
 
 interface AllContextProviderProps {
   showCommand: boolean;
