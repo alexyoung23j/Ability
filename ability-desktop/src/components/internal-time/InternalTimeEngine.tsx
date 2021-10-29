@@ -15,7 +15,7 @@ import {
   NotificationTimeMap,
   runNotificationEngine,
   ScheduledNotificationJobBatch,
-} from '../util/global-util/NotificationsUtil';
+} from '../util/global-util/NotificationsUtilOld';
 
 interface InternalTimeEngineProps {
   showCommand: boolean;
@@ -50,7 +50,14 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
   const [notificationTimeMap, setNotificationTimeMap, notificationTimeMapRef] =
     useStateRef<NotificationTimeMap>(buildTimeMap(calendarIndex, setTrayText));
 
-    
+  const [jobScheduledNext, setJobScheduledNext, jobScheduledNextRef] =
+    useStateRef<NotificationJob>();
+  const [
+    jobCurrentlyExecuting,
+    setJobCurrentlyExecuting,
+    jobCurrentlyExecutingRef,
+  ] = useStateRef<Job>(null);
+
   const [
     currentJobMetaScheduler,
     setCurrentJobMetaScheduler,
