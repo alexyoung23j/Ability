@@ -66,11 +66,11 @@ export function buildTimeMap(
   const nowStartMinute = DateTime.now().startOf('minute');
 
   const jobStream1 = scheduleEventNotificationStream(
-    2,
+    0,
     'First Event',
     'First Event',
-    4,
-    nowStartMinute.plus({ minutes: 3 }),
+    3,
+    nowStartMinute.plus({ minutes: 1 }),
     setTrayText
   );
 
@@ -83,9 +83,9 @@ export function buildTimeMap(
         rawJobStream: {
           jobs: jobStream1,
           correspondingEvent: null,
-          startTime: nowStartMinute,
-          eventStartTime: nowStartMinute.plus({minutes: 3}),
-          endTime: nowStartMinute.plus({ minutes: 7 }),
+          startTime: nowStartMinute.plus({minutes:1}),
+          eventStartTime: nowStartMinute.plus({minutes: 1}),
+          endTime: nowStartMinute.plus({ minutes: 4 }),
         },
         scheduledJobStream: null,
         isUnion: false,
@@ -95,11 +95,11 @@ export function buildTimeMap(
   };
 
   const jobStream2 = scheduleEventNotificationStream(
-    2,
+    0,
     'Second Event',
     'Second Event',
     1,
-    nowStartMinute.plus({ minutes: 4 }),
+    nowStartMinute.plus({ minutes: 2 }),
     setTrayText
   );
 
@@ -113,8 +113,8 @@ export function buildTimeMap(
           jobs: jobStream2,
           correspondingEvent: null,
           startTime: nowStartMinute.plus({ minutes: 2 }),
-          eventStartTime: nowStartMinute.plus({minutes: 4}),
-          endTime: nowStartMinute.plus({ minutes: 5 }),
+          eventStartTime: nowStartMinute.plus({minutes: 2}),
+          endTime: nowStartMinute.plus({ minutes: 3 }),
         },
         scheduledJobStream: null,
         isUnion: false,
@@ -179,8 +179,8 @@ function performUnion(
 ): Array<NotificationJob> {
 
   // The Top job in the stack at this point is NOT a union job. This is because it was added from the time map
-  // If we already have a union job (lol), then it is guaranteed to the the second from the top 
-  // otherwise, we only have one job 
+  // If we already have a union job (lol), then it is somewhere below the top job. There may be any number of jobs above 
+  // an existing union job, but they all will be new jobs 
 
   const newJob = jobStack[jobStack.length-1];
 
@@ -337,9 +337,10 @@ function removeJobFromStack(
     const job = notificationJobStack[i];
 
     if (job.jobID === jobID) {
-      console.log("found: ", jobID, job, notificationJobStack.splice(i, 1))
-      setNotificationJobStack(notificationJobStack.splice(i, 1))
-      break
+      const stackCopy = [...notificationJobStack]
+      stackCopy.splice(i, 1)
+
+      setNotificationJobStack(stackCopy)
     } 
   }
 }
