@@ -9,13 +9,12 @@ import {
   scheduleRecurringJob,
 } from '../util/cron-util/CronUtil';
 import {
-  buildTimeMap,
-  handleUpdatesToJobStack,
-  NotificationJob,
-  NotificationTimeMap,
   runNotificationEngine,
-  ScheduledNotificationJobBatch,
-} from '../util/global-util/NotificationsUtilOld';
+  NotificationTimeMap,
+  buildTimeMap,
+  NotificationJob,
+  getCurrentMinute,
+} from '../util/global-util/NotificationsUtil';
 
 interface InternalTimeEngineProps {
   showCommand: boolean;
@@ -41,66 +40,56 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
 
   // --------------------------- START NOTIFICATIONS CODE ------------------- //
 
-  // Notification State
-  const [
-    notificationJobStack,
-    setNotificationJobStack,
-    notificationJobStackRef,
-  ] = useStateRef<Array<NotificationJob>>([]);
   const [notificationTimeMap, setNotificationTimeMap, notificationTimeMapRef] =
     useStateRef<NotificationTimeMap>(buildTimeMap(calendarIndex, setTrayText));
 
   const [jobScheduledNext, setJobScheduledNext, jobScheduledNextRef] =
-    useStateRef<NotificationJob>();
+    useStateRef<NotificationJob | null>();
+
   const [
     jobCurrentlyExecuting,
     setJobCurrentlyExecuting,
     jobCurrentlyExecutingRef,
-  ] = useStateRef<Job>(null);
-
-  const [
-    currentJobMetaScheduler,
-    setCurrentJobMetaScheduler,
-    currentJobMetaSchedulerRef,
-  ] = useStateRef<Job>(null);
+  ] = useStateRef<Job | null>(null);
 
   // Schedule periodic query of the notificationTimeMap
   const masterJob: ScheduledRecurringJob = {
-    scheduledRecurrenceRule: { second: [0, 10, 20, 30, 40, 50, 60] }, // TODO: this isn't quite right, its not logging eevery 10 secobds, fix this
+    scheduledRecurrenceRule: { second: 0 }, // TODO: this isn't quite right, its not logging eevery 10 secobds, fix this
     callback: () => {
       runNotificationEngine(
-        notificationJobStackRef.current,
-        setNotificationJobStack,
         notificationTimeMapRef.current,
         setNotificationTimeMap,
-        currentJobMetaSchedulerRef.current,
-        setCurrentJobMetaScheduler
+        jobScheduledNextRef.current,
+        setJobScheduledNext,
+        jobCurrentlyExecutingRef.current,
+        setJobCurrentlyExecuting,
+        setTrayText
       );
-      console.log('current Stack: ', notificationJobStackRef.current);
     },
     extendBeyondActiveSession: false,
   };
+
+  useEffect(() => {
+    // Initialize the scheduled next job
+    const currentMinute = getCurrentMinute();
+    if (
+      notificationTimeMap != null &&
+      currentMinute + 1 in notificationTimeMap
+    ) {
+      setJobScheduledNext(notificationTimeMap[currentMinute + 1][0]);
+      console.log('scheduled');
+      console.log('map: ', notificationTimeMap);
+    }
+  }, []);
 
   useEffect(() => {
     scheduleRecurringJob(masterJob);
   }, []);
 
   // Listen to for updates to CalendarIndex
-  useEffect(() => {}, [calendarIndex]);
-
-  // Listen to updates to notificationJobStack
   useEffect(() => {
-    console.log(
-      'There was an update to the notifcationJobStack: ',
-      notificationJobStack
-    );
-    handleUpdatesToJobStack(
-      notificationJobStackRef.current,
-      setNotificationJobStack,
-      currentJobMetaSchedulerRef.current,
-      setCurrentJobMetaScheduler
-    );
-  }, [notificationJobStack]);
+    // TODO: Rebuild time map intelligently (if we see a change has occured)
+  }, [calendarIndex]);
 
   // --------------------------- END NOTIFICATIONS CODE ------------------- //
 
