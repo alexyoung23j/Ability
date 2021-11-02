@@ -16,7 +16,7 @@ import { v4 as uuidv4 } from 'uuid';
 export interface NotificationJob {
   isPrelude: boolean;
   job: ScheduledSingledInstanceJob;
-  associatedEvent: CalendarIndexEvent | null;
+  associatedEvent: Array<CalendarIndexEvent> | null;
   eventStartTime: DateTime | null;
   eventEndTime: DateTime | null;
 }
@@ -38,11 +38,20 @@ export function buildTimeMap(
   const currentMin = getCurrentMinute();
 
   const firstJob = scheduleEventNotificationStream(
-    0,
+    1,
     'Event 1',
     'Event 1',
     1,
-    DateTime.now().startOf('minute').plus({ minutes: 1 }),
+    DateTime.now().startOf('minute').plus({ minutes: 2 }),
+    trayTextSetter
+  );
+
+  const secondJob = scheduleEventNotificationStream(
+    1,
+    'Event 2',
+    'Event 2',
+    1,
+    DateTime.now().startOf('minute').plus({ minutes: 2 }),
     trayTextSetter
   );
 
@@ -51,13 +60,25 @@ export function buildTimeMap(
   for (const job of firstJob) {
     timeMap[i] = [
       {
-        isPrelude: true, // innacurate
+        isPrelude: job.scheduledExecutionTime > DateTime.now() ? true : false, // innacurate
         job: job,
         associatedEvent: null,
-        eventStartTime: DateTime.now().startOf('minute').plus({ minutes: 1 }),
-        eventEndTime: DateTime.now().startOf('minute').plus({ minutes: 2 }),
+        eventStartTime: DateTime.now().startOf('minute').plus({ minutes: 2 }),
+        eventEndTime: DateTime.now().startOf('minute').plus({ minutes: 3 }),
       },
     ];
+    i += 1;
+  }
+
+  i = currentMin + 1;
+  for (const job of secondJob) {
+    timeMap[i].push({
+      isPrelude: job.scheduledExecutionTime > DateTime.now() ? true : false, // innacurate
+      job: job,
+      associatedEvent: null,
+      eventStartTime: DateTime.now().startOf('minute').plus({ minutes: 2 }),
+      eventEndTime: DateTime.now().startOf('minute').plus({ minutes: 3 }),
+    });
     i += 1;
   }
 
@@ -132,20 +153,144 @@ function createNextMinuteJob(
   if (jobs.length === 1) {
     return jobs[0];
   } else {
-    //return buildUnion(jobs, trayTextSetter);
-    return jobs[0]; // Innacurate
+    const unionJob = buildUnion(jobs, trayTextSetter);
+    console.log('unionJob :', unionJob);
+    return unionJob;
   }
 
   return;
 }
 
-function buildUnion(
+export function buildUnion(
   jobs: Array<NotificationJob>,
   trayTextSetter: (payload: string) => void
 ): NotificationJob | null {
   // logic to union the events
 
+  const allStartAtSameTime = jobsStartAtSameTime(jobs);
+
+  if (allStartAtSameTime) {
+    const eventsStartTime = jobs[0].eventStartTime;
+    if (!jobs[0].isPrelude) {
+      // We already passed the start time, lets create a current union
+
+      const numEvents = jobs.length;
+      const titleString = ' Now: ' + numEvents.toString() + ' events';
+      const timeToStartNextMinute = DateTime.now()
+        .startOf('minute')
+        .plus({ minutes: 1, seconds: 0.5 });
+
+      const job: ScheduledSingledInstanceJob = {
+        scheduledExecutionTime: timeToStartNextMinute,
+        callback: () => trayTextSetter(titleString),
+        extendBeyondActiveSession: false,
+      };
+
+      return {
+        isPrelude: false,
+        job: job,
+        associatedEvent: null, // TODO: add all events
+        eventStartTime: null, // I think we dont need to bother updating eventStartTime
+        eventEndTime: null,
+      };
+    } else {
+      // Its a prelude event so we build preludes
+      const minutesUntilEvents =
+        DateTime.now().startOf('minute').diff(eventsStartTime).minutes + 1;
+
+      console.log(
+        eventsStartTime.toISO(),
+        DateTime.now().startOf('minute').toISO()
+      );
+
+      const numEvents = jobs.length;
+      const titleString =
+        ' In ' +
+        minutesUntilEvents.toString() +
+        ' mins: ' +
+        numEvents.toString() +
+        ' events';
+      const timeToStartNextMinute = DateTime.now()
+        .startOf('minute')
+        .plus({ minutes: 1, seconds: 0.5 });
+
+      const job: ScheduledSingledInstanceJob = {
+        scheduledExecutionTime: timeToStartNextMinute,
+        callback: () => trayTextSetter(titleString),
+        extendBeyondActiveSession: false,
+      };
+
+      return {
+        isPrelude: true,
+        job: job,
+        associatedEvent: null, // TODO: add all events
+        eventStartTime: null, // I think we dont need to bother updating eventStartTime
+        eventEndTime: null,
+      };
+    }
+  } else {
+    const nextSoonestStartJob = findNextSoonest(jobs);
+    if (nextSoonestStartJob != null) {
+      // We have a job that starts soon
+      return nextSoonestStartJob;
+    } else {
+      // There is no job that starts soon, all are going now.
+      const numEvents = jobs.length;
+      const titleString = ' Now: ' + numEvents.toString() + ' events';
+      const timeToStartNextMinute = DateTime.now()
+        .startOf('minute')
+        .plus({ minutes: 1, seconds: 0.5 });
+
+      const job: ScheduledSingledInstanceJob = {
+        scheduledExecutionTime: timeToStartNextMinute,
+        callback: () => trayTextSetter(titleString),
+        extendBeyondActiveSession: false,
+      };
+
+      return {
+        isPrelude: false,
+        job: job,
+        associatedEvent: null, // TODO: add all events
+        eventStartTime: null, // I think we dont need to bother updating eventStartTime
+        eventEndTime: null,
+      };
+    }
+  }
+
   return null;
+}
+
+/**
+ * Find next soonest job that starts
+ * @param jobs
+ */
+function findNextSoonest(jobs: Array<NotificationJob>) {
+  const now = DateTime.now();
+  let nextSoonestTime = DateTime.now().plus({ days: 1 });
+  let nextSoonestJob = null;
+
+  for (const job of jobs) {
+    const jobStart = job.eventStartTime;
+
+    if (jobStart < nextSoonestTime && jobStart > now) {
+      nextSoonestJob = job;
+      nextSoonestTime = nextSoonestTime;
+    }
+  }
+
+  return nextSoonestJob;
+}
+
+function jobsStartAtSameTime(jobs: Array<NotificationJob>) {
+  let firstStartTime = jobs[0].eventStartTime;
+
+  for (const job of jobs) {
+    if (!job.eventStartTime.equals(firstStartTime)) {
+      return false;
+    }
+  }
+  console.log('all start at same time');
+  return true;
 }
 
 export function getCurrentMinute() {

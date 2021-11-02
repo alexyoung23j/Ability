@@ -14,6 +14,7 @@ import {
   buildTimeMap,
   NotificationJob,
   getCurrentMinute,
+  buildUnion,
 } from '../util/global-util/NotificationsUtil';
 
 interface InternalTimeEngineProps {
@@ -76,7 +77,9 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
       notificationTimeMap != null &&
       currentMinute + 1 in notificationTimeMap
     ) {
-      setJobScheduledNext(notificationTimeMap[currentMinute + 1][0]);
+      setJobScheduledNext(
+        buildUnion(notificationTimeMap[currentMinute + 1], setTrayText)
+      );
       console.log('scheduled');
       console.log('map: ', notificationTimeMap);
     }
