@@ -41,7 +41,7 @@ export function buildTimeMap(
     1,
     'Event 1',
     'Event 1',
-    1,
+    4,
     DateTime.now().startOf('minute').plus({ minutes: 2 }),
     trayTextSetter
   );
@@ -50,8 +50,8 @@ export function buildTimeMap(
     1,
     'Event 2',
     'Event 2',
-    1,
-    DateTime.now().startOf('minute').plus({ minutes: 2 }),
+    2,
+    DateTime.now().startOf('minute').plus({ minutes: 3 }),
     trayTextSetter
   );
 
@@ -60,24 +60,32 @@ export function buildTimeMap(
   for (const job of firstJob) {
     timeMap[i] = [
       {
-        isPrelude: job.scheduledExecutionTime > DateTime.now() ? true : false, // innacurate
+        isPrelude:
+          job.scheduledExecutionTime <
+          DateTime.now().startOf('minute').plus({ minutes: 2 })
+            ? true
+            : false, // innacurate
         job: job,
         associatedEvent: null,
         eventStartTime: DateTime.now().startOf('minute').plus({ minutes: 2 }),
-        eventEndTime: DateTime.now().startOf('minute').plus({ minutes: 3 }),
+        eventEndTime: DateTime.now().startOf('minute').plus({ minutes: 6 }),
       },
     ];
     i += 1;
   }
 
-  i = currentMin + 1;
+  i = currentMin + 2;
   for (const job of secondJob) {
     timeMap[i].push({
-      isPrelude: job.scheduledExecutionTime > DateTime.now() ? true : false, // innacurate
+      isPrelude:
+        job.scheduledExecutionTime <
+        DateTime.now().startOf('minute').plus({ minutes: 3 })
+          ? true
+          : false, // innacurate
       job: job,
       associatedEvent: null,
-      eventStartTime: DateTime.now().startOf('minute').plus({ minutes: 2 }),
-      eventEndTime: DateTime.now().startOf('minute').plus({ minutes: 3 }),
+      eventStartTime: DateTime.now().startOf('minute').plus({ minutes: 3 }),
+      eventEndTime: DateTime.now().startOf('minute').plus({ minutes: 5 }),
     });
     i += 1;
   }
@@ -137,8 +145,6 @@ function createNextMinuteJob(
       extendBeyondActiveSession: false,
     };
 
-    console.log('Returning');
-
     return {
       isPrelude: false,
       job: job,
@@ -154,7 +160,6 @@ function createNextMinuteJob(
     return jobs[0];
   } else {
     const unionJob = buildUnion(jobs, trayTextSetter);
-    console.log('unionJob :', unionJob);
     return unionJob;
   }
 
@@ -197,11 +202,6 @@ export function buildUnion(
       // Its a prelude event so we build preludes
       const minutesUntilEvents =
         DateTime.now().startOf('minute').diff(eventsStartTime).minutes + 1;
-
-      console.log(
-        eventsStartTime.toISO(),
-        DateTime.now().startOf('minute').toISO()
-      );
 
       const numEvents = jobs.length;
       const titleString =
@@ -289,7 +289,6 @@ function jobsStartAtSameTime(jobs: Array<NotificationJob>) {
       return false;
     }
   }
-  console.log('all start at same time');
   return true;
 }
 
