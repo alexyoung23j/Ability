@@ -34,7 +34,6 @@ export function buildTimeMap(
   globalUserSettings: GlobalUserSettings
 ) {
   // TODO: Build actual time map
-  console.log(calendarIndexDay);
 
   let timeMap: NotificationTimeMap = {};
   const currentMin = getCurrentMinute();
@@ -43,11 +42,6 @@ export function buildTimeMap(
   }
 
   // Dummy Data:
-  /* 
-  
-  let timeMap: NotificationTimeMap = {};
-
-  const currentMin = getCurrentMinute();
 
   const firstJob = scheduleEventNotificationStream(
     1,
@@ -84,7 +78,7 @@ export function buildTimeMap(
       },
     ];
     i += 1;
-  } */
+  }
 
   /*   i = currentMin + 2;
   for (const job of secondJob) {
