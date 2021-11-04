@@ -74,7 +74,7 @@ export function buildTimeMap(
     i += 1;
   }
 
-  i = currentMin + 2;
+  /*   i = currentMin + 2;
   for (const job of secondJob) {
     timeMap[i].push({
       isPrelude:
@@ -88,7 +88,7 @@ export function buildTimeMap(
       eventEndTime: DateTime.now().startOf('minute').plus({ minutes: 5 }),
     });
     i += 1;
-  }
+  } */
 
   return timeMap;
 }
@@ -105,9 +105,9 @@ export function runNotificationEngine(
   const currentMinute = getCurrentMinute();
   const nextMinute = currentMinute + 1;
 
+  console.log('Building for nextMin:', nextMinute);
   // Cancel the job that was just running
   if (jobCurrentlyExecuting != null) {
-    console.log('cancelling Job: ', jobCurrentlyExecuting);
     jobCurrentlyExecuting.cancel();
   }
 
@@ -157,6 +157,7 @@ function createNextMinuteJob(
   const jobs = notificationTimeMap[nextMinute];
 
   if (jobs.length === 1) {
+    console.log('returning one job: ', jobs[0]);
     return jobs[0];
   } else {
     const unionJob = buildUnion(jobs, trayTextSetter);
@@ -175,6 +176,7 @@ export function buildUnion(
   const allStartAtSameTime = jobsStartAtSameTime(jobs);
 
   if (allStartAtSameTime) {
+    console.log('all start at same time');
     const eventsStartTime = jobs[0].eventStartTime;
     if (!jobs[0].isPrelude) {
       // We already passed the start time, lets create a current union
@@ -229,9 +231,12 @@ export function buildUnion(
       };
     }
   } else {
+    console.log('not all start at same time');
+
     const nextSoonestStartJob = findNextSoonest(jobs);
     if (nextSoonestStartJob != null) {
       // We have a job that starts soon
+      console.log('Next soonest job found');
       return nextSoonestStartJob;
     } else {
       // There is no job that starts soon, all are going now.
@@ -256,8 +261,6 @@ export function buildUnion(
       };
     }
   }
-
-  return null;
 }
 
 /**
@@ -272,7 +275,7 @@ function findNextSoonest(jobs: Array<NotificationJob>) {
   for (const job of jobs) {
     const jobStart = job.eventStartTime;
 
-    if (jobStart < nextSoonestTime && jobStart > now) {
+    if (jobStart < nextSoonestTime && jobStart > now && job.isPrelude) {
       nextSoonestJob = job;
       nextSoonestTime = nextSoonestTime;
     }
