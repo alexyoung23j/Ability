@@ -11,6 +11,7 @@ import SettingsView from '../settings-window/SettingsView';
 import {
   ScheduledRecurringJob,
   scheduleRecurringJob,
+  ScheduledSingledInstanceJob,
 } from '../util/cron-util/CronUtil';
 import {
   runNotificationEngine,
@@ -97,8 +98,27 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
         );
       }
 
-      console.log('scheduled');
-      console.log('map: ', notificationTimeMap);
+      console.log('scheduled job based on map');
+    } else if (notificationTimeMap != null) {
+      // We should schedule an empty string job since there is no next minute in our timemap
+      const timeToStartNextMinute = DateTime.now()
+        .startOf('minute')
+        .plus({ minutes: 1, seconds: 0.5 });
+      const job: ScheduledSingledInstanceJob = {
+        scheduledExecutionTime: timeToStartNextMinute,
+        callback: () => setTrayText(''),
+        extendBeyondActiveSession: false,
+      };
+
+      const nextJob = {
+        isPrelude: false,
+        job: job,
+        associatedEvent: null,
+        eventStartTime: null,
+        eventEndTime: null,
+      };
+      setJobScheduledNext(nextJob);
+      console.log('scheduled job based on empty map');
     }
   }, []);
 

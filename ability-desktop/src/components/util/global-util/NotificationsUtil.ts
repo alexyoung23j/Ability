@@ -43,7 +43,7 @@ export function buildTimeMap(
 
   // Dummy Data:
 
-  const firstJob = scheduleEventNotificationStream(
+  /* const firstJob = scheduleEventNotificationStream(
     1,
     'Event 1',
     'Event 1',
@@ -78,7 +78,7 @@ export function buildTimeMap(
       },
     ];
     i += 1;
-  }
+  } */
 
   /*   i = currentMin + 2;
   for (const job of secondJob) {
@@ -131,7 +131,7 @@ export function runNotificationEngine(
   setJobScheduledNext(nextMinuteJob);
 }
 
-function createNextMinuteJob(
+export function createNextMinuteJob(
   notificationTimeMap: NotificationTimeMap,
   trayTextSetter: (payload: string) => void
 ): NotificationJob {
