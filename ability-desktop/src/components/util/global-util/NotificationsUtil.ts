@@ -5,6 +5,7 @@ import {
 import {
   CalendarIndexEvent,
   mapDateToIndex,
+  CalendarIndexDay,
 } from '../command-view-util/CalendarIndexUtil';
 import { DateTime } from 'luxon';
 import { CalendarIndex } from '../../AllContextProvider';
@@ -12,6 +13,8 @@ import { Job } from 'node-schedule';
 import { Updater } from 'use-immer';
 import { SetStateAction, Dispatch } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { GlobalUserSettings } from '../../../constants/types';
+import { civicinfo } from 'googleapis/build/src/apis/civicinfo';
 
 export interface NotificationJob {
   isPrelude: boolean;
@@ -26,13 +29,22 @@ export interface NotificationTimeMap {
 }
 
 export function buildTimeMap(
-  calendarIndex: CalendarIndex,
-  trayTextSetter: (payload: string) => void
+  calendarIndexDay: CalendarIndexDay,
+  trayTextSetter: (payload: string) => void,
+  globalUserSettings: GlobalUserSettings
 ) {
   // TODO: Build actual time map
+  console.log(calendarIndexDay);
+
+  let timeMap: NotificationTimeMap = {};
+  const currentMin = getCurrentMinute();
+
+  for (const event of calendarIndexDay.events) {
+  }
 
   // Dummy Data:
-
+  /* 
+  
   let timeMap: NotificationTimeMap = {};
 
   const currentMin = getCurrentMinute();
@@ -72,7 +84,7 @@ export function buildTimeMap(
       },
     ];
     i += 1;
-  }
+  } */
 
   /*   i = currentMin + 2;
   for (const job of secondJob) {
@@ -105,7 +117,6 @@ export function runNotificationEngine(
   const currentMinute = getCurrentMinute();
   const nextMinute = currentMinute + 1;
 
-  console.log('Building for nextMin:', nextMinute);
   // Cancel the job that was just running
   if (jobCurrentlyExecuting != null) {
     jobCurrentlyExecuting.cancel();
@@ -157,7 +168,6 @@ function createNextMinuteJob(
   const jobs = notificationTimeMap[nextMinute];
 
   if (jobs.length === 1) {
-    console.log('returning one job: ', jobs[0]);
     return jobs[0];
   } else {
     const unionJob = buildUnion(jobs, trayTextSetter);
@@ -176,7 +186,6 @@ export function buildUnion(
   const allStartAtSameTime = jobsStartAtSameTime(jobs);
 
   if (allStartAtSameTime) {
-    console.log('all start at same time');
     const eventsStartTime = jobs[0].eventStartTime;
     if (!jobs[0].isPrelude) {
       // We already passed the start time, lets create a current union
@@ -231,12 +240,9 @@ export function buildUnion(
       };
     }
   } else {
-    console.log('not all start at same time');
-
     const nextSoonestStartJob = findNextSoonest(jobs);
     if (nextSoonestStartJob != null) {
       // We have a job that starts soon
-      console.log('Next soonest job found');
       return nextSoonestStartJob;
     } else {
       // There is no job that starts soon, all are going now.

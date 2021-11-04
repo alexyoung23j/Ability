@@ -1,7 +1,11 @@
 import { Job } from 'node-schedule';
 import React, { useContext, useEffect } from 'react';
 import useStateRef from 'react-usestateref';
-import { CalendarContext, GlobalSettingsContext } from '../AllContextProvider';
+import {
+  CalendarContext,
+  GlobalSettingsContext,
+  CalendarIndex,
+} from '../AllContextProvider';
 import CommandView from '../command-window/CommandView';
 import SettingsView from '../settings-window/SettingsView';
 import {
@@ -16,6 +20,8 @@ import {
   getCurrentMinute,
   buildUnion,
 } from '../util/global-util/NotificationsUtil';
+import { mapDateToIndex } from '../util/command-view-util/CalendarIndexUtil';
+import { DateTime } from 'luxon';
 
 interface InternalTimeEngineProps {
   showCommand: boolean;
@@ -42,7 +48,13 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
   // --------------------------- START NOTIFICATIONS CODE ------------------- //
 
   const [notificationTimeMap, setNotificationTimeMap, notificationTimeMapRef] =
-    useStateRef<NotificationTimeMap>(buildTimeMap(calendarIndex, setTrayText));
+    useStateRef<NotificationTimeMap>(
+      buildTimeMap(
+        calendarIndex[mapDateToIndex(DateTime.now(), calendarIndex[0].date)],
+        setTrayText,
+        globalUserSettings
+      )
+    );
 
   const [jobScheduledNext, setJobScheduledNext, jobScheduledNextRef] =
     useStateRef<NotificationJob | null>();
