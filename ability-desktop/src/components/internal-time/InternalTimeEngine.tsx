@@ -1,21 +1,28 @@
 import { Job } from 'node-schedule';
 import React, { useContext, useEffect } from 'react';
 import useStateRef from 'react-usestateref';
-import { CalendarContext, GlobalSettingsContext } from '../AllContextProvider';
+import {
+  CalendarContext,
+  GlobalSettingsContext,
+  CalendarIndex,
+} from '../AllContextProvider';
 import CommandView from '../command-window/CommandView';
 import SettingsView from '../settings-window/SettingsView';
 import {
   ScheduledRecurringJob,
   scheduleRecurringJob,
+  ScheduledSingledInstanceJob,
 } from '../util/cron-util/CronUtil';
 import {
-  buildTimeMap,
-  handleUpdatesToJobStack,
-  NotificationJob,
-  NotificationTimeMap,
   runNotificationEngine,
-  ScheduledNotificationJobBatch,
+  NotificationTimeMap,
+  buildTimeMap,
+  NotificationJob,
+  getCurrentMinute,
+  buildUnion,
 } from '../util/global-util/NotificationsUtil';
+import { mapDateToIndex } from '../util/command-view-util/CalendarIndexUtil';
+import { DateTime } from 'luxon';
 
 interface InternalTimeEngineProps {
   showCommand: boolean;
@@ -41,62 +48,88 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
 
   // --------------------------- START NOTIFICATIONS CODE ------------------- //
 
-  // Notification State
-  const [
-    notificationJobStack,
-    setNotificationJobStack,
-    notificationJobStackRef,
-  ] = useStateRef<Array<NotificationJob>>([]);
-  const [
-    currentlyScheduledJobs,
-    setCurrentlyScheduledJobs,
-    currentScheduledJobsRef,
-  ] = useStateRef<Array<ScheduledNotificationJobBatch>>([]);
   const [notificationTimeMap, setNotificationTimeMap, notificationTimeMapRef] =
-    useStateRef<NotificationTimeMap>(buildTimeMap(calendarIndex, setTrayText));
+    useStateRef<NotificationTimeMap>(
+      buildTimeMap(
+        calendarIndex[mapDateToIndex(DateTime.now(), calendarIndex[0].date)],
+        setTrayText,
+        globalUserSettings
+      )
+    );
+
+  const [jobScheduledNext, setJobScheduledNext, jobScheduledNextRef] =
+    useStateRef<NotificationJob | null>();
+
   const [
-    currentJobMetaScheduler,
-    setCurrentJobMetaScheduler,
-    currentJobMetaSchedulerRef,
-  ] = useStateRef<Job>(null);
+    jobCurrentlyExecuting,
+    setJobCurrentlyExecuting,
+    jobCurrentlyExecutingRef,
+  ] = useStateRef<Job | null>(null);
 
   // Schedule periodic query of the notificationTimeMap
   const masterJob: ScheduledRecurringJob = {
-    scheduledRecurrenceRule: { second: [0, 10, 20, 30, 40, 50, 60] }, // TODO: this isn't quite right, its not logging eevery 10 secobds, fix this
+    scheduledRecurrenceRule: { second: 0 }, // TODO: this isn't quite right, its not logging eevery 10 secobds, fix this
     callback: () => {
       runNotificationEngine(
-        notificationJobStackRef.current,
-        setNotificationJobStack,
         notificationTimeMapRef.current,
         setNotificationTimeMap,
-        currentJobMetaSchedulerRef.current,
-        setCurrentJobMetaScheduler
+        jobScheduledNextRef.current,
+        setJobScheduledNext,
+        jobCurrentlyExecutingRef.current,
+        setJobCurrentlyExecuting,
+        setTrayText
       );
-      console.log('current Stack: ', notificationJobStackRef.current);
     },
     extendBeyondActiveSession: false,
   };
+
+  useEffect(() => {
+    // Initialize the scheduled next job
+    const currentMinute = getCurrentMinute();
+    if (
+      notificationTimeMap != null &&
+      currentMinute + 1 in notificationTimeMap
+    ) {
+      if (notificationTimeMap[currentMinute + 1].length === 1) {
+        setJobScheduledNext(notificationTimeMap[currentMinute + 1][0]);
+      } else {
+        setJobScheduledNext(
+          buildUnion(notificationTimeMap[currentMinute + 1], setTrayText)
+        );
+      }
+
+      console.log('scheduled job based on map');
+    } else if (notificationTimeMap != null) {
+      // We should schedule an empty string job since there is no next minute in our timemap
+      const timeToStartNextMinute = DateTime.now()
+        .startOf('minute')
+        .plus({ minutes: 1, seconds: 0.5 });
+      const job: ScheduledSingledInstanceJob = {
+        scheduledExecutionTime: timeToStartNextMinute,
+        callback: () => setTrayText(''),
+        extendBeyondActiveSession: false,
+      };
+
+      const nextJob = {
+        isPrelude: false,
+        job: job,
+        associatedEvent: null,
+        eventStartTime: null,
+        eventEndTime: null,
+      };
+      setJobScheduledNext(nextJob);
+      console.log('scheduled job based on empty map');
+    }
+  }, []);
 
   useEffect(() => {
     scheduleRecurringJob(masterJob);
   }, []);
 
   // Listen to for updates to CalendarIndex
-  useEffect(() => {}, [calendarIndex]);
-
-  // Listen to updates to notificationJobStack
   useEffect(() => {
-    console.log(
-      'There was an update to the notifcationJobStack: ',
-      notificationJobStack
-    );
-    handleUpdatesToJobStack(
-      notificationJobStackRef.current,
-      setNotificationJobStack,
-      currentJobMetaSchedulerRef.current,
-      setCurrentJobMetaScheduler
-    );
-  }, [notificationJobStack]);
+    // TODO: Rebuild time map intelligently (if we see a change has occured)
+  }, [calendarIndex]);
 
   // --------------------------- END NOTIFICATIONS CODE ------------------- //
 
