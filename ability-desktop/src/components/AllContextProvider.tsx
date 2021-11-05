@@ -28,6 +28,8 @@ import {
   useInitializedGoogleAuthClient,
 } from './auth/GoogleAuthSetup';
 
+import firebase from 'firebase/config';
+
 interface AllContextProviderProps {
   showCommand: boolean;
   toggleBetweenWindows: any;
@@ -140,23 +142,15 @@ export default function AllContextProvider(props: AllContextProviderProps) {
     >
       <CalendarContext.Provider value={{ calendarIndex, setCalendarIndex }}>
         <SessionContext.Provider value={electronSessionId}>
-          {/*  {(!isSignedIn && (
+          {(!isSignedIn && (
             <SignIn onSignInComplete={() => setIsSignedIn(true)} />
           )) || (
-            <>
-              <button
-                onClick={async () => {
-                  await firebase.auth().signOut();
-                  setIsSignedIn(false);
-                }}
-              >
-                Sign out
-              </button> */}
-          <InternalTimeEngine
-            showCommand={showCommand}
-            toggleWindowHandler={toggleBetweenWindows}
-            setTrayText={setTrayText}
-          />
+            <InternalTimeEngine
+              showCommand={showCommand}
+              toggleWindowHandler={toggleBetweenWindows}
+              setTrayText={setTrayText}
+            />
+          )}
         </SessionContext.Provider>
       </CalendarContext.Provider>
     </GlobalSettingsContext.Provider>
