@@ -1,4 +1,5 @@
 import { calendar_v3 } from 'googleapis';
+import { DateTime } from 'luxon';
 import _ from 'underscore';
 
 import { assert } from '../components/util/assert';
@@ -9,88 +10,51 @@ const CALENDAR_ID = 'abilityapptester01@gmail.com';
 // Default end date string
 const END_DATE = new Date('December 10, 2021 12:00:00').toISOString();
 
-export async function fetchRecurringEventInstances(
-  calendar: calendar_v3.Calendar,
-  calendarId: string,
-  eventId: string,
-  options: {
-    timeMin?: string;
-    timeMax?: string;
-  }
-) {
-  const { timeMax, timeMin } = options;
-  assert(
-    !(timeMax != null && timeMin == null),
-    'timeMax cannot be specified without timeMin'
-  );
-  await calendar.events.instances({
-    calendarId,
-    eventId,
-    timeMin: '2021-06-20T04:30:41.173Z',
-    timeMax: '2021-07-20T04:30:41.173Z',
-  });
-}
+export type EventFromServer = gapi.client.calendar.Event & {
+  start: { dateTime: string } | { date: string };
+  end: { dateTime: string } | { date: string };
+  id: string;
+  htmlLink: string;
+  summary: string;
+};
 
-export async function fetchEvents(
-  calendar: calendar_v3.Calendar,
-  {
-    timeMin = new Date().toISOString(),
-    timeMax,
-  }: {
-    timeMin?: string;
-    timeMax?: string;
-  }
-): Promise<calendar_v3.Schema$Events> {
+/**
+ * Return list of all Calendars.
+ *
+ * Uses the user's token currently set on gapi.client.
+ */
+export async function getCalendars(): Promise<
+  Array<gapi.client.calendar.CalendarListEntry>
+> {
   return (
-    await calendar.events.list({
-      calendarId: CALENDAR_ID,
-      timeMin,
-      timeMax: timeMax ?? undefined,
-    })
-  ).data;
-}
-
-export async function fetchInstances(
-  calendar: calendar_v3.Calendar,
-  options: {
-    timeMin?: string;
-    timeMax?: string;
-  } = {
-    // TODO: Change this to be 00:00 of the current day
-    timeMin: new Date().toISOString(),
-    timeMax: undefined,
-  }
-) {
-  const { timeMin, timeMax } = options;
-  const { items } = await fetchEvents(calendar, { timeMin, timeMax });
-  const instancesPromises = [];
-  for (const item of items) {
-    instancesPromises.push(
-      calendar.events.instances({
-        calendarId: 'abilityapptester01@gmail.com',
-        eventId: item['id'],
-        timeMin: new Date().toISOString(),
-        timeMax: '2021-12-10T20:00:00.000Z',
-      })
-    );
-  }
-  const instances = (await Promise.all(instancesPromises)).map(
-    (instance) => instance.data.items
+    (await window.gapi.client.calendar.calendarList.list()).result.items ?? []
   );
-  return _.flatten(instances);
 }
 
-export async function _fetchSomething(calendar: calendar_v3.Calendar | null) {
-  if (calendar != null) {
-    assert(
-      calendar.context._options?.auth?.credentials != null,
-      'Calendar context._options credentials should be set'
-    );
-    try {
-      const out = await calendar.calendarList.list();
-      console.log(out);
-    } catch (e) {
-      console.log(e);
-    }
+/**
+ * Return list of all events for a specific calendar.
+ *
+ * Uses the user's token currently set on gapi.client.
+ */
+export async function getCalendarEvents(
+  calendarId: string,
+  { timeMin, timeMax }: { timeMin?: string; timeMax?: string } = {
+    timeMin: DateTime.now().startOf('day').toISO(),
   }
+): Promise<Array<EventFromServer>> {
+  // TODO: validate these responses and replace the type with Required<...> so we don't have to keep doing `start!.dateTime!` and shit.
+
+  // TODO: Change this to be pagination loop
+
+  return (
+    ((
+      await window.gapi.client.calendar.events.list({
+        calendarId,
+        timeMin,
+        timeMax,
+        singleEvents: true,
+        maxResults: 2500,
+      })
+    ).result.items as Array<EventFromServer>) ?? []
+  );
 }

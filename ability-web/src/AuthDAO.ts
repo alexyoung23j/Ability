@@ -15,7 +15,7 @@ interface AbilityUserInfo {
 interface CalendarAccount {
   calendarId: string;
   calendarAccessInfo: {
-    access_token: string | null;
+    accessToken: string | null;
     // id_token: string | null;   <-- Not needed for now
     // login_hint: string | null; <-- Not needed for now
   };
@@ -75,7 +75,7 @@ export async function persistUserInfo(
   const userCalendarAccount: CalendarAccount = {
     calendarId,
     calendarAccessInfo: {
-      access_token: googleUser.getAuthResponse().access_token,
+      accessToken: googleUser.getAuthResponse().access_token,
     },
     dateAdded: DateTime.now().toISO(),
   };
@@ -110,7 +110,7 @@ export async function persistAdditionalCalendar(
   const userCalendarAccount: CalendarAccount = {
     calendarId,
     calendarAccessInfo: {
-      access_token: googleUser.getAuthResponse().access_token,
+      accessToken: googleUser.getAuthResponse().access_token,
     },
     dateAdded: DateTime.now().toISO(),
   };
