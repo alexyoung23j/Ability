@@ -120,17 +120,10 @@ export function splitMultiDayEvent(
   // Create 24-hr dummy events for days between first and last day of the event
   let previousDay = endOfDay;
   const dayBeforeLastDay = endDate.minus({ days: 1 });
-  console.log('first day:', startDate.toLocaleString());
-  console.log('day before last day:', dayBeforeLastDay.toLocaleString());
-  console.log('last day:', endDate.toLocaleString());
-  console.log('\n\n\n\n');
 
   while (!previousDay.hasSame(dayBeforeLastDay, 'day')) {
-    console.log('previous day:', previousDay.toLocaleString());
     // Create a new day after previousDay
     let today = previousDay.plus({ days: 1 });
-    console.log('"today":', today.toLocaleString());
-    console.log('\n\n\n\n');
     const startOfDay = today.startOf('day');
     const endOfDay = today.endOf('day');
 
@@ -243,7 +236,6 @@ export function parseCalendarApiResponse(eventsByCalendar: {
   const days = _initializeEmptyDaysArray(firstDate);
 
   for (const [calendarId, allEvents] of Object.entries(eventsByCalendar)) {
-    console.log('parsing calendar:', calendarId);
     for (const eventFromServer of allEvents) {
       // Split multi-day events into individual events
       for (const singleDayEventFromServer of splitMultiDayEvent(
