@@ -1,4 +1,10 @@
-import React, { useRef, useEffect, useState, Fragment } from 'react';
+import React, {
+  useRef,
+  useEffect,
+  useState,
+  Fragment,
+  useContext,
+} from 'react';
 import CSS from 'csstype';
 import { DatePicker, KeyboardDatePicker } from '@material-ui/pickers';
 import { createMuiTheme } from '@material-ui/core';
@@ -7,38 +13,25 @@ import { Overrides } from '@material-ui/core/styles/overrides';
 import { MuiPickersOverrides } from '@material-ui/pickers/typings/overrides';
 import { Multiselect } from 'multiselect-react-dropdown';
 import CalendarPickerPopup from './CalendarPickerPopup';
-import { Calendar } from '../../../../../../constants/types';
+import { AbilityCalendar } from '../../../../../../constants/types';
+import { RegisteredAccountToCalendarsContext } from 'components/AllContextProvider';
+import _ from 'underscore';
+import { Color } from 'components/util/command-view-util/CalendarIndexUtil';
 const miniCalendar = require('/src/content/svg/MiniCalendarIcon.svg');
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 interface CalendarPickerProps {
-  eventCalendar: Calendar;
-  setEventCalendar: any;
+  eventCalendar: AbilityCalendar;
+  setEventCalendar: (eventCalendar: AbilityCalendar) => void;
 }
 export default function CalendarPickerComponent(props: CalendarPickerProps) {
-  // TODO: Add access to context containing the calendar information
-  const calendars: Array<Calendar> = [
-    {
-      name: "Alex's Personal Calendar",
-      color: '#33b679',
-      googleAccount: 'testAccount1@gmail.com',
-      selectedForDisplay: true,
-    },
-    {
-      name: 'Work Calendar',
-      color: 'blue',
-      googleAccount: 'testAccount1@gmail.com',
-      selectedForDisplay: true,
-    },
-    {
-      name: 'Calendar 3',
-      color: 'pink',
-      googleAccount: 'testAccount1@gmail.com',
-      selectedForDisplay: true,
-    },
-  ];
-
+  const calendars: Array<AbilityCalendar> = _.flatten(
+    Object.values(
+      useContext(RegisteredAccountToCalendarsContext)
+        .registeredAccountToCalendars!
+    )
+  ).map((calendar) => ({ ...calendar, selectedForDisplay: true }));
   const { eventCalendar, setEventCalendar } = props;
 
   // State

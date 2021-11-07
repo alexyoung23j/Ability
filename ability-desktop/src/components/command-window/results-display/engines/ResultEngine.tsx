@@ -1,16 +1,20 @@
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useImmer } from 'use-immer';
 import {
   CalculateFreeBlocks,
   HydrateOverlapEvents,
 } from '../../../util/command-view-util/CalendarViewUtil';
 import { demo1ArrayOfSnippets } from '../../../../constants/old-constants';
-import { Calendar, RegisteredAccount } from '../../../../constants/types';
+import {
+  AbilityCalendar,
+  RegisteredAccount,
+} from '../../../../constants/types';
 import CalendarView from '../calendar-display/calendar-body/CalendarView';
 import TextEngine from './TextEngine';
 import { generateTimeZoneObjects } from '../../../util/command-view-util/TextEngineUtil';
+import { RegisteredAccountToCalendarsContext } from 'components/AllContextProvider';
 const { DateTime } = require('luxon');
 
 const dropdownArrowNormal = require('/src/content/svg/DropdownArrowNormal.svg');
@@ -27,7 +31,7 @@ export interface CalendarResultEvent {
   title: string;
   url: string;
   color: string;
-  calendar: Calendar;
+  calendar: AbilityCalendar;
   index_of_overlapped_events: Array<number>;
 }
 
@@ -55,31 +59,21 @@ export default function ResultEngine(props: ResultEngineProps) {
 
   // TODO: Replace with calendars from DB/context
   // These are the calendars the user has access to. The selectedForDisplay values are based on the most recent changes to the settings?
-  const fetched_calendars: Array<RegisteredAccount> = [
-    {
-      accountEmail: 'testAccount1@gmail.com',
-      calendars: [
-        {
-          name: "Alex's Personal Calendar",
-          color: '#33b679',
-          googleAccount: 'testAccount1@gmail.com',
+  const registeredAccountToCalendars = useContext(
+    RegisteredAccountToCalendarsContext
+  )?.registeredAccountToCalendars;
+
+  const fetchedCalendars = Object.keys(registeredAccountToCalendars ?? {}).map(
+    (accountEmail) => ({
+      accountEmail,
+      calendars: registeredAccountToCalendars![accountEmail].map(
+        (calendar) => ({
+          ...calendar,
           selectedForDisplay: true,
-        },
-        {
-          name: 'Work Calendar',
-          color: 'blue',
-          googleAccount: 'testAccount1@gmail.com',
-          selectedForDisplay: true,
-        },
-        {
-          name: 'Calendar 3',
-          color: 'pink',
-          googleAccount: 'testAccount1@gmail.com',
-          selectedForDisplay: true,
-        },
-      ],
-    },
-  ];
+        })
+      ),
+    })
+  );
 
   // TODO: Determine if this is the best way to do this
   const [calendarResultData, setCalendarResultData] = useImmer(
@@ -89,7 +83,7 @@ export default function ResultEngine(props: ResultEngineProps) {
     props.calendarResultData
   ); // The filtered result data that screens out events from calendars that are not selected for display
   const [calendarAccounts, setCalendarAccounts] =
-    useImmer<Array<RegisteredAccount>>(fetched_calendars); // The copy of the calendar accounts we keep in state. This gets updated, though updating the default settings is not yet included
+    useImmer<Array<RegisteredAccount>>(fetchedCalendars); // The copy of the calendar accounts we keep in state. This gets updated, though updating the default settings is not yet included
   const [ignoreSlots, setIgnoreSlots] = useState([]); // The free slots that get ignored by the text engine
   const [textEngineLaunched, setTextEngineLaunched] = useState(false); // Defines if our text engine is launched
   const [initialIgnoredSlotsSet, setInitialIgnoredSlotSet] = useState(false);
@@ -101,9 +95,9 @@ export default function ResultEngine(props: ResultEngineProps) {
     for (const group of calendarAccounts) {
       for (const calendar of group.calendars) {
         if (
-          group.accountEmail == googleAccount &&
-          calendar.name == name &&
-          calendar.selectedForDisplay == true
+          group.accountEmail === googleAccount &&
+          calendar.name === name &&
+          calendar.selectedForDisplay
         ) {
           return true;
         }
@@ -178,12 +172,12 @@ export default function ResultEngine(props: ResultEngineProps) {
       for (let i = 0; i < calendarResultData.days.length; i++) {
         let currentDay = calendarResultData.days[i];
 
-        let validEvents = [];
+        let validEvents: Array<CalendarResultEvent> = [];
 
         for (const event of currentDay.events) {
           let eventCalendar = event.calendar;
 
-          if (_IsSelected(eventCalendar.name, eventCalendar.googleAccount)) {
+          if (_IsSelected(eventCalendar.name, eventCalendar.accountEmail)) {
             validEvents.push(event);
           }
         }
@@ -228,7 +222,7 @@ export default function ResultEngine(props: ResultEngineProps) {
   // Handles the creation of our array that stores the free_slots that we plan to ignore when creating the text
   // The text engine will set some initial slot state, then we can remove or add to it via the UI
   // Index of the form [x, y, z] where x = day_idx, y = free_block idx, z = free_slot idx
-  const updateIgnoredSlots = (index: number[], action: string) => {
+  const updateIgnoredSlots = (index: number[], action: string): void => {
     if (action === 'remove') {
       setIgnoreSlots([...ignoreSlots, index]);
     } else if (action === 'add-back') {
@@ -252,12 +246,10 @@ export default function ResultEngine(props: ResultEngineProps) {
     end_time: string,
     title: string,
     url: string,
-    color: string,
-    calendar_name: string,
-    calendar_color: string,
+    calendar: AbilityCalendar,
     day_idx: number,
     orig_event_idx: number
-  ) => {
+  ): void => {
     // TODO: Delete Event Instance with Calendar API
 
     let event_idx = _findIdxInUnfilteredData(day_idx, orig_event_idx);
@@ -297,11 +289,9 @@ export default function ResultEngine(props: ResultEngineProps) {
     end_time: string,
     title: string,
     url: string,
-    color: string,
-    calendar_name: string,
-    calendar_color: string,
+    calendar: AbilityCalendar,
     day_idx: number
-  ) => {
+  ): void => {
     // TODO: Need to actually do the scheduling here with the calendar API
 
     // Find position to insert into events
@@ -352,12 +342,8 @@ export default function ResultEngine(props: ResultEngineProps) {
       end_time: end_time,
       title: title,
       url: url,
-      color: color,
-      calendar: {
-        name: calendar_name,
-        color: calendar_color,
-        googleAccount: 'testAccount1@gmail.com',
-      },
+      color: calendar.color,
+      calendar: calendar,
       index_of_overlapped_events: [],
     });
 
@@ -388,9 +374,7 @@ export default function ResultEngine(props: ResultEngineProps) {
     end_time: string,
     title: string,
     url: string,
-    color: string,
-    calendar_name: string,
-    calendar_color: string,
+    calendar: AbilityCalendar,
     day_idx: number,
     orig_event_idx: number
   ) => {
@@ -479,12 +463,8 @@ export default function ResultEngine(props: ResultEngineProps) {
       end_time: end_time,
       title: title,
       url: url,
-      color: color,
-      calendar: {
-        name: calendar_name,
-        color: calendar_color,
-        googleAccount: 'testAccount1@gmail.com',
-      },
+      color: calendar.color,
+      calendar,
       index_of_overlapped_events: [],
     });
 
@@ -532,7 +512,7 @@ export default function ResultEngine(props: ResultEngineProps) {
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <CalendarView
-          calendar_data={calendarResultData}
+          calendarData={calendarResultData}
           ignoreHandler={updateIgnoredSlots}
           ignoredSlots={ignoreSlots}
           textEngineLaunched={textEngineLaunched}

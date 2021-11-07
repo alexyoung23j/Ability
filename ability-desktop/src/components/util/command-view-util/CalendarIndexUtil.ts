@@ -9,7 +9,7 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 const NUM_DAYS = Math.ceil(365 / 2) + 365;
 
-const enum Color {
+export const enum Color {
   BLUE = 'BLUE',
 }
 
@@ -22,6 +22,7 @@ export interface CalendarIndexEvent {
   calendarId: string;
   summary: string;
   id: string;
+  accountEmail: string;
 }
 
 // Organized by start time
@@ -172,11 +173,15 @@ function getEventDateTime(
 }
 
 function _getFirstDate(eventsByCalendar: {
-  [calendarId: string]: Array<EventFromServer>;
+  [calendarId: string]: {
+    events: Array<EventFromServer>;
+    accountEmail: string;
+  };
 }): DateTime {
-  const randomEvent = eventsByCalendar[Object.keys(eventsByCalendar)[0]][0];
+  const randomCalendarId = Object.keys(eventsByCalendar)[0];
+  const randomEvent = eventsByCalendar[randomCalendarId].events[0];
   let firstDate = getEventDateTime(randomEvent, 'start');
-  for (const calendarEvents of Object.values(eventsByCalendar)) {
+  for (const { events: calendarEvents } of Object.values(eventsByCalendar)) {
     for (const event of calendarEvents) {
       const datetime = getEventDateTime(event, 'start');
       if (datetime < firstDate) {
@@ -230,12 +235,18 @@ function _initializeEmptyDaysArray(
  * @returns
  */
 export function parseCalendarApiResponse(eventsByCalendar: {
-  [calendarId: string]: Array<EventFromServer>;
+  [calendarId: string]: {
+    accountEmail: string;
+    events: Array<EventFromServer>;
+  };
 }): CalendarIndex {
   const firstDate = _getFirstDate(eventsByCalendar);
   const days = _initializeEmptyDaysArray(firstDate);
 
-  for (const [calendarId, allEvents] of Object.entries(eventsByCalendar)) {
+  for (const [
+    calendarId,
+    { accountEmail, events: allEvents },
+  ] of Object.entries(eventsByCalendar)) {
     for (const eventFromServer of allEvents) {
       // Split multi-day events into individual events
       for (const singleDayEventFromServer of splitMultiDayEvent(
@@ -265,6 +276,7 @@ export function parseCalendarApiResponse(eventsByCalendar: {
           calendarId,
           summary,
           id: id!,
+          accountEmail,
         };
 
         // Insert at index: _getIndexInDay()

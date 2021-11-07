@@ -7998,5 +7998,8 @@ export const EVENTS = [
 
 export const CALENDAR_INDEX_1: CalendarIndex =
   CalendarIndexUtil.parseCalendarApiResponse({
-    'something@gmail.com': EVENTS,
+    'something@gmail.com': {
+      events: EVENTS,
+      accountEmail: 'something@gmail.com',
+    },
   });

@@ -1,8 +1,10 @@
 import { DateTime } from 'luxon';
 import React, { useContext, useState } from 'react';
 import {
-  CalendarContext,
+  CalendarIndexContext,
   GlobalSettingsContext,
+  RegisteredAccountToCalendars,
+  RegisteredAccountToCalendarsContext,
 } from '../../../../components/AllContextProvider';
 import { assert } from '../../../util/assert';
 import {
@@ -47,7 +49,15 @@ interface FilterError {
 export function QueryTransformEngine(
   props: QueryTransformEngineProps
 ): JSX.Element | null {
-  const { calendarIndex, setCalendarIndex } = useContext(CalendarContext);
+  const calendarIndexContext = useContext(CalendarIndexContext);
+  const registeredAccountToCalendars = useContext(
+    RegisteredAccountToCalendarsContext
+  )?.registeredAccountToCalendars;
+  assert(
+    calendarIndexContext != null && registeredAccountToCalendars != null,
+    'Found null Contexts when rendering QueryTransformEngine'
+  );
+  const { calendarIndex, setCalendarIndex } = calendarIndexContext;
   const { globalUserSettings, setGlobalUserSettings } = useContext(
     GlobalSettingsContext
   );
@@ -75,14 +85,14 @@ export function QueryTransformEngine(
     CalendarIndexUtil.mapDateToIndex(date, dateAtIndexZero)
   );
 
-  let calendarResultData: CalendarResultData = null;
-  //let showError = false;
+  let calendarResultData: CalendarResultData | null = null;
 
   if (indices.includes(-1)) {
     queryError = {
       errorStatus: true,
       errorType: FilterErrorType.OUT_OF_RANGE,
     };
+    return <ErrorResult errorType={queryError.errorType} />;
   } else {
     // Step 2: Use other parts of filter and build result data for each index in the calendar index (lol)
     const daysFromCalendarIndex = indices.map((index) =>
@@ -91,19 +101,18 @@ export function QueryTransformEngine(
 
     calendarResultData = transformToResultData(
       daysFromCalendarIndex,
+      registeredAccountToCalendars,
       filter,
       globalUserSettings
     );
   }
 
-  return (
+  if (queryError.errorStatus) {
     // TODO: Add handling for different error messages
-    <div>
-      {(!queryError.errorStatus && (
-        <ResultEngine calendarResultData={calendarResultData} />
-      )) || <ErrorResult errorType={queryError.errorType} />}
-    </div>
-  );
+    return <ErrorResult errorType={queryError.errorType} />;
+  }
+
+  return <ResultEngine calendarResultData={calendarResultData} />;
 }
 
 function intersectFilters(
@@ -264,13 +273,14 @@ function _hydrateNullFields(
 }
 
 function transformToResultData(
-  daysFromCalendarIndex: Array<CalendarIndexUtil.CalendarIndexDay>,
+  calendarIndex: Array<CalendarIndexUtil.CalendarIndexDay>,
+  registeredAccountToCalendars: RegisteredAccountToCalendars,
   filter: CalendarIndexFilter,
   globalUserSettings: GlobalUserSettings
 ): CalendarResultData {
   return {
     minDuration: filter.duration,
-    days: daysFromCalendarIndex.map((calendarIndexDay) => {
+    days: calendarIndex.map((calendarIndexDay) => {
       const hard_start_hour =
         filter.startTime?.hour ??
         globalUserSettings.profileSettings.defaults.dayHardStart.hours;
@@ -301,17 +311,17 @@ function transformToResultData(
             endTime,
             summary,
             eventHtmlLink,
+            accountEmail,
+            calendarId,
           }): CalendarResultEvent => ({
             start_time: startTime.dateTime,
             end_time: endTime.dateTime,
             color: 'blue',
             title: summary,
             url: eventHtmlLink,
-            calendar: {
-              name: 'Work Calendar',
-              googleAccount: 'testAccount1@gmail.com',
-              color: 'blue',
-            },
+            calendar: registeredAccountToCalendars[accountEmail].find(
+              (abilityCalendar) => abilityCalendar.calendarId === calendarId
+            )!,
             index_of_overlapped_events: [],
           })
         ),

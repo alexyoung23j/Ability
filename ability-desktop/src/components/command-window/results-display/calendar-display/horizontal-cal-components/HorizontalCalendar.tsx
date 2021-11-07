@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import CSS from 'csstype';
 import useDragScroll from 'use-drag-scroll';
 import ReactDOM from 'react-dom';
@@ -14,6 +14,7 @@ import ReactTooltip from 'react-tooltip';
 import EventTooltip from './EventTooltip';
 import { current } from 'immer';
 import { NumberLiteralType } from 'typescript';
+import { RegisteredAccountToCalendarsContext } from 'components/AllContextProvider';
 const { DateTime } = require('luxon');
 
 var nodeConsole = require('console');
@@ -142,12 +143,14 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     setModalEventTitle('');
     setModalEventLocation('');
     setModalEventDescription('');
-    setModalEventCalendar({
-      name: "Alex's Personal Calendar",
-      color: '#33b679',
-      googleAccount: 'testAccount1@gmail.com',
-      selectedForDisplay: true,
-    }); // TODO: Use the default calendar
+
+    // TODO: make this better pls
+    const registeredAccountToCalendars = useContext(
+      RegisteredAccountToCalendarsContext
+    ).registeredAccountToCalendars!;
+    const randomCalendar = Object.values(registeredAccountToCalendars)[0][0];
+
+    setModalEventCalendar(randomCalendar);
     setCurrentlyHoveredEventIdx(-1);
   }
 

@@ -1,32 +1,62 @@
 import CSS from 'csstype';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import CalendarHeader from '../calendar-header/CalendarHeader';
 import CalendarBody from './CalendarBody';
-import { Calendar, RegisteredAccount } from '../../../../../constants/types';
-import { useImmer } from 'use-immer';
+import {
+  AbilityCalendar,
+  RegisteredAccount,
+} from '../../../../../constants/types';
+import { Updater, useImmer } from 'use-immer';
 import { CalendarPickerModal } from '../calendar-header/CalendarPickerModal';
 import DailyCalendarView from '../daily-calendar/DailyCalendarView';
+import { CalendarResultData } from '../../engines/ResultEngine';
+import { RegisteredAccountToCalendarsContext } from 'components/AllContextProvider';
 const { DateTime } = require('luxon');
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
 interface CalendarView {
-  calendar_data: any;
-  ignoreHandler: any;
+  calendarData: CalendarResultData;
+  ignoreHandler: (index: Array<number>, action: string) => void;
   ignoredSlots: Array<Array<number>>;
   textEngineLaunched: boolean;
-  scheduleNewEvent: any;
-  modifyExistingEvent: any;
-  deleteEvent: any;
-  filteredCalendarData: any;
+  scheduleNewEvent: (
+    start_time: string,
+    end_time: string,
+    title: string,
+    url: string,
+    color: string,
+    calendar: AbilityCalendar,
+    day_idx: number
+  ) => void;
+  modifyExistingEvent: (
+    start_time: string,
+    end_time: string,
+    title: string,
+    url: string,
+    color: string,
+    calendar: AbilityCalendar,
+    orig_event_idx: number
+  ) => void;
+  deleteEvent: (
+    start_time: string,
+    end_time: string,
+    title: string,
+    url: string,
+    color: string,
+    calendar: AbilityCalendar,
+    day_idx: number,
+    orig_event_idx: number
+  ) => void;
+  filteredCalendarData: CalendarResultData;
   calendarAccounts: Array<RegisteredAccount>;
-  setCalendarAccounts: any;
+  setCalendarAccounts: Updater<Array<RegisteredAccount>>;
 }
 
 export default function CalendarView(props: CalendarView) {
   const {
-    calendar_data,
+    calendarData,
     ignoreHandler,
     ignoredSlots,
     textEngineLaunched,
@@ -52,11 +82,13 @@ export default function CalendarView(props: CalendarView) {
   );
   const [modalEventTitle, setModalEventTitle] = useState('');
   const [modalEventLocation, setModalEventLocation] = useState('');
-  const [modalEventCalendar, setModalEventCalendar] = useState({
-    name: "Alex's Calendar",
-    color: 'blue',
-    googleAccount: 'testAccount1@gmail.com',
-  }); // TODO: Fetch from context
+
+  const registeredAccountToCalendars = useContext(
+    RegisteredAccountToCalendarsContext
+  ).registeredAccountToCalendars!;
+  const randomCalendar = Object.values(registeredAccountToCalendars)[0][0];
+  const [modalEventCalendar, setModalEventCalendar] = useState(randomCalendar);
+
   const [modalEventDescription, setModalEventDescription] = useState('');
 
   return (
@@ -70,7 +102,7 @@ export default function CalendarView(props: CalendarView) {
       )}
       <div style={calendarViewStyle}>
         <CalendarHeader
-          calendar_data={calendar_data}
+          calendar_data={calendarData}
           showButtons={true} // Whether we allow user to skip forward or not
           calendarPickerLaunched={calendarPickerLaunched}
           setCalendarPickerLaunched={setCalendarPickerLaunched}
