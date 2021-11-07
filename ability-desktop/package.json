@@ -150,6 +150,7 @@
     "semantic-ui-react": "^2.0.3",
     "toad-scheduler": "^1.5.0",
     "ts-node": "^10.0.0",
+    "tsconfig-paths-webpack-plugin": "^3.5.1",
     "tzdata": "^1.0.25",
     "use-drag-scroll": "^1.0.1",
     "use-immer": "^0.5.2"

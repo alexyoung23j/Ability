@@ -58,7 +58,7 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
     );
 
   const [jobScheduledNext, setJobScheduledNext, jobScheduledNextRef] =
-    useStateRef<NotificationJob | null>();
+    useStateRef<NotificationJob | null>(null);
 
   const [
     jobCurrentlyExecuting,
@@ -110,12 +110,13 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
         extendBeyondActiveSession: false,
       };
 
-      const nextJob = {
+      const now = DateTime.now();
+      const nextJob: NotificationJob = {
         isPrelude: false,
         job: job,
         associatedEvent: null,
-        eventStartTime: null,
-        eventEndTime: null,
+        eventStartTime: now.plus({ minutes: 1 }),
+        eventEndTime: now.plus({ minutes: 2 }),
       };
       setJobScheduledNext(nextJob);
       console.log('scheduled job based on empty map');

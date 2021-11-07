@@ -3,6 +3,7 @@ import schedule, { RecurrenceRule, Job } from 'node-schedule';
 import { DateTime } from 'luxon';
 import { ipcRenderer } from 'electron';
 
+// TODO: rename this to single lol
 export interface ScheduledSingledInstanceJob {
   scheduledExecutionTime: DateTime;
   callback: any;

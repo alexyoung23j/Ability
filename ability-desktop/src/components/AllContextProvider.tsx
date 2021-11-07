@@ -1,5 +1,16 @@
+import {
+  CalendarIndexDay,
+  parseCalendarApiResponse,
+} from 'components/util/command-view-util/CalendarIndexUtil';
+import { loadGlobalSettings } from 'components/util/global-util/GlobalSettingsUtil';
+import {
+  EventFromServer,
+  getCalendarEvents,
+  getCalendars,
+} from 'DAO/CalendarDAO';
+import * as DatabaseUtil from 'firebase/DatabaseUtil';
 import React, { useEffect, useState } from 'react';
-import { useImmer } from 'use-immer';
+import { Updater, useImmer } from 'use-immer';
 import { v4 as uuidv4 } from 'uuid';
 import { GlobalUserSettings } from '../constants/types';
 import { isUserSignedIn } from '../firebase/util/FirebaseUtil';
@@ -8,27 +19,12 @@ import {
   ELECTRON_SESSION_IDS_TO_USER_IDS_COLLECTION,
   getCalendarInfos,
 } from './auth/AuthDAO';
-import SignIn, { CalendarInfo } from './auth/SignIn';
-import InternalTimeEngine from './internal-time/InternalTimeEngine';
-import {
-  EventFromServer,
-  getCalendarEvents,
-  getCalendars,
-} from 'DAO/CalendarDAO';
-
-import * as DatabaseUtil from 'firebase/DatabaseUtil';
-
-import {
-  CalendarIndexDay,
-  parseCalendarApiResponse,
-} from 'components/util/command-view-util/CalendarIndexUtil';
-import { loadGlobalSettings } from 'components/util/global-util/GlobalSettingsUtil';
 import {
   setGapiClientToken,
   useInitializedGoogleAuthClient,
 } from './auth/GoogleAuthSetup';
-
-import firebase from 'firebase/config';
+import SignIn from './auth/SignIn';
+import InternalTimeEngine from './internal-time/InternalTimeEngine';
 
 interface AllContextProviderProps {
   showCommand: boolean;
@@ -48,9 +44,15 @@ export const SessionContext = React.createContext<string>(
 );
 
 // Context that requires setters
-export const CalendarContext = React.createContext(null);
+export const CalendarContext = React.createContext<{
+  calendarIndex: CalendarIndex;
+  setCalendarIndex: Updater<CalendarIndex>;
+} | null>(null);
 
-export const GlobalSettingsContext = React.createContext(null);
+export const GlobalSettingsContext = React.createContext<{
+  globalUserSettings: GlobalUserSettings;
+  setGlobalUserSettings: Updater<GlobalUserSettings>;
+} | null>(null);
 
 // ---------------- Methods that should be elsewhere/are temp -------- //
 export function useFirebaseSignIn() {
@@ -119,13 +121,10 @@ export default function AllContextProvider(props: AllContextProviderProps) {
   const { showCommand, toggleBetweenWindows, setTrayText } = props;
 
   // Context State (needed so we can pass the setters to our children to modify context in the app)
-  const [calendarIndex, setCalendarIndex] = useImmer<CalendarIndex | null>(
-    CALENDAR_INDEX_1
-  );
+  const [calendarIndex, setCalendarIndex] =
+    useImmer<CalendarIndex>(CALENDAR_INDEX_1);
 
-  const [electronSessionId, _] = useState<string | null>(
-    generatedElectronSessionId
-  );
+  const [electronSessionId, _] = useState<string>(generatedElectronSessionId);
 
   const [globalUserSettings, setGlobalUserSettings] =
     useImmer<GlobalUserSettings>(loadGlobalSettings());
