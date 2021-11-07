@@ -1,11 +1,7 @@
-import { calendar_v3 } from 'googleapis';
 import { DateTime } from 'luxon';
 import _ from 'underscore';
 
-import { assert } from '../components/util/assert';
-
-// TODO kedar: move these to react_env files and don't store in commit!!!!
-const CALENDAR_ID = 'abilityapptester01@gmail.com';
+import { fetchPaginated } from 'DAO/GapiDaoUtil';
 
 // Default end date string
 const END_DATE = new Date('December 10, 2021 12:00:00').toISOString();
@@ -19,22 +15,22 @@ export type EventFromServer = gapi.client.calendar.Event & {
 };
 
 /**
- * Return list of all Calendars.
- *
- * Uses the user's token currently set on gapi.client.
+ * Return list of all Calendars for the current gapi user.
  */
 export async function getCalendars(): Promise<
   Array<gapi.client.calendar.CalendarListEntry>
 > {
-  return (
-    (await window.gapi.client.calendar.calendarList.list()).result.items ?? []
+  const params = {};
+  return fetchPaginated<gapi.client.calendar.CalendarListEntry>(
+    params,
+    (args) => window.gapi.client.calendar.calendarList.list(args)
   );
 }
 
 /**
- * Return list of all events for a specific calendar.
+ * Return list of all events for a specific calendar for the current gapi user.
  *
- * Uses the user's token currently set on gapi.client.
+ * Unless specified, fetches all events from today --> 1 year from today.
  */
 export async function getCalendarEvents(
   calendarId: string,
@@ -43,19 +39,27 @@ export async function getCalendarEvents(
     timeMax: DateTime.now().plus({ years: 1 }).endOf('day').toISO(),
   }
 ): Promise<Array<EventFromServer>> {
-  // TODO: validate these responses and replace the type with Required<...> so we don't have to keep doing `start!.dateTime!` and shit.
+  type FetchCalendarEventsParams = {
+    calendarId: string;
+    timeMin?: string;
+    timeMax?: string;
+    singleEvents: boolean;
+    maxResults: number;
+  };
 
-  // TODO: Change this to be pagination loop
+  const fetchFn = (
+    args: FetchCalendarEventsParams
+  ): gapi.client.Request<gapi.client.calendar.Events> =>
+    window.gapi.client.calendar.events.list(args);
 
-  return (
-    ((
-      await window.gapi.client.calendar.events.list({
-        calendarId,
-        timeMin,
-        timeMax,
-        singleEvents: true,
-        maxResults: 2500,
-      })
-    ).result.items as Array<EventFromServer>) ?? []
+  const events = await fetchPaginated<
+    gapi.client.calendar.Event,
+    FetchCalendarEventsParams
+  >(
+    { calendarId, timeMin, timeMax, singleEvents: true, maxResults: 2500 },
+    fetchFn
   );
+  // Pretty certain that these fields are always there.
+  // TODO: validate that this^ is true...
+  return events as Array<EventFromServer>;
 }

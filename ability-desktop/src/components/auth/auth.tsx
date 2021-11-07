@@ -1,18 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { google } from 'googleapis';
-import { OAuth2Client } from 'googleapis-common';
-import { GoogleLogin, GoogleLoginResponse } from 'react-google-login';
-
-import { assert } from '../util/assert';
+import React from 'react';
 import * as CalendarDAO from '../../DAO/CalendarDAO';
-import { writeJSONToFile } from './util';
-import { CalendarContext } from '../../App';
-import * as CalendarIndexUtil from '../util/command-view-util/CalendarIndexUtil';
-import {
-  setGapiClientToken,
-  useInitializedGoogleAuthClient,
-} from './GoogleAuthSetup';
 import { RerenderButton } from '../../hooks/util/RerenderButton';
+import * as CalendarIndexUtil from '../util/command-view-util/CalendarIndexUtil';
+import { useInitializedGoogleAuthClient } from './GoogleAuthSetup';
+import { writeJSONToFile } from './util';
 
 const CALENDAR_ID = 'abilityapptester01@gmail.com';
 
@@ -23,11 +14,9 @@ window.calendarIndexUtil = CalendarIndexUtil;
 
 export function Auth() {
   const { authInstance } = useInitializedGoogleAuthClient();
-  const token =
-    'ya29.a0ARrdaM_VIgutZphkEcJL5TaBUF45qYO6--AyGuc1BrJRvKxNsd3G6gz8dOn68d2gJeTQohw74f-qZ-09b7wndP7qId6ogjuhzLe7Ou9hXKDBANHZkQtsmLWGT8WM1q9LyxumOWHMLhnA3P7Uhvk4B1p24v_oCg';
-  if (authInstance != null) {
-    setGapiClientToken(token);
-  }
+  // if (authInstance != null) {
+  //   setGapiClientToken(token);
+  // }
 
   return <RerenderButton />;
 }
