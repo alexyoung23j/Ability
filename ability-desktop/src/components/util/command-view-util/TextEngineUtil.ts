@@ -1,20 +1,19 @@
-import { CalendarResultData } from '../../command-window/results-display/engines/ResultEngine';
-import {
-  TextSnippetPackage,
-  TextSnippet,
-  DateTextObject,
-  TextObject,
-  isDateTextObject,
-  isDurationTextObject,
-  DurationTextObject,
-} from '../../../constants/types';
+import { getTimeZones } from '@vvo/tzdb';
 import { ContentState } from 'draft-js';
 import { DateTime } from 'luxon';
-const { zones } = require('tzdata');
-import { TimeZoneData } from '../../command-window/results-display/engines/TextEngine';
 import { CITIES_TO_FIND_ZONES_FOR } from '../../../constants/TextEngineConstants';
-import { getTimeZones, rawTimeZones, timeZonesNames } from '@vvo/tzdb';
-import { couldStartTrivia } from 'typescript';
+import {
+  DateTextObject,
+  DurationTextObject,
+  isDateTextObject,
+  isDurationTextObject,
+  TextObject,
+  TextSnippet,
+  TextSnippetPackage,
+} from '../../../constants/types';
+import { CalendarResultData } from '../../command-window/results-display/engines/ResultEngine';
+import { TimeZoneData } from '../../command-window/results-display/engines/TextEngine';
+const { zones } = require('tzdata');
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
