@@ -2,7 +2,7 @@ import { Job } from 'node-schedule';
 import React, { useContext, useEffect } from 'react';
 import useStateRef from 'react-usestateref';
 import {
-  CalendarContext,
+  CalendarIndexContext,
   GlobalSettingsContext,
   CalendarIndex,
 } from '../AllContextProvider';
@@ -39,7 +39,7 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
   const { showCommand, toggleWindowHandler, setTrayText } = props;
 
   // Fetch Context
-  const { calendarIndex, setCalendarIndex } = useContext(CalendarContext);
+  const { calendarIndex, setCalendarIndex } = useContext(CalendarIndexContext);
   const { globalUserSettings, setGlobalUserSettings } = useContext(
     GlobalSettingsContext
   );

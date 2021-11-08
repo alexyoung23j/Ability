@@ -3,7 +3,8 @@ import CSS from 'csstype';
 import { AnimationType } from 'framer-motion/types/render/utils/types';
 const { DateTime } = require('luxon');
 import { generatePickerTimeOptions } from '../../../../../util/command-view-util/CalendarViewUtil';
-import { Calendar } from '../../../../../../constants/types';
+import { AbilityCalendar } from '../../../../../../constants/types';
+import { Color } from '@material-ui/core';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -11,8 +12,8 @@ var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 interface CalendarPickerPopupProps {
   isOpen: boolean;
   setIsOpen: any;
-  calendars: Array<Calendar>;
-  eventCalendar: { name: string; color: string };
+  calendars: Array<AbilityCalendar>;
+  eventCalendar: AbilityCalendar;
   setEventCalendar: any;
 }
 
@@ -29,7 +30,7 @@ export default function CalendarPickerPopup(props: CalendarPickerPopupProps) {
               color={calendar.color}
               name={calendar.name}
               setEventCalendar={setEventCalendar}
-              eventCalendar={eventCalendar}
+              eventCalendar={calendar}
               setIsOpen={setIsOpen}
             />
           </div>
@@ -42,8 +43,8 @@ export default function CalendarPickerPopup(props: CalendarPickerPopupProps) {
 interface CalendarOptionProps {
   color: string;
   name: string;
-  setEventCalendar: any;
-  eventCalendar: Calendar;
+  setEventCalendar: (eventCalendar: AbilityCalendar) => void;
+  eventCalendar: AbilityCalendar;
   setIsOpen: any;
 }
 
@@ -59,7 +60,7 @@ function CalendarOption(props: CalendarOptionProps) {
   function handleClick(e) {
     e.stopPropagation();
 
-    setEventCalendar({ name: name, color: color });
+    setEventCalendar(eventCalendar);
     setIsOpen(false);
   }
 

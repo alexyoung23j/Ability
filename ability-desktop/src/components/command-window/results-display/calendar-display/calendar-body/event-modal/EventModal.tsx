@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useState, Fragment } from 'react';
 import CSS from 'csstype';
 import DatePickerComponent from './DatePickerComponent';
 import CalendarPickerComponent from './CalendarPickerComponent';
+import { Color } from 'components/util/command-view-util/CalendarIndexUtil';
+import { AbilityCalendar } from 'constants/types';
 const locationIcon = require('/src/content/svg/locationIcon.svg');
 const textIcon = require('/src/content/svg/TextIcon.svg');
 const { DateTime } = require('luxon');
@@ -13,7 +15,7 @@ interface EventModalProps {
   eventEnd: any;
   eventTitle: string;
   eventLocation: string;
-  eventCalendar: { name: string; color: string };
+  eventCalendar: AbilityCalendar;
   eventDescription: string;
   modalEventIdxInDay: number;
 
@@ -23,7 +25,7 @@ interface EventModalProps {
   setEventEnd: any;
   setEventTitle: any;
   setEventLocation: any;
-  setEventCalendar: any;
+  setEventCalendar: (eventCalendar: AbilityCalendar) => void;
   setEventDescription: any;
 
   scheduleNewEvent: any;
@@ -81,9 +83,7 @@ export default function EventModal(props: EventModalProps) {
         eventEnd.toISO(),
         eventTitle,
         'fake_url', // TODO: generate a UrL? maybe this takes place in the new event scheduler in ResultEngine
-        eventCalendar.color,
-        eventCalendar.name,
-        eventCalendar.color,
+        eventCalendar,
         dayIdx
       );
 
@@ -95,9 +95,7 @@ export default function EventModal(props: EventModalProps) {
         eventEnd.toISO(),
         eventTitle,
         'fake_url', // TODO: generate a UrL? maybe this takes place in the new event scheduler in ResultEngine
-        eventCalendar.color,
-        eventCalendar.name,
-        eventCalendar.color,
+        eventCalendar,
         dayIdx,
         modalEventIdxInDay
       );
@@ -124,9 +122,7 @@ export default function EventModal(props: EventModalProps) {
       eventEnd.toISO(),
       eventTitle,
       'fake_url',
-      eventCalendar.color,
-      eventCalendar.name,
-      eventCalendar.color,
+      eventCalendar,
       dayIdx,
       modalEventIdxInDay
     );

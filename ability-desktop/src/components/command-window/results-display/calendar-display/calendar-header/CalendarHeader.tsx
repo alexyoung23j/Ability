@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import {
-  CalendarContext,
+  CalendarIndexContext,
   GlobalSettingsContext,
 } from '../../../../AllContextProvider';
 const leftArrow = require('/src/content/svg/LeftArrow.svg');

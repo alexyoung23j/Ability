@@ -2,7 +2,10 @@ import CSS from 'csstype';
 import React, { useState } from 'react';
 import CalendarHeader from './CalendarHeader';
 import CalendarBody from '../calendar-body/CalendarBody';
-import { Calendar, RegisteredAccount } from '../../../../../constants/types';
+import {
+  AbilityCalendar,
+  RegisteredAccount,
+} from '../../../../../constants/types';
 import { useImmer } from 'use-immer';
 import { Checkbox } from 'reakit/Checkbox';
 import { css } from '@emotion/css';
@@ -86,7 +89,7 @@ function CalendarGroup(props: {
 }
 
 function CalendarEntry(props: {
-  calendar: Calendar;
+  calendar: AbilityCalendar;
   setCalendarAccounts: any;
 }) {
   const { calendar, setCalendarAccounts } = props;
@@ -98,7 +101,7 @@ function CalendarEntry(props: {
       // We are unchecking a calendar
       setCalendarAccounts((draft) => {
         for (const account of draft) {
-          if (account.accountEmail == calendar.googleAccount) {
+          if (account.accountEmail == calendar.accountEmail) {
             for (const accountCalendar of account.calendars) {
               if (accountCalendar.name == calendar.name) {
                 accountCalendar.selectedForDisplay = false;
@@ -112,7 +115,7 @@ function CalendarEntry(props: {
       // We are checking a calendar
       setCalendarAccounts((draft) => {
         for (const account of draft) {
-          if (account.accountEmail == calendar.googleAccount) {
+          if (account.accountEmail == calendar.accountEmail) {
             for (const accountCalendar of account.calendars) {
               if (accountCalendar.name == calendar.name) {
                 accountCalendar.selectedForDisplay = true;

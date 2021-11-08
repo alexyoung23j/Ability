@@ -87,15 +87,16 @@ export interface CalendarIndexFilter {
   duration: number | null;
 }
 
-export interface Calendar {
+export interface AbilityCalendar {
   name: string;
   color: string;
-  googleAccount?: string;
+  accountEmail: string;
+  calendarId: string;
   selectedForDisplay?: boolean;
 }
 
 export interface RegisteredAccount {
-  calendars: Array<Calendar>;
+  calendars: Array<AbilityCalendar>;
   accountEmail: string;
 }
 

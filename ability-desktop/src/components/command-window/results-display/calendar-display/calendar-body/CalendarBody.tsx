@@ -2,9 +2,13 @@ import React, { useRef, useState, useEffect } from 'react';
 import CSS from 'csstype';
 import HorizontalCalendar from '../horizontal-cal-components/HorizontalCalendar';
 import EventModal from './event-modal/EventModal';
-import { RegisteredAccount, Calendar } from '../../../../../constants/types';
+import {
+  RegisteredAccount,
+  AbilityCalendar,
+} from '../../../../../constants/types';
 import { DateTime } from 'luxon';
 import { BAR_WIDTH } from '../../../../util/command-view-util/CalendarViewUtil';
+import { Color } from 'components/util/command-view-util/CalendarIndexUtil';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -34,8 +38,11 @@ interface CalendarBody {
   setModalEventTitle: any;
   modalEventLocation: string;
   setModalEventLocation: any;
-  modalEventCalendar: Calendar;
-  setModalEventCalendar: any;
+  modalEventCalendar: AbilityCalendar;
+  setModalEventCalendar: (eventCalendar: {
+    name: string;
+    color: Color;
+  }) => void;
   modalEventDescription: string;
   setModalEventDescription: any;
 }

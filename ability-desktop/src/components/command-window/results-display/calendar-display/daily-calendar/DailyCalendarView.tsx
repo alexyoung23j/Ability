@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DateTime } from 'luxon';
-import { Calendar } from '../../../../../constants/types';
+import { AbilityCalendar } from '../../../../../constants/types';
 
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
@@ -21,7 +21,7 @@ interface DailyCalendarViewProps {
   setModalEventTitle: any;
   modalEventLocation: string;
   setModalEventLocation: any;
-  modalEventCalendar: Calendar;
+  modalEventCalendar: AbilityCalendar;
   setModalEventCalendar: any;
   modalEventDescription: string;
   setModalEventDescription: any;
