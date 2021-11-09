@@ -1,3 +1,8 @@
+import {
+  FreeBlock,
+  CalendarResultEvent,
+} from 'components/command-window/results-display/engines/ResultEngine';
+
 const { DateTime } = require('luxon');
 
 var nodeConsole = require('console');
@@ -256,6 +261,26 @@ export function generatePickerTimeOptions(
 
 // ------------------------------------- RESULT ENGINE STUFF ---------------------------- //
 
+/**
+ *
+ * @param hard_start The hard start limit
+ * @param hard_stop the hard stop limit
+ * @param min_duration The smallest value (in minutes) that a block can be. This might be redundant, remove it later
+ * @param slot_size The size of the slots (in minutes)
+ * @param interval_size The interval size in minutes. For instance, an interval of 15 will cause a block starting at 9:42 to be adjusted to 9:45
+ * @param events The CalendarResultEvents that correspond to this day. Sorted by start time
+ */
+export function CalculateFreeBlocks2(
+  hard_start: string,
+  hard_stop: string,
+  min_duration: number,
+  slot_size: number,
+  interval_size: number,
+  events: Array<CalendarResultEvent>
+): Array<FreeBlock> {
+  let blocks = [];
+}
+
 // Takes in information about a given day, creates the free blocks and slots corresponding to that day
 // Remember, events are listed in order of start time
 export function CalculateFreeBlocks(
@@ -274,7 +299,6 @@ export function CalculateFreeBlocks(
   }>
 ) {
   let blocks = [];
-  console.log(hard_stop);
 
   if (events.length < 1) {
     const newBlock = {

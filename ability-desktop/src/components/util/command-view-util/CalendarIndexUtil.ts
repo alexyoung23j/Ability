@@ -23,6 +23,7 @@ export interface CalendarIndexEvent {
   summary: string;
   id: string;
   accountEmail: string;
+  isAllDayEvent: boolean;
 }
 
 // Organized by start time
@@ -268,7 +269,7 @@ export function parseCalendarApiResponse(eventsByCalendar: {
           id,
         } = singleDayEventFromServer;
 
-        const event: CalendarIndexEvent = {
+        let event: CalendarIndexEvent = {
           startTime,
           endTime,
           color: Color.BLUE,
@@ -277,7 +278,15 @@ export function parseCalendarApiResponse(eventsByCalendar: {
           summary,
           id: id!,
           accountEmail,
+          isAllDayEvent: false,
         };
+
+        const { start: startAsGapiGivesUs } = singleDayEventFromServer;
+
+        // Check if the field is "date"; if so, this is an all day event, and should be handled accordingly
+        if ('date' in startAsGapiGivesUs) {
+          event.isAllDayEvent = true;
+        }
 
         // Insert at index: _getIndexInDay()
         days[dayIndex].events.splice(

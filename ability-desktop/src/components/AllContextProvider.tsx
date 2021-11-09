@@ -49,15 +49,17 @@ export const RegisteredAccountToCalendarsContext = React.createContext<{
 });
 
 // Context that requires setters
-export const CalendarIndexContext = React.createContext<{
-  calendarIndex: CalendarIndex;
-  setCalendarIndex: Updater<CalendarIndex>;
-} | null>(null);
+export const CalendarIndexContext =
+  React.createContext<{
+    calendarIndex: CalendarIndex;
+    setCalendarIndex: Updater<CalendarIndex>;
+  } | null>(null);
 
-export const GlobalSettingsContext = React.createContext<{
-  globalUserSettings: GlobalUserSettings;
-  setGlobalUserSettings: Updater<GlobalUserSettings>;
-} | null>(null);
+export const GlobalSettingsContext =
+  React.createContext<{
+    globalUserSettings: GlobalUserSettings;
+    setGlobalUserSettings: Updater<GlobalUserSettings>;
+  } | null>(null);
 
 // ---------------- Methods that should be elsewhere/are temp -------- //
 export function useFirebaseSignIn() {
@@ -104,7 +106,6 @@ export default function AllContextProvider(props: AllContextProviderProps) {
   // TODO: change this to be initialized with null whenever we make loadGlobalSettings async
   const [globalUserSettings, setGlobalUserSettings] =
     useImmer<GlobalUserSettings>(loadGlobalSettings());
-  console.log('global user settings');
 
   const [registeredAccountToCalendars, setRegisteredAccountToCalendars] =
     useImmer<RegisteredAccountToCalendars | null>(null);

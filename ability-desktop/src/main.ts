@@ -136,7 +136,12 @@ app
   .then(async () => {
     await session.defaultSession.loadExtension(reactDevToolsPath);
   })
-  .then(createSentinelWindow);
+  .then(createSentinelWindow)
+  .then(() => {
+    const win = BrowserWindow.getAllWindows()[0];
+    const ses = win.webContents.session;
+    ses.clearStorageData();
+  });
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
