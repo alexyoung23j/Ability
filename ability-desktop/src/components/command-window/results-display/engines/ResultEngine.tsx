@@ -88,7 +88,6 @@ export default function ResultEngine(props: ResultEngineProps) {
   const [ignoreSlots, setIgnoreSlots] = useState([]); // The free slots that get ignored by the text engine
   const [textEngineLaunched, setTextEngineLaunched] = useState(false); // Defines if our text engine is launched
   const [initialIgnoredSlotsSet, setInitialIgnoredSlotSet] = useState(false);
-  console.log('Filtered: ', filteredCalendarData);
 
   let textSnippetArray = demo1ArrayOfSnippets[0]; // DUMMY: The text snippets
 

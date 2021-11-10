@@ -279,7 +279,14 @@ export function CalculateFreeBlocks2(
   events: Array<CalendarResultEvent>
 ): Array<FreeBlock> {
   let blocks = [];
+
+  const firstBlockStartNotAdjusted = _calculateFirstStart(hard_start, events);
 }
+
+function _calculateFirstStart(
+  hard_start: string,
+  events: Array<CalendarResultEvent>
+): DateTime {}
 
 // Takes in information about a given day, creates the free blocks and slots corresponding to that day
 // Remember, events are listed in order of start time
@@ -299,6 +306,8 @@ export function CalculateFreeBlocks(
   }>
 ) {
   let blocks = [];
+
+  console.log('Events as they are ordered: ', events);
 
   if (events.length < 1) {
     const newBlock = {

@@ -281,10 +281,11 @@ export function parseCalendarApiResponse(eventsByCalendar: {
           isAllDayEvent: false,
         };
 
-        const { start: startAsGapiGivesUs } = singleDayEventFromServer;
+        const { start: startAsGapiGivesUs, end: endAsGapiGivesUs } =
+          singleDayEventFromServer;
 
         // Check if the field is "date"; if so, this is an all day event, and should be handled accordingly
-        if ('date' in startAsGapiGivesUs) {
+        if ('date' in startAsGapiGivesUs || 'date' in endAsGapiGivesUs) {
           event.isAllDayEvent = true;
         }
 
