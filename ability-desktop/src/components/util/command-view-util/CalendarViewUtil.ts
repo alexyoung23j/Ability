@@ -307,8 +307,6 @@ export function CalculateFreeBlocks(
 ) {
   let blocks = [];
 
-  console.log('Events as they are ordered: ', events);
-
   if (events.length < 1) {
     const newBlock = {
       start_time: hard_start,

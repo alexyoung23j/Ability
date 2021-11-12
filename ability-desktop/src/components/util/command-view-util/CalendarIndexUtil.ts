@@ -72,6 +72,11 @@ function _getEventIndexInDay(
   eventsInDay: Array<CalendarIndexEvent>,
   eventToAdd: EventFromServer
 ) {
+  if ('date' in eventToAdd.start || 'date' in eventToAdd.end) {
+    // We default to have all the All Day Events at the start of the array
+    return 0;
+  }
+
   for (const [idx, event] of eventsInDay.entries()) {
     assert(eventToAdd.start != null, "Calendar event doesn't have start");
 
