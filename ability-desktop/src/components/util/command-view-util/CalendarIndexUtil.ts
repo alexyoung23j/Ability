@@ -284,7 +284,7 @@ export function parseCalendarApiResponse(eventsByCalendar: {
           id,
         } = singleDayEventFromServer;
 
-        let event: CalendarIndexEvent = {
+        const event: CalendarIndexEvent = {
           startTime,
           endTime,
           color: Color.BLUE,

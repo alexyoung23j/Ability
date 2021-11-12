@@ -179,8 +179,8 @@ export default function ResultEngine(props: ResultEngineProps) {
           let eventCalendar = event.calendar;
 
           if (
-            _IsSelected(eventCalendar.name, eventCalendar.accountEmail) &&
-            !event.isAllDayEvent
+            !event.isAllDayEvent &&
+            _IsSelected(eventCalendar.name, eventCalendar.accountEmail)
           ) {
             validEvents.push(event);
           }
@@ -205,7 +205,6 @@ export default function ResultEngine(props: ResultEngineProps) {
       });
     } else {
       // if text engine not launched, make intervals 30 minutes
-
       setIgnoreSlots([]);
       setFilteredCalendarData((draft) => {
         for (var i = 0; i < calendarResultData.days.length; i++) {
