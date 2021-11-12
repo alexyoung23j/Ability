@@ -187,7 +187,6 @@ export default function ResultEngine(props: ResultEngineProps) {
         }
 
         draft.days[i].events = validEvents;
-        console.log('num events here', draft.days[0].events.length);
       }
     });
 
@@ -209,7 +208,6 @@ export default function ResultEngine(props: ResultEngineProps) {
 
       setIgnoreSlots([]);
       setFilteredCalendarData((draft) => {
-        console.log('num events', draft.days[0].events.length);
         for (var i = 0; i < calendarResultData.days.length; i++) {
           draft.days[i].free_blocks = CalculateFreeBlocks(
             draft.days[i].hard_start,

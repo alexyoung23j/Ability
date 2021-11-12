@@ -1,5 +1,7 @@
 import { EventFromServer } from 'DAO/CalendarDAO';
+import produce from 'immer';
 import { DateTime } from 'luxon';
+import { ScriptElementKindModifier } from 'typescript';
 import { CalendarIndex } from '../../../components/AllContextProvider';
 
 import { assert } from '../assert';
@@ -11,6 +13,41 @@ const NUM_DAYS = Math.ceil(365 / 2) + 365;
 
 export const enum Color {
   BLUE = 'BLUE',
+}
+
+function eventComparator(
+  event1: CalendarIndexEvent,
+  event2: CalendarIndexEvent
+): -1 | 0 | 1 {
+  const getDateTime = (time: gapi.client.calendar.EventDateTime) =>
+    time.dateTime ?? time.date!;
+
+  if (event1.isAllDayEvent || event2.isAllDayEvent) {
+    if (event1.isAllDayEvent && event2.isAllDayEvent) {
+      return 0;
+    } else if (event1.isAllDayEvent) {
+      return -1;
+    }
+    return 1;
+  }
+  const event1Start = DateTime.fromISO(getDateTime(event1.startTime));
+  const event2Start = DateTime.fromISO(getDateTime(event2.startTime));
+  const event1End = DateTime.fromISO(getDateTime(event1.endTime));
+  const event2End = DateTime.fromISO(getDateTime(event2.endTime));
+
+  // Compare start times
+  if (event1Start < event2Start) {
+    return -1;
+  } else if (event1Start > event2Start) {
+    return 1;
+  }
+  // Compare end times
+  if (event1End < event2End) {
+    return -1;
+  } else if (event1End > event2End) {
+    return 1;
+  }
+  return 0;
 }
 
 export interface CalendarIndexEvent {
@@ -68,36 +105,9 @@ export function mapDateToIndex(
   }
 }
 
-function _getEventIndexInDay(
-  eventsInDay: Array<CalendarIndexEvent>,
-  eventToAdd: EventFromServer
-) {
-  if ('date' in eventToAdd.start || 'date' in eventToAdd.end) {
-    // We default to have all the All Day Events at the start of the array
-    return 0;
-  }
-
-  for (const [idx, event] of eventsInDay.entries()) {
-    assert(eventToAdd.start != null, "Calendar event doesn't have start");
-
-    // Sort by start time, then end time.
-    if (event.startTime == eventToAdd.start) {
-      assert(eventToAdd.end != null, "Calendar event doesn't have end");
-      if (event.endTime > eventToAdd.end) {
-        return idx + 1;
-      }
-    }
-    if (event.startTime > eventToAdd.start) {
-      return idx + 1;
-    }
-  }
-  return eventsInDay.length;
-}
-
-// TODO kedar: return the events / days in a region of time specified by query
-type IndexRange = undefined;
-function getEventsInRangeFromIndex(range: IndexRange): Array<CalendarIndexDay> {
-  return [];
+// TODO: see if there's a better way to identify whether an event is all day
+function isAllDayEvent(event: EventFromServer): boolean {
+  return event.start.date != null || event.end.date != null;
 }
 
 export function splitMultiDayEvent(
@@ -283,28 +293,22 @@ export function parseCalendarApiResponse(eventsByCalendar: {
           summary,
           id: id!,
           accountEmail,
-          isAllDayEvent: false,
+          isAllDayEvent: isAllDayEvent(singleDayEventFromServer),
         };
 
-        const { start: startAsGapiGivesUs, end: endAsGapiGivesUs } =
-          singleDayEventFromServer;
-
-        // Check if the field is "date"; if so, this is an all day event, and should be handled accordingly
-        if ('date' in startAsGapiGivesUs || 'date' in endAsGapiGivesUs) {
-          event.isAllDayEvent = true;
-        }
-
-        // Insert at index: _getIndexInDay()
-        days[dayIndex].events.splice(
-          _getEventIndexInDay(days[dayIndex].events, singleDayEventFromServer),
-          0,
-          event
-        );
+        // Insert event at respective dayIndex
+        days[dayIndex].events.push(event);
       }
     }
   }
+  // TODO: check if this is performant for a lot of events
+  const sortedDays = produce(days, (draftDays) => {
+    for (const [dayIdx, { events }] of draftDays.entries()) {
+      draftDays[dayIdx].events = events.sort(eventComparator);
+    }
+  });
 
-  return days;
+  return sortedDays;
 }
 
 export function _printCalendarIndex(days: Array<CalendarIndexDay>): void {
