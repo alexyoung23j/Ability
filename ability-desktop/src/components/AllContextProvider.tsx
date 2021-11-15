@@ -120,6 +120,7 @@ export default function AllContextProvider(props: AllContextProviderProps) {
           calendarIndex: CalendarIndex;
           registeredAccountToCalendars: RegisteredAccountToCalendars;
         }) => {
+          console.log('The Index:', calendarIndex);
           setCalendarIndex(calendarIndex);
           setRegisteredAccountToCalendars(registeredAccountToCalendars);
         }
