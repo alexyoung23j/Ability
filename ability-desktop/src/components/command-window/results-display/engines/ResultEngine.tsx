@@ -24,7 +24,7 @@ const redirect = require('/src/content/svg/Redirect.svg');
 var nodeConsole = require('console');
 var myConsole = new nodeConsole.Console(process.stdout, process.stderr);
 
-type FreeBlock = any;
+export type FreeBlock = any;
 export interface CalendarResultEvent {
   start_time: string;
   end_time: string;
@@ -33,6 +33,7 @@ export interface CalendarResultEvent {
   color: string;
   calendar: AbilityCalendar;
   index_of_overlapped_events: Array<number>;
+  isAllDayEvent: boolean;
 }
 
 export interface CalendarResultDay {
@@ -177,7 +178,10 @@ export default function ResultEngine(props: ResultEngineProps) {
         for (const event of currentDay.events) {
           let eventCalendar = event.calendar;
 
-          if (_IsSelected(eventCalendar.name, eventCalendar.accountEmail)) {
+          if (
+            !event.isAllDayEvent &&
+            _IsSelected(eventCalendar.name, eventCalendar.accountEmail)
+          ) {
             validEvents.push(event);
           }
         }

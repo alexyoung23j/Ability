@@ -44,7 +44,6 @@ export async function loadCalendarData(
     registeredAccountToCalendars: RegisteredAccountToCalendars;
   }) => void
 ) {
-  console.log('Fetching calendar data');
   // Get current user from firebase
   const userCalendarInfos = await getCalendarInfos();
   const allEventsByCalendar: {
@@ -68,7 +67,6 @@ export async function loadCalendarData(
     const calendars = await getCalendars();
 
     for (const calendarFromServer of calendars) {
-      console.log('calendar:', calendarFromServer);
       const abilityCalendar = transformCalendarFromServerToAbilityCalendar(
         calendarFromServer,
         accountEmail

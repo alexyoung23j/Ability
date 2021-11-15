@@ -80,6 +80,10 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     setSelectedDayIdx,
   } = props;
 
+  const registeredAccountToCalendars = useContext(
+    RegisteredAccountToCalendarsContext
+  ).registeredAccountToCalendars!;
+
   // State
   const [currentlyHoveredEventIdx, setCurrentlyHoveredEventIdx] = useState(-1); // refers to the index in "events" being hovered
   const [currentlySelectedEventIdx, setCurrentlySelectedEventIdx] =
@@ -145,9 +149,7 @@ export default function HorizontalCalendar(props: HorizontalCalendar) {
     setModalEventDescription('');
 
     // TODO: make this better pls
-    const registeredAccountToCalendars = useContext(
-      RegisteredAccountToCalendarsContext
-    ).registeredAccountToCalendars!;
+
     const randomCalendar = Object.values(registeredAccountToCalendars)[0][0];
 
     setModalEventCalendar(randomCalendar);

@@ -35,7 +35,7 @@ export async function getCalendars(): Promise<
 export async function getCalendarEvents(
   calendarId: string,
   { timeMin, timeMax }: { timeMin?: string; timeMax?: string } = {
-    timeMin: DateTime.now().startOf('day').toISO(),
+    timeMin: DateTime.now().minus({ days: 7 }).startOf('day').toISO(),
     timeMax: DateTime.now().plus({ years: 1 }).endOf('day').toISO(),
   }
 ): Promise<Array<EventFromServer>> {
