@@ -51,9 +51,9 @@ export function buildTimeMap(
     }
     // Find out when the event is in terms of minutes
     const eventStartMinute = getEventStartMinute(event);
-    const eventDurationMinutes =
-      DateTime.fromISO(event.endTime.dateTime!).minute -
-      DateTime.fromISO(event.startTime.dateTime!).minute;
+    const eventDurationMinutes = DateTime.fromISO(event.endTime.dateTime!)
+      .diff(DateTime.fromISO(event.startTime.dateTime!), ['minutes'])
+      .toObject().minutes!;
     const eventStartTimeDateTime = DateTime.fromISO(event.startTime.dateTime!);
     const eventEndTimeDateTime = DateTime.fromISO(event.endTime.dateTime!);
 
@@ -70,77 +70,31 @@ export function buildTimeMap(
       trayTextSetter
     );
 
+    console.log('Data: ', eventStartMinute, eventDurationMinutes);
+
     for (
       let index = eventStartMinute - minutesBeforeDisplay;
       index < eventStartMinute + eventDurationMinutes;
       index++
     ) {
+      const indexInJobsArr = index - (eventStartMinute - minutesBeforeDisplay);
+      const isPrelude = index < eventStartMinute;
+      console.log('index: ', index, isPrelude);
       const notificationJob: NotificationJob = {
-        isPrelude: true,
-        job: preludeJobs[index],
+        isPrelude: isPrelude,
+        job: preludeJobs[indexInJobsArr],
         associatedEvent: [event],
         eventStartTime: eventStartTimeDateTime,
         eventEndTime: eventEndTimeDateTime,
       };
+
+      if (timeMap[index] != null) {
+        timeMap[index].push(notificationJob);
+      } else {
+        timeMap[index] = [notificationJob];
+      }
     }
   }
-
-  console.log(calendarIndexDay);
-
-  // Dummy Data:
-
-  /* const firstJob = scheduleEventNotificationStream(
-    1,
-    'Event 1',
-    'Event 1',
-    4,
-    DateTime.now().startOf('minute').plus({ minutes: 2 }),
-    trayTextSetter
-  );
-
-  const secondJob = scheduleEventNotificationStream(
-    1,
-    'Event 2',
-    'Event 2',
-    2,
-    DateTime.now().startOf('minute').plus({ minutes: 3 }),
-    trayTextSetter
-  );
-
-  let i = currentMin + 1;
-
-  for (const job of firstJob) {
-    timeMap[i] = [
-      {
-        isPrelude:
-          job.scheduledExecutionTime <
-          DateTime.now().startOf('minute').plus({ minutes: 2 })
-            ? true
-            : false, // innacurate
-        job: job,
-        associatedEvent: null,
-        eventStartTime: DateTime.now().startOf('minute').plus({ minutes: 2 }),
-        eventEndTime: DateTime.now().startOf('minute').plus({ minutes: 6 }),
-      },
-    ];
-    i += 1;
-  } */
-
-  /*   i = currentMin + 2;
-  for (const job of secondJob) {
-    timeMap[i].push({
-      isPrelude:
-        job.scheduledExecutionTime <
-        DateTime.now().startOf('minute').plus({ minutes: 3 })
-          ? true
-          : false, // innacurate
-      job: job,
-      associatedEvent: null,
-      eventStartTime: DateTime.now().startOf('minute').plus({ minutes: 3 }),
-      eventEndTime: DateTime.now().startOf('minute').plus({ minutes: 5 }),
-    });
-    i += 1;
-  } */
 
   return timeMap;
 }
@@ -161,12 +115,15 @@ export function runNotificationEngine(
   const currentMinute = getCurrentMinute();
   const nextMinute = currentMinute + 1;
 
+  console.log('curMin: ', currentMinute);
+
   // Cancel the job that was just running
   if (jobCurrentlyExecuting != null) {
     jobCurrentlyExecuting.cancel();
   }
 
   // Run the notification job that we have queued up
+  console.log('should be running next job: ', jobScheduledNext);
   const scheduledNotificationJob = scheduleSingleInstanceJob(
     jobScheduledNext.job
   );
@@ -193,6 +150,7 @@ export function createNextMinuteJob(
     .plus({ minutes: 1, seconds: 0.5 });
 
   if (!(nextMinute in notificationTimeMap)) {
+    console.log('next scheduled is empty');
     // Create an empty string notification
     const job: ScheduledSingledInstanceJob = {
       scheduledExecutionTime: timeToStartNextMinute,
@@ -200,7 +158,7 @@ export function createNextMinuteJob(
       extendBeyondActiveSession: false,
     };
 
-    const now = DateTime.now();
+    const now = DateTime.now().startOf('minute');
     return {
       isPrelude: false,
       job: job,

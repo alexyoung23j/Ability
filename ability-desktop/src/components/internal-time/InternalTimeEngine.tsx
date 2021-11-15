@@ -49,13 +49,7 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
   // --------------------------- START NOTIFICATIONS CODE ------------------- //
 
   const [notificationTimeMap, setNotificationTimeMap, notificationTimeMapRef] =
-    useStateRef<NotificationTimeMap>(
-      buildTimeMap(
-        calendarIndex[mapDateToIndex(DateTime.now(), calendarIndex[0].date)],
-        setTrayText,
-        globalUserSettings
-      )
-    );
+    useStateRef<NotificationTimeMap>({});
 
   const [jobScheduledNext, setJobScheduledNext, jobScheduledNextRef] =
     useStateRef<NotificationJob | null>(null);
@@ -68,7 +62,7 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
 
   // Schedule periodic query of the notificationTimeMap
   const masterJob: ScheduledRecurringJob = {
-    scheduledRecurrenceRule: { second: 0 }, // TODO: this isn't quite right, its not logging eevery 10 secobds, fix this
+    scheduledRecurrenceRule: { second: 0 },
     callback: () => {
       runNotificationEngine(
         notificationTimeMapRef.current,
@@ -85,6 +79,8 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
 
   useEffect(() => {
     // Initialize the scheduled next job
+
+    console.log('Map: ', notificationTimeMap);
     const currentMinute = getCurrentMinute();
     if (
       notificationTimeMap != null &&
@@ -97,8 +93,6 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
           buildUnion(notificationTimeMap[currentMinute + 1], setTrayText)
         );
       }
-
-      console.log('scheduled job based on map');
     } else if (notificationTimeMap != null) {
       // We should schedule an empty string job since there is no next minute in our timemap
       const timeToStartNextMinute = DateTime.now()
@@ -119,9 +113,8 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
         eventEndTime: now.plus({ minutes: 2 }),
       };
       setJobScheduledNext(nextJob);
-      console.log('scheduled job based on empty map');
     }
-  }, []);
+  }, [notificationTimeMap]);
 
   useEffect(() => {
     scheduleRecurringJob(masterJob);
@@ -130,6 +123,14 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
   // Listen to for updates to CalendarIndex
   useEffect(() => {
     // TODO: Rebuild time map intelligently (if we see a change has occured)
+    console.log('rebuilding timemap because calendar Index updated');
+    setNotificationTimeMap(
+      buildTimeMap(
+        calendarIndex[mapDateToIndex(DateTime.now(), calendarIndex[0].date)],
+        setTrayText,
+        globalUserSettings
+      )
+    );
   }, [calendarIndex]);
 
   // --------------------------- END NOTIFICATIONS CODE ------------------- //
