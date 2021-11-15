@@ -23,18 +23,69 @@ export interface NotificationTimeMap {
   [key: number]: Array<NotificationJob>;
 }
 
+function getEventStartMinute(event: CalendarIndexEvent): number {
+  const startDateTime = DateTime.fromISO(event.startTime.dateTime!);
+  return startDateTime.minute + 60 * startDateTime.hour;
+}
+
 export function buildTimeMap(
   calendarIndexDay: CalendarIndexDay,
   trayTextSetter: (payload: string) => void,
   globalUserSettings: GlobalUserSettings
 ) {
+  if (!globalUserSettings.notificationSettings.notificationsEnabled) {
+    // User doesnt want notifications
+    return {};
+  }
   // TODO: Build actual time map
 
   let timeMap: NotificationTimeMap = {};
   const currentMin = getCurrentMinute();
 
+  const minutesBeforeDisplay =
+    globalUserSettings.notificationSettings.minutesBeforeDisplay;
+
   for (const event of calendarIndexDay.events) {
+    if (event.isAllDayEvent) {
+      continue;
+    }
+    // Find out when the event is in terms of minutes
+    const eventStartMinute = getEventStartMinute(event);
+    const eventDurationMinutes =
+      DateTime.fromISO(event.endTime.dateTime!).minute -
+      DateTime.fromISO(event.startTime.dateTime!).minute;
+    const eventStartTimeDateTime = DateTime.fromISO(event.startTime.dateTime!);
+    const eventEndTimeDateTime = DateTime.fromISO(event.endTime.dateTime!);
+
+    // Using the global settings, put the jobs in the appropriate timeslots
+
+    // Build Preludes
+
+    const preludeJobs = scheduleEventNotificationStream(
+      minutesBeforeDisplay,
+      event.summary,
+      event.summary,
+      eventDurationMinutes,
+      eventStartTimeDateTime,
+      trayTextSetter
+    );
+
+    for (
+      let index = eventStartMinute - minutesBeforeDisplay;
+      index < eventStartMinute + eventDurationMinutes;
+      index++
+    ) {
+      const notificationJob: NotificationJob = {
+        isPrelude: true,
+        job: preludeJobs[index],
+        associatedEvent: [event],
+        eventStartTime: eventStartTimeDateTime,
+        eventEndTime: eventEndTimeDateTime,
+      };
+    }
   }
+
+  console.log(calendarIndexDay);
 
   // Dummy Data:
 
