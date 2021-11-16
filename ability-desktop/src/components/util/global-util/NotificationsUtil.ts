@@ -23,133 +23,125 @@ export interface NotificationTimeMap {
   [key: number]: Array<NotificationJob>;
 }
 
+/**
+ * Builds the Time Map based on the calendarIndexDay corresponding to "today"
+ * @param calendarIndexDay
+ * @param trayTextSetter
+ * @param globalUserSettings
+ */
 export function buildTimeMap(
   calendarIndexDay: CalendarIndexDay,
   trayTextSetter: (payload: string) => void,
   globalUserSettings: GlobalUserSettings
 ) {
+  if (!globalUserSettings.notificationSettings.notificationsEnabled) {
+    // User doesnt want notifications
+    return {};
+  }
   // TODO: Build actual time map
 
   let timeMap: NotificationTimeMap = {};
   const currentMin = getCurrentMinute();
 
+  const minutesBeforeDisplay =
+    globalUserSettings.notificationSettings.minutesBeforeDisplay;
+
   for (const event of calendarIndexDay.events) {
+    if (event.isAllDayEvent) {
+      continue;
+    }
+    // Find out when the event is in terms of minutes
+    const eventStartMinute = getEventStartMinute(event);
+    const eventDurationMinutes = DateTime.fromISO(event.endTime.dateTime!)
+      .diff(DateTime.fromISO(event.startTime.dateTime!), ['minutes'])
+      .toObject().minutes!;
+    const eventStartTimeDateTime = DateTime.fromISO(event.startTime.dateTime!);
+    const eventEndTimeDateTime = DateTime.fromISO(event.endTime.dateTime!);
+
+    // Using the global settings, put the jobs in the appropriate timeslots
+
+    // Build Preludes
+
+    const preludeJobs = scheduleEventNotificationStream(
+      minutesBeforeDisplay,
+      event.summary,
+      event.summary,
+      eventDurationMinutes,
+      eventStartTimeDateTime,
+      trayTextSetter
+    );
+
+    for (
+      let index = eventStartMinute - minutesBeforeDisplay;
+      index < eventStartMinute + eventDurationMinutes;
+      index++
+    ) {
+      const indexInJobsArr = index - (eventStartMinute - minutesBeforeDisplay);
+      const isPrelude = index < eventStartMinute;
+      const notificationJob: NotificationJob = {
+        isPrelude: isPrelude,
+        job: preludeJobs[indexInJobsArr],
+        associatedEvent: [event],
+        eventStartTime: eventStartTimeDateTime,
+        eventEndTime: eventEndTimeDateTime,
+      };
+
+      if (timeMap[index] != null) {
+        timeMap[index].push(notificationJob);
+      } else {
+        timeMap[index] = [notificationJob];
+      }
+    }
   }
-
-  // Dummy Data:
-
-  /* const firstJob = scheduleEventNotificationStream(
-    1,
-    'Event 1',
-    'Event 1',
-    4,
-    DateTime.now().startOf('minute').plus({ minutes: 2 }),
-    trayTextSetter
-  );
-
-  const secondJob = scheduleEventNotificationStream(
-    1,
-    'Event 2',
-    'Event 2',
-    2,
-    DateTime.now().startOf('minute').plus({ minutes: 3 }),
-    trayTextSetter
-  );
-
-  let i = currentMin + 1;
-
-  for (const job of firstJob) {
-    timeMap[i] = [
-      {
-        isPrelude:
-          job.scheduledExecutionTime <
-          DateTime.now().startOf('minute').plus({ minutes: 2 })
-            ? true
-            : false, // innacurate
-        job: job,
-        associatedEvent: null,
-        eventStartTime: DateTime.now().startOf('minute').plus({ minutes: 2 }),
-        eventEndTime: DateTime.now().startOf('minute').plus({ minutes: 6 }),
-      },
-    ];
-    i += 1;
-  } */
-
-  /*   i = currentMin + 2;
-  for (const job of secondJob) {
-    timeMap[i].push({
-      isPrelude:
-        job.scheduledExecutionTime <
-        DateTime.now().startOf('minute').plus({ minutes: 3 })
-          ? true
-          : false, // innacurate
-      job: job,
-      associatedEvent: null,
-      eventStartTime: DateTime.now().startOf('minute').plus({ minutes: 3 }),
-      eventEndTime: DateTime.now().startOf('minute').plus({ minutes: 5 }),
-    });
-    i += 1;
-  } */
 
   return timeMap;
 }
 
+/**
+ * Cron Job that runs every 10 seconds, creating and executing notification jobs
+ * @param notificationTimeMap
+ * @param jobCurrentlyExecuting
+ * @param setJobCurrentlyExecuting
+ * @param trayTextSetter
+ */
 export function runNotificationEngine(
   notificationTimeMap: NotificationTimeMap,
-  setNotificationTimeMap: Updater<NotificationTimeMap>,
-  jobScheduledNext: NotificationJob | null,
-  setJobScheduledNext: Updater<NotificationJob | null>,
   jobCurrentlyExecuting: Job | null,
   setJobCurrentlyExecuting: Updater<Job | null>,
   trayTextSetter: (payload: string) => void
 ) {
-  if (jobScheduledNext == null) {
-    return;
-  }
-
-  const currentMinute = getCurrentMinute();
-  const nextMinute = currentMinute + 1;
+  const notifJob = createCurrentJob(notificationTimeMap, trayTextSetter);
 
   // Cancel the job that was just running
   if (jobCurrentlyExecuting != null) {
     jobCurrentlyExecuting.cancel();
   }
 
-  // Run the notification job that we have queued up
   const scheduledNotificationJob = scheduleSingleInstanceJob(
-    jobScheduledNext.job
+    notifJob!.job,
+    DateTime.now().plus({ seconds: 0.5 })
   );
-
   setJobCurrentlyExecuting(scheduledNotificationJob);
-
-  // Build the next job
-  const nextMinuteJob = createNextMinuteJob(
-    notificationTimeMap,
-    trayTextSetter
-  );
-  setJobScheduledNext(nextMinuteJob);
 }
 
-export function createNextMinuteJob(
+/**
+ * Builds NotificationJob Objects
+ */
+function createCurrentJob(
   notificationTimeMap: NotificationTimeMap,
   trayTextSetter: (payload: string) => void
 ): NotificationJob | null {
   const currentMinute = getCurrentMinute();
-  const nextMinute = currentMinute + 1;
 
-  const timeToStartNextMinute = DateTime.now()
-    .startOf('minute')
-    .plus({ minutes: 1, seconds: 0.5 });
-
-  if (!(nextMinute in notificationTimeMap)) {
-    // Create an empty string notification
+  if (!(currentMinute in notificationTimeMap)) {
+    // Empty String Option
     const job: ScheduledSingledInstanceJob = {
-      scheduledExecutionTime: timeToStartNextMinute,
+      scheduledExecutionTime: DateTime.now().plus({ seconds: 0.5 }),
       callback: () => trayTextSetter(''),
       extendBeyondActiveSession: false,
     };
 
-    const now = DateTime.now();
+    const now = DateTime.now().startOf('minute');
     return {
       isPrelude: false,
       job: job,
@@ -159,18 +151,30 @@ export function createNextMinuteJob(
     };
   }
 
-  const jobs = notificationTimeMap[nextMinute];
+  const jobs = notificationTimeMap[currentMinute];
 
   return jobs.length === 1 ? jobs[0] : buildUnion(jobs, trayTextSetter);
 }
 
-export function buildUnion(
+/**
+ * Creates a union job when we have more than one job at a given minute index in our notificatonMap
+ * @param jobs
+ * @param trayTextSetter
+ */
+function buildUnion(
   jobs: Array<NotificationJob>,
   trayTextSetter: (payload: string) => void
 ): NotificationJob | null {
   // logic to union the events
 
   const allStartAtSameTime = jobsStartAtSameTime(jobs);
+  let events: Array<CalendarIndexEvent> = [];
+
+  for (const job of jobs) {
+    for (const event of job.associatedEvent!) {
+      events.push(event);
+    }
+  }
 
   if (allStartAtSameTime) {
     const eventsStartTime = jobs[0].eventStartTime;
@@ -179,12 +183,9 @@ export function buildUnion(
 
       const numEvents = jobs.length;
       const titleString = ' Now: ' + numEvents.toString() + ' events';
-      const timeToStartNextMinute = DateTime.now()
-        .startOf('minute')
-        .plus({ minutes: 1, seconds: 0.5 });
 
       const job: ScheduledSingledInstanceJob = {
-        scheduledExecutionTime: timeToStartNextMinute,
+        scheduledExecutionTime: DateTime.now(), // This doesn't matter now
         callback: () => trayTextSetter(titleString),
         extendBeyondActiveSession: false,
       };
@@ -193,14 +194,15 @@ export function buildUnion(
       return {
         isPrelude: false,
         job: job,
-        associatedEvent: null, // TODO: add all events
-        eventStartTime: now.plus({ minutes: 1 }),
-        eventEndTime: now.plus({ minutes: 2 }),
+        associatedEvent: events,
+        eventStartTime: now,
+        eventEndTime: now.plus({ minutes: 1 }),
       };
     } else {
       // Its a prelude event so we build preludes
-      const minutesUntilEvents =
-        DateTime.now().startOf('minute').diff(eventsStartTime).minutes + 1;
+      const minutesUntilEvents = eventsStartTime
+        .diff(DateTime.now().startOf('minute'), ['minutes'])
+        .toObject().minutes!;
 
       const numEvents = jobs.length;
       const titleString =
@@ -209,23 +211,20 @@ export function buildUnion(
         ' mins: ' +
         numEvents.toString() +
         ' events';
-      const timeToStartNextMinute = DateTime.now()
-        .startOf('minute')
-        .plus({ minutes: 1, seconds: 0.5 });
+      const now = DateTime.now();
 
       const job: ScheduledSingledInstanceJob = {
-        scheduledExecutionTime: timeToStartNextMinute,
+        scheduledExecutionTime: now,
         callback: () => trayTextSetter(titleString),
         extendBeyondActiveSession: false,
       };
 
-      const now = DateTime.now();
       return {
         isPrelude: true,
         job: job,
-        associatedEvent: null, // TODO: add all events
-        eventStartTime: now.plus({ minutes: 1 }),
-        eventEndTime: now.plus({ minutes: 2 }),
+        associatedEvent: events,
+        eventStartTime: now,
+        eventEndTime: now.plus({ minutes: 1 }),
       };
     }
   } else {
@@ -237,23 +236,20 @@ export function buildUnion(
       // There is no job that starts soon, all are going now.
       const numEvents = jobs.length;
       const titleString = ' Now: ' + numEvents.toString() + ' events';
-      const timeToStartNextMinute = DateTime.now()
-        .startOf('minute')
-        .plus({ minutes: 1, seconds: 0.5 });
 
+      const now = DateTime.now();
       const job: ScheduledSingledInstanceJob = {
-        scheduledExecutionTime: timeToStartNextMinute,
+        scheduledExecutionTime: now,
         callback: () => trayTextSetter(titleString),
         extendBeyondActiveSession: false,
       };
 
-      const now = DateTime.now();
       return {
         isPrelude: false,
         job: job,
-        associatedEvent: null, // TODO: add all events
-        eventStartTime: now.plus({ minutes: 1 }),
-        eventEndTime: now.plus({ minutes: 2 }),
+        associatedEvent: events,
+        eventStartTime: now,
+        eventEndTime: now.plus({ minutes: 1 }),
       };
     }
   }
@@ -264,7 +260,7 @@ export function buildUnion(
  * @param jobs
  */
 function findNextSoonest(jobs: Array<NotificationJob>): NotificationJob | null {
-  const now = DateTime.now();
+  const now = DateTime.now().startOf('minute');
   let nextSoonestTime = DateTime.now().plus({ days: 1 });
   let nextSoonestJob: NotificationJob | null = null;
 
@@ -273,9 +269,11 @@ function findNextSoonest(jobs: Array<NotificationJob>): NotificationJob | null {
 
     if (jobStart < nextSoonestTime && jobStart > now && job.isPrelude) {
       nextSoonestJob = job;
-      nextSoonestTime = nextSoonestTime;
+      nextSoonestTime = jobStart;
     }
   }
+
+  console.log('found next soonest:', nextSoonestJob);
 
   return nextSoonestJob;
 }
@@ -297,6 +295,11 @@ export function getCurrentMinute() {
   return now.minute + 60 * now.hour;
 }
 
+function getEventStartMinute(event: CalendarIndexEvent): number {
+  const startDateTime = DateTime.fromISO(event.startTime.dateTime!);
+  return startDateTime.minute + 60 * startDateTime.hour;
+}
+
 /**
  * Takes an event and creates an event job stream that handles the notifications for the entirety of the event.
  * The events are not actualyl scheduled. Scheduling the jobs is handled in InternalTimeEngine.
@@ -307,7 +310,7 @@ export function getCurrentMinute() {
  * @param eventTime
  * @param trayTextSetter
  */
-export function scheduleEventNotificationStream(
+function scheduleEventNotificationStream( // TODO: Handle hours, change text, etc
   minutesBeforeDisplay: number,
   eventLeadupTitle: string, // What gets displayed for "in x min: ____"
   eventTitle: string, // What gets displayed for "now: ____"

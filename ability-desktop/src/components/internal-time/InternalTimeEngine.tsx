@@ -20,6 +20,7 @@ import {
   NotificationJob,
   getCurrentMinute,
   buildUnion,
+  runNotificationEngineAlternate,
 } from '../util/global-util/NotificationsUtil';
 import { mapDateToIndex } from '../util/command-view-util/CalendarIndexUtil';
 import { DateTime } from 'luxon';
@@ -44,21 +45,10 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
     GlobalSettingsContext
   );
 
-  const [dailyJobsScheduled, setDailyJobsScheduled] = useStateRef(false);
-
   // --------------------------- START NOTIFICATIONS CODE ------------------- //
 
   const [notificationTimeMap, setNotificationTimeMap, notificationTimeMapRef] =
-    useStateRef<NotificationTimeMap>(
-      buildTimeMap(
-        calendarIndex[mapDateToIndex(DateTime.now(), calendarIndex[0].date)],
-        setTrayText,
-        globalUserSettings
-      )
-    );
-
-  const [jobScheduledNext, setJobScheduledNext, jobScheduledNextRef] =
-    useStateRef<NotificationJob | null>(null);
+    useStateRef<NotificationTimeMap>({});
 
   const [
     jobCurrentlyExecuting,
@@ -68,13 +58,10 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
 
   // Schedule periodic query of the notificationTimeMap
   const masterJob: ScheduledRecurringJob = {
-    scheduledRecurrenceRule: { second: 0 }, // TODO: this isn't quite right, its not logging eevery 10 secobds, fix this
+    scheduledRecurrenceRule: { second: [0, 10, 20, 30, 40, 50] },
     callback: () => {
       runNotificationEngine(
         notificationTimeMapRef.current,
-        setNotificationTimeMap,
-        jobScheduledNextRef.current,
-        setJobScheduledNext,
         jobCurrentlyExecutingRef.current,
         setJobCurrentlyExecuting,
         setTrayText
@@ -83,53 +70,20 @@ export default function InternalTimeEngine(props: InternalTimeEngineProps) {
     extendBeyondActiveSession: false,
   };
 
-  useEffect(() => {
-    // Initialize the scheduled next job
-    const currentMinute = getCurrentMinute();
-    if (
-      notificationTimeMap != null &&
-      currentMinute + 1 in notificationTimeMap
-    ) {
-      if (notificationTimeMap[currentMinute + 1].length === 1) {
-        setJobScheduledNext(notificationTimeMap[currentMinute + 1][0]);
-      } else {
-        setJobScheduledNext(
-          buildUnion(notificationTimeMap[currentMinute + 1], setTrayText)
-        );
-      }
-
-      console.log('scheduled job based on map');
-    } else if (notificationTimeMap != null) {
-      // We should schedule an empty string job since there is no next minute in our timemap
-      const timeToStartNextMinute = DateTime.now()
-        .startOf('minute')
-        .plus({ minutes: 1, seconds: 0.5 });
-      const job: ScheduledSingledInstanceJob = {
-        scheduledExecutionTime: timeToStartNextMinute,
-        callback: () => setTrayText(''),
-        extendBeyondActiveSession: false,
-      };
-
-      const now = DateTime.now();
-      const nextJob: NotificationJob = {
-        isPrelude: false,
-        job: job,
-        associatedEvent: null,
-        eventStartTime: now.plus({ minutes: 1 }),
-        eventEndTime: now.plus({ minutes: 2 }),
-      };
-      setJobScheduledNext(nextJob);
-      console.log('scheduled job based on empty map');
-    }
-  }, []);
-
+  // Schedule the cron job
   useEffect(() => {
     scheduleRecurringJob(masterJob);
   }, []);
 
   // Listen to for updates to CalendarIndex
   useEffect(() => {
-    // TODO: Rebuild time map intelligently (if we see a change has occured)
+    setNotificationTimeMap(
+      buildTimeMap(
+        calendarIndex[mapDateToIndex(DateTime.now(), calendarIndex[0].date)],
+        setTrayText,
+        globalUserSettings
+      )
+    );
   }, [calendarIndex]);
 
   // --------------------------- END NOTIFICATIONS CODE ------------------- //
