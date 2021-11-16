@@ -26,10 +26,12 @@ interface dbScheduleInfo {
 // ---------------------- BASIC METHODS ------------------------ //
 
 export function scheduleSingleInstanceJob(
-  job: ScheduledSingledInstanceJob
+  job: ScheduledSingledInstanceJob,
+  executionTime?: DateTime
 ): Job {
   const scheduledJob = schedule.scheduleJob(
-    job.scheduledExecutionTime.toJSDate().valueOf(),
+    executionTime?.toJSDate().valueOf() ??
+      job.scheduledExecutionTime.toJSDate().valueOf(),
     job.callback
   );
 
