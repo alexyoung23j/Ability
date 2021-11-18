@@ -15,6 +15,7 @@ import CalendarView from '../calendar-display/calendar-body/CalendarView';
 import TextEngine from './TextEngine';
 import { generateTimeZoneObjects } from '../../../util/command-view-util/TextEngineUtil';
 import { RegisteredAccountToCalendarsContext } from 'components/AllContextProvider';
+import { deleteCalendarEvent } from 'DAO/CalendarDAO';
 const { DateTime } = require('luxon');
 
 const dropdownArrowNormal = require('/src/content/svg/DropdownArrowNormal.svg');
@@ -34,6 +35,7 @@ export interface CalendarResultEvent {
   calendar: AbilityCalendar;
   index_of_overlapped_events: Array<number>;
   isAllDayEvent: boolean;
+  eventId: string;
 }
 
 export interface CalendarResultDay {
@@ -90,6 +92,8 @@ export default function ResultEngine(props: ResultEngineProps) {
   const [initialIgnoredSlotsSet, setInitialIgnoredSlotSet] = useState(false);
 
   let textSnippetArray = demo1ArrayOfSnippets[0]; // DUMMY: The text snippets
+
+  console.log('data:, ', props.calendarResultData);
 
   // Checks if an event is part of a calendar that is selected for display
   function _IsSelected(name: string, googleAccount: string) {
@@ -255,6 +259,11 @@ export default function ResultEngine(props: ResultEngineProps) {
     orig_event_idx: number
   ): void => {
     // TODO: Delete Event Instance with Calendar API
+
+    const deleteOut = deleteCalendarEvent(
+      calendar.calendarId,
+      '63vg6gudpfli34gsqnnv943gna'
+    );
 
     let event_idx = _findIdxInUnfilteredData(day_idx, orig_event_idx);
 

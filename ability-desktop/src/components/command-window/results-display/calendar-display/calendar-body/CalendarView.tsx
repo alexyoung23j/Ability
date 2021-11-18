@@ -47,7 +47,8 @@ interface CalendarView {
     color: string,
     calendar: AbilityCalendar,
     day_idx: number,
-    orig_event_idx: number
+    orig_event_idx: number,
+    eventId: string
   ) => void;
   filteredCalendarData: CalendarResultData;
   calendarAccounts: Array<RegisteredAccount>;

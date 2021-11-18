@@ -314,6 +314,7 @@ function transformToResultData(
             accountEmail,
             calendarId,
             isAllDayEvent,
+            id,
           }): CalendarResultEvent => ({
             start_time: startTime.dateTime,
             end_time: endTime.dateTime,
@@ -325,6 +326,7 @@ function transformToResultData(
             )!,
             index_of_overlapped_events: [],
             isAllDayEvent: isAllDayEvent,
+            eventId: id,
           })
         ),
       };
