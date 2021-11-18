@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   CalendarIndexContext,
   GlobalSettingsContext,
