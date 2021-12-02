@@ -135,7 +135,6 @@ export default function CalendarView(props: CalendarView) {
           modalEventCalendar={modalEventCalendar}
           setModalEventCalendar={setModalEventCalendar}
           modalEventDescription={modalEventDescription}
-          setModalEventDescription={setModalEventDescription}
         />
         {!textEngineLaunched && (
           <DailyCalendarView
