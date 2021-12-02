@@ -290,6 +290,8 @@ function transformToResultData(
 
       const { day, month, year } = calendarIndexDay.date;
 
+      console.log("CalednarIndexDay: ", calendarIndexDay)
+
       return {
         calendar_date: calendarIndexDay.date.toISODate(),
         hard_start: DateTime.fromObject({
