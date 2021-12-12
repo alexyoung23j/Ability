@@ -18,6 +18,8 @@ import {
 import SignIn from './auth/SignIn';
 import InternalTimeEngine from './internal-time/InternalTimeEngine';
 import { loadCalendarData } from './loadCalendarData';
+import { useCalendarAPI } from 'hooks/calendar/useCalendarAPI';
+import { REGISTERED_ACCOUNT_TO_CALENDARS } from 'tests/ContextFixtures';
 
 interface AllContextProviderProps {
   showCommand: boolean;
@@ -59,6 +61,12 @@ export const GlobalSettingsContext =
   React.createContext<{
     globalUserSettings: GlobalUserSettings;
     setGlobalUserSettings: Updater<GlobalUserSettings>;
+  } | null>(null);
+
+export const isCurrentlyFetchingContext =
+  React.createContext<{
+    isCurrentlyFetching: boolean;
+    setIsCurrentlyFetching: Updater<boolean>;
   } | null>(null);
 
 // ---------------- Methods that should be elsewhere/are temp -------- //
@@ -108,10 +116,13 @@ export default function AllContextProvider(props: AllContextProviderProps) {
     useImmer<GlobalUserSettings>(loadGlobalSettings());
 
   const [registeredAccountToCalendars, setRegisteredAccountToCalendars] =
-    useImmer<RegisteredAccountToCalendars | null>(null);
+    useImmer<RegisteredAccountToCalendars | null>(REGISTERED_ACCOUNT_TO_CALENDARS);
+
+  const [isCurrentlyFetching, setIsCurrentlyFetching] = useState<boolean>(true);
 
   useEffect(() => {
     if (isSignedIn && authInstance != null) {
+      // TODO: We are unable to use our useCalendarAPI Hook because this is not a context consumer. Should we reorg this?
       loadCalendarData(
         ({
           calendarIndex,
@@ -124,6 +135,7 @@ export default function AllContextProvider(props: AllContextProviderProps) {
           setRegisteredAccountToCalendars(registeredAccountToCalendars);
         }
       );
+      setIsCurrentlyFetching(false);
     }
   }, [isSignedIn]);
 
@@ -141,15 +153,19 @@ export default function AllContextProvider(props: AllContextProviderProps) {
           }}
         >
           <SessionContext.Provider value={electronSessionId}>
-            {(!isSignedIn && (
-              <SignIn onSignInComplete={() => setIsSignedIn(true)} />
-            )) || (
-              <InternalTimeEngine
-                showCommand={showCommand}
-                toggleWindowHandler={toggleBetweenWindows}
-                setTrayText={setTrayText}
-              />
-            )}
+            <isCurrentlyFetchingContext.Provider
+              value={{ isCurrentlyFetching, setIsCurrentlyFetching }}
+            >
+              {(isSignedIn && (
+                <SignIn onSignInComplete={() => setIsSignedIn(true)} />
+              )) || (
+                <InternalTimeEngine
+                  showCommand={showCommand}
+                  toggleWindowHandler={toggleBetweenWindows}
+                  setTrayText={setTrayText}
+                />
+              )}
+            </isCurrentlyFetchingContext.Provider>
           </SessionContext.Provider>
         </RegisteredAccountToCalendarsContext.Provider>
       </CalendarIndexContext.Provider>

@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import _ from 'underscore';
 
 import { fetchPaginated } from 'DAO/GapiDaoUtil';
+import { CalendarIndexEvent } from 'components/util/command-view-util/CalendarIndexUtil';
 
 // Default end date string
 const END_DATE = new Date('December 10, 2021 12:00:00').toISOString();
@@ -25,6 +26,13 @@ export async function getCalendars(): Promise<
     params,
     (args) => window.gapi.client.calendar.calendarList.list(args)
   );
+}
+
+export async function deleteCalendarEvent(calendarId, eventId) {
+  return window.gapi.client.request({
+    path: `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events/${eventId}`,
+    method: 'DELETE',
+  });
 }
 
 /**

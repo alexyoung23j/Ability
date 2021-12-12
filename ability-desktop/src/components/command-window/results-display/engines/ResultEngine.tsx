@@ -15,6 +15,14 @@ import CalendarView from '../calendar-display/calendar-body/CalendarView';
 import TextEngine from './TextEngine';
 import { generateTimeZoneObjects } from '../../../util/command-view-util/TextEngineUtil';
 import { RegisteredAccountToCalendarsContext } from 'components/AllContextProvider';
+import { deleteCalendarEvent } from 'DAO/CalendarDAO';
+import {
+  _IsSelected,
+  _findIdxInUnfilteredData,
+  UpdateFilteredData,
+  isSameDay,
+  updateIgnoredSlots,
+} from 'components/util/command-view-util/ResultEngineUtil';
 const { DateTime } = require('luxon');
 
 const dropdownArrowNormal = require('/src/content/svg/DropdownArrowNormal.svg');
@@ -34,6 +42,7 @@ export interface CalendarResultEvent {
   calendar: AbilityCalendar;
   index_of_overlapped_events: Array<number>;
   isAllDayEvent: boolean;
+  eventId: string;
 }
 
 export interface CalendarResultDay {
@@ -58,7 +67,6 @@ export default function ResultEngine(props: ResultEngineProps) {
   // effectively modifying our copy of the initial query.
   // In general, we prefer to only REMOVE items from the result.
 
-  // TODO: Replace with calendars from DB/context
   // These are the calendars the user has access to. The selectedForDisplay values are based on the most recent changes to the settings?
   const registeredAccountToCalendars = useContext(
     RegisteredAccountToCalendarsContext
@@ -77,56 +85,16 @@ export default function ResultEngine(props: ResultEngineProps) {
   );
 
   // TODO: Determine if this is the best way to do this
-  const [calendarResultData, setCalendarResultData] = useImmer(
-    props.calendarResultData
-  ); // The Raw, unfiltered Result Data that contains every event from every calendar
-  const [filteredCalendarData, setFilteredCalendarData] = useImmer(
-    props.calendarResultData
-  ); // The filtered result data that screens out events from calendars that are not selected for display
+  const [calendarResultData, setCalendarResultData] =
+    useImmer<CalendarResultData>(props.calendarResultData); // The Raw, unfiltered Result Data that contains every event from every calendar
+  const [filteredCalendarData, setFilteredCalendarData] =
+    useImmer<CalendarResultData>(props.calendarResultData); // The filtered result data that screens out events from calendars that are not selected for display
   const [calendarAccounts, setCalendarAccounts] =
     useImmer<Array<RegisteredAccount>>(fetchedCalendars); // The copy of the calendar accounts we keep in state. This gets updated, though updating the default settings is not yet included
-  const [ignoreSlots, setIgnoreSlots] = useState([]); // The free slots that get ignored by the text engine
-  const [textEngineLaunched, setTextEngineLaunched] = useState(false); // Defines if our text engine is launched
-  const [initialIgnoredSlotsSet, setInitialIgnoredSlotSet] = useState(false);
-
-  let textSnippetArray = demo1ArrayOfSnippets[0]; // DUMMY: The text snippets
-
-  // Checks if an event is part of a calendar that is selected for display
-  function _IsSelected(name: string, googleAccount: string) {
-    for (const group of calendarAccounts) {
-      for (const calendar of group.calendars) {
-        if (
-          group.accountEmail === googleAccount &&
-          calendar.name === name &&
-          calendar.selectedForDisplay
-        ) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  function _findIdxInUnfilteredData(day_idx, event_idx) {
-    // Grab data to identify the event we are looking for
-    const { start_time, end_time, title, url } =
-      filteredCalendarData.days[day_idx].events[event_idx];
-
-    for (let i = 0; i < calendarResultData.days[day_idx].events.length; i++) {
-      let potentialMatch = calendarResultData.days[day_idx].events[i];
-
-      if (
-        potentialMatch.start_time == start_time &&
-        potentialMatch.end_time == end_time &&
-        potentialMatch.title == title &&
-        potentialMatch.url == url
-      ) {
-        return i;
-      }
-    }
-
-    return -1;
-  }
+  const [ignoreSlots, setIgnoreSlots] = useState<Array<number>>([]); // The free slots that get ignored by the text engine
+  const [textEngineLaunched, setTextEngineLaunched] = useState<boolean>(false); // Defines if our text engine is launched
+  const [initialIgnoredSlotsSet, setInitialIgnoredSlotSet] =
+    useState<boolean>(false);
 
   // Sets the slots to be all ignored when we first open the text engine
   useEffect(() => {
@@ -162,71 +130,21 @@ export default function ResultEngine(props: ResultEngineProps) {
   // Listen for updates to the unfiltered data, the accounts, and the text engine launch status
   useEffect(() => {
     // If text engine launched, make intervals 1 hour
-    UpdateFilteredData();
+    UpdateFilteredData(
+      setFilteredCalendarData,
+      calendarResultData,
+      calendarAccounts,
+      textEngineLaunched,
+      setIgnoreSlots
+    );
   }, [textEngineLaunched, calendarResultData, calendarAccounts]);
-
-  // When raw unfiltered data changes, update the free slots on the filtered data
-  // Also makes the interval size between free slots larger when the text engine is launched to simplify UI and text generation
-  function UpdateFilteredData() {
-    setFilteredCalendarData((draft) => {
-      // TODO: this is probably inefficient
-      for (let i = 0; i < calendarResultData.days.length; i++) {
-        let currentDay = calendarResultData.days[i];
-
-        let validEvents: Array<CalendarResultEvent> = [];
-
-        for (const event of currentDay.events) {
-          let eventCalendar = event.calendar;
-
-          if (
-            !event.isAllDayEvent &&
-            _IsSelected(eventCalendar.name, eventCalendar.accountEmail)
-          ) {
-            validEvents.push(event);
-          }
-        }
-
-        draft.days[i].events = validEvents;
-      }
-    });
-
-    if (textEngineLaunched) {
-      setFilteredCalendarData((draft) => {
-        for (var i = 0; i < calendarResultData.days.length; i++) {
-          draft.days[i].free_blocks = CalculateFreeBlocks(
-            draft.days[i].hard_start,
-            draft.days[i].hard_end,
-            draft.minDuration,
-            60,
-            60,
-            draft.days[i].events
-          );
-        }
-      });
-    } else {
-      // if text engine not launched, make intervals 30 minutes
-      setIgnoreSlots([]);
-      setFilteredCalendarData((draft) => {
-        for (var i = 0; i < calendarResultData.days.length; i++) {
-          draft.days[i].free_blocks = CalculateFreeBlocks(
-            draft.days[i].hard_start,
-            draft.days[i].hard_end,
-            draft.minDuration,
-            60,
-            30,
-            draft.days[i].events
-          );
-        }
-      });
-    }
-  }
 
   // ----------------------------------- CALLBACKS ----------------------------------- //
 
   // Handles the creation of our array that stores the free_slots that we plan to ignore when creating the text
   // The text engine will set some initial slot state, then we can remove or add to it via the UI
   // Index of the form [x, y, z] where x = day_idx, y = free_block idx, z = free_slot idx
-  const updateIgnoredSlots = (index: number[], action: string): void => {
+  function updateIgnoredSlots(index: number[], action: string): void {
     if (action === 'remove') {
       setIgnoreSlots([...ignoreSlots, index]);
     } else if (action === 'add-back') {
@@ -235,17 +153,9 @@ export default function ResultEngine(props: ResultEngineProps) {
       );
       setIgnoreSlots(newSlots);
     }
-  };
-
-  // Checks if two times are on the same day
-  function isSameDay(time, originalTime) {
-    const newTime = DateTime.fromISO(time);
-    const oldTime = DateTime.fromISO(originalTime);
-
-    return newTime.ordinal == oldTime.ordinal && newTime.year == oldTime.year;
   }
 
-  const deleteEvent = (
+  function deleteEvent(
     start_time: string,
     end_time: string,
     title: string,
@@ -253,10 +163,20 @@ export default function ResultEngine(props: ResultEngineProps) {
     calendar: AbilityCalendar,
     day_idx: number,
     orig_event_idx: number
-  ): void => {
+  ): void {
     // TODO: Delete Event Instance with Calendar API
 
-    let event_idx = _findIdxInUnfilteredData(day_idx, orig_event_idx);
+    const deleteOut = deleteCalendarEvent(
+      calendar.calendarId,
+      '63vg6gudpfli34gsqnnv943gna'
+    );
+
+    let event_idx = _findIdxInUnfilteredData(
+      day_idx,
+      orig_event_idx,
+      filteredCalendarData,
+      calendarResultData
+    );
 
     // Save a copy of the original events (from which this event originated)
     const origDayIdx = day_idx;
@@ -285,17 +205,17 @@ export default function ResultEngine(props: ResultEngineProps) {
         origEvents
       );
     });
-  };
+  }
 
   // Handles new events, makes API call to create them in the calendar, and updates local results to change ui
-  const scheduleNewEvent = (
+  function scheduleNewEvent(
     start_time: string,
     end_time: string,
     title: string,
     url: string,
     calendar: AbilityCalendar,
     day_idx: number
-  ): void => {
+  ): void {
     // TODO: Need to actually do the scheduling here with the calendar API
 
     // Find position to insert into events
@@ -370,10 +290,10 @@ export default function ResultEngine(props: ResultEngineProps) {
         events
       );
     });
-  };
+  }
 
   // Modifies information for some existing event
-  const modifyExistingEvent = (
+  function modifyExistingEvent(
     start_time: string,
     end_time: string,
     title: string,
@@ -381,10 +301,15 @@ export default function ResultEngine(props: ResultEngineProps) {
     calendar: AbilityCalendar,
     day_idx: number,
     orig_event_idx: number
-  ) => {
+  ) {
     // TODO: Need to actually do the scheduling here with the calendar API
 
-    let event_idx = _findIdxInUnfilteredData(day_idx, orig_event_idx);
+    let event_idx = _findIdxInUnfilteredData(
+      day_idx,
+      orig_event_idx,
+      filteredCalendarData,
+      calendarResultData
+    );
 
     // Find position to insert into events
     const newEventStartTime = DateTime.fromISO(start_time);
@@ -510,7 +435,7 @@ export default function ResultEngine(props: ResultEngineProps) {
         );
       });
     }
-  };
+  }
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>

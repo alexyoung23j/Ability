@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   CalendarIndexContext,
   GlobalSettingsContext,
@@ -290,6 +290,8 @@ function transformToResultData(
 
       const { day, month, year } = calendarIndexDay.date;
 
+      console.log("CalednarIndexDay: ", calendarIndexDay)
+
       return {
         calendar_date: calendarIndexDay.date.toISODate(),
         hard_start: DateTime.fromObject({
@@ -314,6 +316,7 @@ function transformToResultData(
             accountEmail,
             calendarId,
             isAllDayEvent,
+            id,
           }): CalendarResultEvent => ({
             start_time: startTime.dateTime,
             end_time: endTime.dateTime,
@@ -325,6 +328,7 @@ function transformToResultData(
             )!,
             index_of_overlapped_events: [],
             isAllDayEvent: isAllDayEvent,
+            eventId: id,
           })
         ),
       };

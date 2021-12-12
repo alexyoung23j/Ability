@@ -1,6 +1,6 @@
 import CSS from 'csstype';
 import 'draft-js/dist/Draft.css';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   Piece,
   QueryPieceType,
@@ -12,6 +12,15 @@ import AutocompleteParser from './autocomplete/AutocompleteParser';
 import ResultEngine from './results-display/engines/ResultEngine';
 import { QueryTransformEngine } from './results-display/engines/QueryTransformEngine';
 import { ScheduledSingledInstanceJob } from '../util/cron-util/CronUtil';
+import { loadCalendarData } from 'components/loadCalendarData';
+import {
+  CalendarIndexContext,
+  RegisteredAccountToCalendarsContext,
+  CalendarIndex,
+  RegisteredAccountToCalendars,
+  isCurrentlyFetchingContext,
+} from 'components/AllContextProvider';
+import { useCalendarAPI } from 'hooks/calendar/useCalendarAPI';
 const { DateTime } = require('luxon');
 
 const { ipcRenderer } = require('electron');
@@ -26,6 +35,12 @@ const DEFAULT_AUTOCOMPLETE: ModifierPiece = {
 };
 
 export default function CommandView() {
+  // Calendar API
+  const { fetchCalendarData } = useCalendarAPI();
+
+  // Context
+  const { isCurrentlyFetching } = useContext(isCurrentlyFetchingContext);
+
   // State
 
   const [autocompleteInProgress, setAutocompleteInProgress] = useState(false);
@@ -198,6 +213,9 @@ export default function CommandView() {
   return (
     <div style={commandAreaStyle} onClick={() => triggerBrowserWindowBlur()}>
       <div style={commandStyle} onClick={(e) => e.stopPropagation()}>
+        <div>
+          <button onClick={() => fetchCalendarData()}>Refresh</button>
+        </div>
         <CommandLine
           queryPiecePositions={queryPiecePositions}
           autocompleteInProgress={autocompleteInProgress}
@@ -220,6 +238,7 @@ export default function CommandView() {
           autocompleteItemClickedHandler={setAutocompleteItemClicked}
           alertCommandLineClearHandler={setAlertCommandLineToClear}
         />
+
         {(finalQueryLaunched && (
           <QueryTransformEngine queryPieces={queryPieces} />
         )) || (
