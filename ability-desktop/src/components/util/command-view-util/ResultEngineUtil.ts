@@ -13,10 +13,11 @@ export function _IsSelected(
   googleAccount: string,
   calendarAccounts
 ) {
+  console.log(googleAccount, calendarAccounts, name)
   for (const group of calendarAccounts) {
     for (const calendar of group.calendars) {
       if (
-        group.accountEmail === googleAccount &&
+        calendar.accountEmail === googleAccount &&
         calendar.name === name &&
         calendar.selectedForDisplay
       ) {

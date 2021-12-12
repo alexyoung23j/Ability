@@ -25,7 +25,7 @@ interface EventModalProps {
   setEventEnd: any;
   setEventTitle: any;
   setEventLocation: any;
-  setEventCalendar: (eventCalendar: AbilityCalendar) => void;
+  setEventCalendar: any;
   setEventDescription: any;
 
   scheduleNewEvent: any;

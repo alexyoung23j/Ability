@@ -39,10 +39,7 @@ interface CalendarBody {
   modalEventLocation: string;
   setModalEventLocation: any;
   modalEventCalendar: AbilityCalendar;
-  setModalEventCalendar: (eventCalendar: {
-    name: string;
-    color: Color;
-  }) => void;
+  setModalEventCalendar: any;
   modalEventDescription: string;
   setModalEventDescription: any;
 }

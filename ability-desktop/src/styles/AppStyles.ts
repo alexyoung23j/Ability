@@ -1,0 +1,8 @@
+export enum COLORS {
+    DARK_BLUE = '#1F82F6',
+    LIGHT_BLUE = '#0085FF',
+    EVENT_RED = '#F29494',
+    EVENT_WHITE = '#F8F8F8',
+    FONT_GRAY = '#232323',
+    INDICATOR_RED = '#EA4E4E',
+} 

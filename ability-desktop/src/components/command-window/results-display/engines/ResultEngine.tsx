@@ -217,7 +217,6 @@ export default function ResultEngine(props: ResultEngineProps) {
     day_idx: number
   ): void {
     // TODO: Need to actually do the scheduling here with the calendar API
-
     // Find position to insert into events
     const newEventStartTime = DateTime.fromISO(start_time);
     const newEventEndTime = DateTime.fromISO(end_time);
