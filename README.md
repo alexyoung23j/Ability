@@ -1,12 +1,16 @@
-## Demo Videos
+## Ability
 
-Query your Google Calendar using just text. 
+A new way to interact with your Google calendar with plain English.
 
-Enter queries such as "tomorrow after 5 PM for 1 hour", "Monday next month", or just simply "tomorrow" to get a filtered view of our calendar.
+Spin up the query bar with a simple keyboard shortcut and search away.
 
-Easily create text snippets of avail_ability_ to share with your friends, professionals, and coworkers with just clicks! 
+Enter queries such as `tomorrow after 5 PM for 1 hour`, `Monday next month`, or just simply `tomorrow` to get a filtered view of our calendar.
+
+Easily create text snippets of avail-_ability_ to share with your friends, professionals, and coworkers with just clicks! 
 
 ---
+
+## Demo Videos
 
 ### Find free time next weekend.
 
