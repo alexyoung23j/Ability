@@ -8,8 +8,7 @@ Enter queries such as `tomorrow after 5 PM for 1 hour`, `Monday next month`, or 
 
 Easily create text snippets of avail-_ability_ to share with your friends, professionals, and coworkers with just clicks! 
 
-**Building (and failing to fully complete) this project was how I learned to code :)
-**
+*Building (and failing to fully complete) this project was how I learned to code :)*
 ---
 
 ## Demo Videos
