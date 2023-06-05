@@ -2,12 +2,6 @@
 
 A new way to interact with your Google calendar with plain English.
 
-Spin up the query bar with a simple keyboard shortcut and search away.
-
-Enter queries such as `tomorrow after 5 PM for 1 hour`, `Monday next month`, or just simply `tomorrow` to get a filtered view of our calendar.
-
-Easily create text snippets of avail-_ability_ to share with your friends, professionals, and coworkers with just clicks! 
-
 *Building (and failing to fully complete) this project was how I learned to code :)*
 ---
 
